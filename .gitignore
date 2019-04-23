@@ -8,6 +8,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#vscode
+.vscode/
+masterthesis.code-workspace
+
 # C extensions
 *.so
 
@@ -70,10 +74,6 @@ instance/
 
 # Scrapy stuff:
 .scrapy
-
-#vscode
-.vscode/
-masterthesis.code-workspace
 
 # Sphinx documentation
 docs/_build/
