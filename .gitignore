@@ -71,6 +71,10 @@ instance/
 # Scrapy stuff:
 .scrapy
 
+#vscode
+.vscode/
+masterthesis.code-workspace
+
 # Sphinx documentation
 docs/_build/
 
