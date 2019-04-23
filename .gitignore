@@ -11,6 +11,7 @@ __pycache__/
 #vscode
 .vscode/
 masterthesis.code-workspace
+pc_home.code-workspace
 
 # C extensions
 *.so
