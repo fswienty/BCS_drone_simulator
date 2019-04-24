@@ -1,13 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-timestep = .5
+### start and end values ###
+START_VELOCITY = np.array([[0,0]])
+START_POSITION = np.array([[0,0]])
+
+END_VELOCITY = np.array([[0,0]])
+END_POSITION = np.array([[10,10]])
+
+
+timestep = .1
 jerk_traj = np.array([[0,0]])
 acc_traj = np.array([[0,0]])
-vel_traj = np.array([[0,0]])
-pos_traj = np.array([[0,0]]) # set initial position here
+vel_traj = START_VELOCITY
+pos_traj = START_POSITION
 
-jerk_traj = np.array([[0,1],[1,1],[.3,-2],[2,-1],[0,-1]])
+jerk_traj = np.array([[0,0]])
+jerk_traj = np.append(jerk_traj, 6*np.random.rand(100,2)-3, axis=0)
 acc_traj = np.zeros([jerk_traj.shape[0]+1, 2])
 vel_traj = np.zeros([jerk_traj.shape[0]+1, 2])
 pos_traj = np.zeros([jerk_traj.shape[0]+1, 2])
@@ -25,9 +34,23 @@ print("acc_trajectory:\n", acc_traj, "\n")
 print("vel_trajectory:\n", vel_traj, "\n")
 print("pos_trajectory:\n", pos_traj, "\n")
 
-print(jerk_traj)
 x = jerk_traj[:,0]
 y = jerk_traj[:,1]
+plt.plot(x,y)
+plt.show()
+
+x = acc_traj[:,0]
+y = acc_traj[:,1]
+plt.plot(x,y)
+plt.show()
+
+x = vel_traj[:,0]
+y = vel_traj[:,1]
+plt.plot(x,y)
+plt.show()
+
+x = pos_traj[:,0]
+y = pos_traj[:,1]
 plt.plot(x,y)
 plt.show()
 
