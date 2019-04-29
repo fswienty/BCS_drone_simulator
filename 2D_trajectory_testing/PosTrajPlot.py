@@ -13,5 +13,6 @@ traj_z = traj_xyz[2]
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-ax.scatter(traj_x, traj_y, traj_z)
+#ax.scatter(traj_x, traj_y, traj_z)
+ax.plot(traj_x, traj_y, traj_z)
 plt.show()
