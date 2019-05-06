@@ -3,3 +3,6 @@
 anaconda packages:
     numpy
     matplotlib
+
+pip packages:
+    pycma
