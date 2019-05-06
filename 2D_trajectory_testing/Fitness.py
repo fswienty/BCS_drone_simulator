@@ -31,7 +31,8 @@ class Fitness():
             self.vel_traj[i+1] = self.vel_traj[i] + (self.timestep * self.acc_traj[i]) + (0.5 * self.timestep**2 * self.jerk_traj[i])
             self.pos_traj[i+1] = self.pos_traj[i] + (self.timestep * self.vel_traj[i]) + (0.5 * self.timestep**2 * self.acc_traj[i]) + (0.1666 * self.timestep**3 * self.jerk_traj[i])  
 
-    def get_fitness(self):
+    def get_fitness(self, jerk_traj):
+        self.integrate(jerk_traj)
         end_vel = self.vel_traj[self.traj_len - 1]
         end_pos = self.pos_traj[self.traj_len - 1]
         vel_error = np.linalg.norm(self.goal_vel - end_vel)

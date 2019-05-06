@@ -18,7 +18,10 @@ result = 0
 fitness = Fitness.Fitness(timestep, traj_len, GOAL_VELOCITY, GOAL_POSITION)
 
 jerk_traj = 6 * np.random.rand(traj_len, dim) - 3
-fitness.integrate(jerk_traj)
-result = fitness.get_fitness()
+result = fitness.get_fitness(jerk_traj)
 
 print(result)
+
+es = cma.CMAEvolutionStrategy(traj_len * [0], 0.5)
+es.optimize(fitness.get_fitness)
+es.result_pretty()
