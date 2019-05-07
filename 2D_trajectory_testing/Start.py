@@ -1,27 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import Fitness
+import TrajectoryError
 import cma
 
 START_VELOCITY = np.array([[0,0]])
 START_POSITION = np.array([[0,0]])
+GOAL_VELOCITY = np.array([[-3,-3]])
+GOAL_POSITION = np.array([[4,4]])
 
-GOAL_VELOCITY = np.array([[0,0]])
-GOAL_POSITION = np.array([[10,10]])
+DIM = 1 # dimensions the robots can traverse
+TIMESTEP = 1
+TRAJ_LEN = 10
 
-dim = 2 # dimensions the robots can traverse
 
-timestep = 1
-traj_len = 10
-result = 0
+error = TrajectoryError.TrajectoryError(TIMESTEP, TRAJ_LEN, GOAL_VELOCITY, GOAL_POSITION, DIM)
 
-fitness = Fitness.Fitness(timestep, traj_len, GOAL_VELOCITY, GOAL_POSITION)
+es = cma.CMAEvolutionStrategy(TRAJ_LEN * [0], 0.5)
+es.optimize(error.get_error)
+#es.result_pretty()
+print("\n")
+xbest = es.result[0]
+error.integrate(xbest)
+print(error.vel_traj)
+print(error.pos_traj)
 
-jerk_traj = 6 * np.random.rand(traj_len, dim) - 3
-result = fitness.get_fitness(jerk_traj)
-
-print(result)
-
-es = cma.CMAEvolutionStrategy(traj_len * [0], 0.5)
-es.optimize(fitness.get_fitness)
-es.result_pretty()
