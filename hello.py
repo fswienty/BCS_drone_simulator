@@ -11,4 +11,7 @@ num_agents = x.shape[0]
 num_traj = x.shape[1]
 num_dim = x.shape[2]
 
-print(x[1,2,1])
+
+
+x_flat = x.flatten()
+x_rebuilt = x_flat.reshape(num_agents,num_traj,num_dim)
