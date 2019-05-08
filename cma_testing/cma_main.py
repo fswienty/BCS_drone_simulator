@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import TrajectoryError
+from error_calculator import ErrorCalculator
 import cma
 
 # AGENT TRAJ DIM
@@ -11,14 +11,13 @@ GOAL_VEL = np.array([[0,0,0],[0,0,0],[2,2,2]])
 GOAL_POS = np.array([[4,4,4],[-2,-2,-2],[0,0,0]])
 
 TIMESTEP = 1
-NUM_AGENTS = GOAL_VEL.shape[0]
-NUM_TRAJ = 10
-NUM_DIM = GOAL_VEL.shape[1]
-
 MAX_JERK = 1
+AGENTS = GOAL_VEL.shape[0]
+TRAJ_LEN = 10
+DIM = GOAL_VEL.shape[1]
 
-num_opt_vars = NUM_AGENTS*NUM_TRAJ*NUM_DIM # the amount of variables to be optimized via cma
-error_calc = TrajectoryError.ErrorCalculator(TIMESTEP, NUM_TRAJ, GOAL_VEL, GOAL_POS)
+num_opt_vars = AGENTS * TRAJ_LEN * DIM # the amount of variables to be optimized via cma
+error_calc = ErrorCalculator(TIMESTEP, TRAJ_LEN, GOAL_VEL, GOAL_POS)
 
 
 options = cma.CMAOptions()
