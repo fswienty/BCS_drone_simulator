@@ -5,8 +5,14 @@ y = np.array([[5,5,5],[6,6,6],[7,7,7],[8,8,8]], ndmin=2)
 
 start_pos = np.array([[1,0,0],[-2,-2,-2],[0,3,0]])
 pos = np.load("pos_traj.npy")
-pos[:,0,:] = start_pos
-print(pos)
+ag1 = pos[0,:,:]
+ag2 = pos[1,:,:]
+diff = ag1 - ag2
+print(ag1)
+print(ag2)
+print(diff)
+for i in range(0, 10):
+    print(np.linalg.norm(diff[i]))
 
 
 
