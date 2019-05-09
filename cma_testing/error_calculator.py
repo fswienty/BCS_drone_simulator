@@ -42,7 +42,8 @@ class ErrorCalculator():
 
     def _check_collisions(self):
         cols = 0
-
+        
+        min_dist = 1
         for ag1 in range(0, self.agents):
             pos_ag1 = self.pos_traj[ag1,:,:]
             for ag2 in range(ag1+1, self.agents):
@@ -51,8 +52,8 @@ class ErrorCalculator():
                 #pos_diff = self.pos_traj[ag1,:,:] - self.pos_traj[ag2,:,:]
                 for step in range(0, self.traj_len):
                     dist = np.linalg.norm(pos_diff[step])
-                    if dist < 3:
-                        cols += 1- 0.33*dist
+                    if dist < min_dist:
+                        cols += 1 - (1/min_dist)*dist
 
         return cols
 
@@ -66,6 +67,6 @@ class ErrorCalculator():
         pos_error = np.linalg.norm(self.goal_pos - self.pos_traj[:,-1,:])
         error += vel_error
         error += pos_error
-        error += self._check_collisions()
+        #error += self._check_collisions()
         return error
     
