@@ -7,8 +7,8 @@ import cma
 
 # START_VEL = np.array([[0,0,0]])
 # START_POS = np.array([[0,0,0]])
-GOAL_VEL = np.array([[0,0,0],[0,0,0],[2,2,2]])
-GOAL_POS = np.array([[4,4,4],[-2,-2,-2],[0,0,0]])
+GOAL_VEL = np.array([[0,0,0],[0,0,0],[2,-3,2]])
+GOAL_POS = np.array([[4,0,0],[-2,-2,-2],[0,0,0]])
 
 TIMESTEP = 1
 MAX_JERK = 1
@@ -39,4 +39,9 @@ print("\n### FINAL VEL TRAJECTORY #############################################"
 print(error_calc.vel_traj)
 print("\n### FINAL POS TRAJECTORY #############################################")
 print(error_calc.pos_traj)
+
+np.save("jerk_traj.npy", error_calc.jerk_traj)
+np.save("acc_traj.npy", error_calc.acc_traj)
+np.save("vel_traj.npy", error_calc.vel_traj)
+np.save("pos_traj.npy", error_calc.pos_traj)
 
