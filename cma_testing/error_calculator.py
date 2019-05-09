@@ -67,6 +67,6 @@ class ErrorCalculator():
         pos_error = np.linalg.norm(self.goal_pos - self.pos_traj[:,-1,:])
         error += vel_error
         error += pos_error
-        #error += self._check_collisions()
+        error += self._check_collisions()
         return error
     
