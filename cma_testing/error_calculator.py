@@ -8,6 +8,8 @@ class ErrorCalculator():
     traj_len = 0
     dim = 0
 
+    start_vel = 0
+    start_pos = 0
     goal_vel = 0
     goal_pos = 0
 
@@ -16,11 +18,13 @@ class ErrorCalculator():
     vel_traj = 0
     pos_traj = 0
 
-    def __init__(self, timestep, traj_len, goal_vel, goal_pos):
+    def __init__(self, timestep, traj_len, start_vel, start_pos, goal_vel, goal_pos):
         self.timestep = timestep
         self.agents = goal_vel.shape[0]
         self.traj_len = traj_len
         self.dim = goal_vel.shape[1]
+        self.start_vel = start_vel
+        self.start_pos = start_pos
         self.goal_vel = goal_vel
         self.goal_pos = goal_pos
         
@@ -29,6 +33,8 @@ class ErrorCalculator():
         self.acc_traj = np.zeros([self.agents, self.traj_len, self.dim])
         self.vel_traj = np.zeros([self.agents, self.traj_len, self.dim])
         self.pos_traj = np.zeros([self.agents, self.traj_len, self.dim])
+        self.vel_traj[:,0,:] = self.start_vel
+        self.pos_traj[:,0,:] = self.start_pos
         for i in range(0, self.traj_len - 1):
             self.acc_traj[:,i+1,:] = self.acc_traj[:,i,:] + (self.timestep * self.jerk_traj[:,i,:])
             self.vel_traj[:,i+1,:] = self.vel_traj[:,i,:] + (self.timestep * self.acc_traj[:,i,:]) + (0.5 * self.timestep**2 * self.jerk_traj[:,i,:])
