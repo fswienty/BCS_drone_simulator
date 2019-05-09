@@ -43,7 +43,7 @@ class ErrorCalculator():
     def _check_collisions(self):
         cols = 0
         
-        min_dist = 1
+        min_dist = 2
         for ag1 in range(0, self.agents):
             pos_ag1 = self.pos_traj[ag1,:,:]
             for ag2 in range(ag1+1, self.agents):
