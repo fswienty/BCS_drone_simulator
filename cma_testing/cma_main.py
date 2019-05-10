@@ -5,10 +5,20 @@ import cma
 
 # AGENT TRAJ DIM
 
+# START_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
+# START_POS = np.array([[4,0,0],[0,4,0],[0,0,4]])
+# GOAL_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
+# GOAL_POS = np.array([[-4,0,0],[0,-4,0],[0,0,-4]])
+
+# START_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
+# START_POS = np.array([[4,-2,0],[4,2,0],[-4,0,0]])
+# GOAL_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
+# GOAL_POS = np.array([[-4,-2,0],[-4,2,0],[4,0,0]])
+
 START_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
-START_POS = np.array([[4,0,0],[0,4,0],[0,0,4]])
+START_POS = np.array([[4,0,0],[-4,0,0],[0,0,0]])
 GOAL_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
-GOAL_POS = np.array([[-4,0,0],[0,-4,0],[0,0,-4]])
+GOAL_POS = np.array([[-4,0,0],[4,0,0],[0,0,0]])
 
 TIMESTEP = 1
 MAX_JERK = 1
