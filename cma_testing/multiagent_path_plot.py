@@ -13,6 +13,7 @@ plt.subplots_adjust(bottom=0.25) # make room for the slider
 
 ax_step = plt.axes([0.25, 0.1, 0.65, 0.03])
 s_step = Slider(ax_step, 'timestep', 1, traj_len, valinit=1, valstep=1)
+
 def update(val):
     step = int(s_step.val)
     ax.clear()

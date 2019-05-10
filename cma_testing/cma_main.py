@@ -24,10 +24,11 @@ TIMESTEP = 1
 MAX_JERK = 1
 AGENTS = GOAL_VEL.shape[0]
 TRAJ_LEN = 10
+MIN_DIST = 3
 DIM = GOAL_VEL.shape[1]
 
 num_opt_vars = AGENTS * TRAJ_LEN * DIM # the amount of variables to be optimized via cma
-error_calc = ErrorCalculator(TIMESTEP, TRAJ_LEN, START_VEL, START_POS, GOAL_VEL, GOAL_POS)
+error_calc = ErrorCalculator(TIMESTEP, TRAJ_LEN, MIN_DIST, START_VEL, START_POS, GOAL_VEL, GOAL_POS)
 
 
 options = cma.CMAOptions()

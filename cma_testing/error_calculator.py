@@ -6,6 +6,7 @@ class ErrorCalculator():
     timestep = 0
     agents = 0
     traj_len = 0
+    min_dist = 0
     dim = 0
 
     start_vel = 0
@@ -18,10 +19,11 @@ class ErrorCalculator():
     vel_traj = 0
     pos_traj = 0
 
-    def __init__(self, timestep, traj_len, start_vel, start_pos, goal_vel, goal_pos):
+    def __init__(self, timestep, traj_len, min_dist, start_vel, start_pos, goal_vel, goal_pos):
         self.timestep = timestep
         self.agents = goal_vel.shape[0]
         self.traj_len = traj_len
+        self.min_dist = min_dist
         self.dim = goal_vel.shape[1]
         self.start_vel = start_vel
         self.start_pos = start_pos
@@ -42,19 +44,16 @@ class ErrorCalculator():
 
     def _check_collisions(self):
         cols = 0
-        
-        min_dist = 2
         for ag1 in range(0, self.agents):
-            pos_ag1 = self.pos_traj[ag1,:,:]
+            #pos_ag1 = self.pos_traj[ag1,:,:]
             for ag2 in range(ag1+1, self.agents):
-                pos_ag2 = self.pos_traj[ag2,:,:]
-                pos_diff = pos_ag1 - pos_ag2
-                #pos_diff = self.pos_traj[ag1,:,:] - self.pos_traj[ag2,:,:]
+                #pos_ag2 = self.pos_traj[ag2,:,:]
+                #pos_diff = pos_ag1 - pos_ag2
+                pos_diff = self.pos_traj[ag1,:,:] - self.pos_traj[ag2,:,:]
                 for step in range(0, self.traj_len):
                     dist = np.linalg.norm(pos_diff[step])
-                    if dist < min_dist:
-                        cols += 1 - (1/min_dist)*dist
-
+                    if dist < self.min_dist:
+                        cols += 1 - (1/self.min_dist)*dist
         return cols
 
     def get_error(self, jerk_traj):
