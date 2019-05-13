@@ -15,16 +15,16 @@ import cma
 # GOAL_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
 # GOAL_POS = np.array([[-4,-2,0],[-4,2,0],[4,0,0]])
 
-START_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
-START_POS = np.array([[4,0,0],[-4,0,0],[0,0,0]])
-GOAL_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
-GOAL_POS = np.array([[-4,0,0],[4,0,0],[0,0,0]])
+START_VEL = np.array([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]])
+START_POS = np.array([[4,0,0],[-4,0,0],[0,0,0],[0,0,4],[-3,-3,0]])
+GOAL_VEL = np.array([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]])
+GOAL_POS = np.array([[-4,0,0],[4,0,0],[0,0,0],[0,0,-4],[3,3,0]])
 
 TIMESTEP = 1
 MAX_JERK = 1
 AGENTS = GOAL_VEL.shape[0]
 TRAJ_LEN = 10
-MIN_DIST = 3
+MIN_DIST = 2
 DIM = GOAL_VEL.shape[1]
 
 num_opt_vars = AGENTS * TRAJ_LEN * DIM # the amount of variables to be optimized via cma
@@ -32,7 +32,7 @@ error_calc = ErrorCalculator(TIMESTEP, TRAJ_LEN, MIN_DIST, START_VEL, START_POS,
 
 
 options = cma.CMAOptions()
-options.set('ftarget', 1e-1)
+options.set('ftarget', 5e-1)
 options.set('bounds', [-MAX_JERK, MAX_JERK])
 # es = cma.CMAEvolutionStrategy(num_opt_vars * [0], 0.5, options)
 # es.opts.set('opt', value) # use this for chaning options while running
