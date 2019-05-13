@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
 from mpl_toolkits.mplot3d import Axes3D
 
-tt = np.load("pos_traj.npy")
+tt = np.load("trajectories/pos_traj.npy")
 agents = tt.shape[0]
 traj_len = tt.shape[1]
 

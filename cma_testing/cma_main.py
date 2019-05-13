@@ -51,8 +51,8 @@ print(error_calc.vel_traj)
 print("\n### FINAL POS TRAJECTORY #############################################")
 print(error_calc.pos_traj)
 
-np.save("jerk_traj.npy", error_calc.jerk_traj)
-np.save("acc_traj.npy", error_calc.acc_traj)
-np.save("vel_traj.npy", error_calc.vel_traj)
-np.save("pos_traj.npy", error_calc.pos_traj)
+np.save("trajectories/jerk_traj.npy", error_calc.jerk_traj)
+np.save("trajectories/acc_traj.npy", error_calc.acc_traj)
+np.save("trajectories/vel_traj.npy", error_calc.vel_traj)
+np.save("trajectories/pos_traj.npy", error_calc.pos_traj)
 
