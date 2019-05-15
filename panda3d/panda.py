@@ -23,7 +23,7 @@ class MyApp(ShowBase):
 
         # Load and transform the panda actor.
         self.pandaActor = Actor("models/panda-model", {"walk": "models/panda-walk4"})
-        self.pandaActor.setScale(0.005, 0.005, 0.005)
+        self.pandaActor.setScale(0.005)
         self.pandaActor.reparentTo(self.render)
         # Loop its animation.
         self.pandaActor.loop("walk")
