@@ -7,12 +7,14 @@ from direct.task import Task
 #from panda3d.core import Point3 # pylint: disable=no-name-in-module
 from panda3d.core import Filename
 from panda3d.core import DirectionalLight
+from panda3d.core import AntialiasAttrib
 
 class BcsTest(ShowBase):
 
     def __init__(self):
         ShowBase.__init__(self)
 
+        # setup model directory
         # Get the location of the 'py' file I'm running:
         self.modelDir = os.path.abspath(sys.path[0])
         # Convert that to panda's unix-style notation.
@@ -21,9 +23,12 @@ class BcsTest(ShowBase):
         self.addRoom()
         self.addLights()
 
+        self.render.setAntialias(AntialiasAttrib.MAuto)
+
+        
+        self.messenger.toggleVerbose() # show all events # self is base
         # Add the procedure to the task manager.
         #self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
-        #self.taskMgr.add(self.spinLightTask, "SpinLightTask")
 
     # Define a procedure to move the camera.
     def spinCameraTask(self, task):
@@ -43,6 +48,7 @@ class BcsTest(ShowBase):
             dlnp = self.render.attachNewNode(dlight) # directional light node path
             dlnp.setHpr(120 * i, -30, 0)
             self.render.setLight(dlnp)
+
 
 app = BcsTest()
 app.run()
