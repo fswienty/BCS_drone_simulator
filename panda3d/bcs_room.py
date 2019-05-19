@@ -8,27 +8,30 @@ from direct.task import Task
 from panda3d.core import Filename
 from panda3d.core import DirectionalLight
 from panda3d.core import AntialiasAttrib
+from panda3d.core import MouseButton
+from panda3d.core import WindowProperties
 
 class BcsTest(ShowBase):
+
+    cameraControlActive = False
 
     def __init__(self):
         ShowBase.__init__(self)
 
         # setup model directory
-        # Get the location of the 'py' file I'm running:
-        self.modelDir = os.path.abspath(sys.path[0])
-        # Convert that to panda's unix-style notation.
-        self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models"
+        self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
+        self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models" # Convert that to panda's unix-style notation.
 
+        # setup scene
         self.addRoom()
         self.addLights()
-
         self.render.setAntialias(AntialiasAttrib.MAuto)
 
-        
+        # setup control scheme
+        self.disableMouse()
+        self.accept("t", self.toggleCameraControl)
+
         #self.messenger.toggleVerbose() # show all events # self is base
-        # Add the procedure to the task manager.
-        #self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
 
     # Define a procedure to move the camera.
     def spinCameraTask(self, task):
@@ -46,8 +49,34 @@ class BcsTest(ShowBase):
         for i in range(0,3):
             dlight = DirectionalLight("light")
             dlnp = self.render.attachNewNode(dlight) # directional light node path
-            dlnp.setHpr((120 * i)+1, -30, 0)
+            dlnp.setHpr((120 * i) + 1, -30, 0)
             self.render.setLight(dlnp)
+        dlight = DirectionalLight("light")
+        dlnp = self.render.attachNewNode(dlight) # directional light node path
+        dlnp.setHpr(1, 30, 0)
+        self.render.setLight(dlnp)
+
+    def toggleCameraControl(self):
+        print("boop")
+        if self.cameraControlActive:
+            self.taskMgr.remove("CameraControlTask")
+        else:
+            self.taskMgr.add(self.cameraControlTask, "CameraControlTask")
+
+    def cameraControlTask(self, task):
+        mw = self.mouseWatcherNode
+        if mw.hasMouse():
+            speed = 20
+            deltaX = speed * mw.getMouseX()
+            deltaY = speed * mw.getMouseY()
+            props = self.win.getProperties()
+            self.win.movePointer(0, int(props.getXSize() / 2), int(props.getYSize() / 2))
+            curHpr = self.camera.getHpr()
+            self.camera.setHpr(curHpr.getX() - deltaX, curHpr.getY() + deltaY, 0)
+        
+        return Task.cont
+        
+        
 
 
 app = BcsTest()
