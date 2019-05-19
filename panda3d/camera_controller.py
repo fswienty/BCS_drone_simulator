@@ -1,29 +1,19 @@
-import sys,os
-from math import pi, sin, cos
-from direct.showbase.ShowBase import ShowBase
+# pylint: disable=no-name-in-module
+from direct.showbase import DirectObject
 from direct.task import Task
-#from direct.actor.Actor import Actor
-#from direct.interval.IntervalGlobal import Sequence
-#from panda3d.core import Point3 # pylint: disable=no-name-in-module
-from panda3d.core import Filename
-from panda3d.core import DirectionalLight
-from panda3d.core import AntialiasAttrib
 from panda3d.core import MouseButton
 from panda3d.core import KeyboardButton
 from panda3d.core import WindowProperties
-from panda3d.core import VBase4
 from panda3d.core import LVector3f
-from panda3d.core import LVecBase3f
-#from panda3d.core import CSDefault
 
-class CameraController:
+class CameraController(DirectObject.DirectObject):
 
     def __init__(self, base):
         self.base = base
-        self.camera = base.camera
         self.base.disableMouse()
+        self.camera = base.camera
         self.cameraControlActive = False
-        self.base.accept("t", self.toggleCameraControl)
+        self.accept("t", self.toggleCameraControl)
 
 
     def toggleCameraControl(self):
