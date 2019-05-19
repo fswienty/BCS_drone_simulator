@@ -38,7 +38,7 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-!models/*.egg
+!panda3d/models/* # to get the .egg model files
 MANIFEST
 
 # PyInstaller
