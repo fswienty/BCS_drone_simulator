@@ -26,7 +26,7 @@ class BcsTest(ShowBase):
         self.render.setAntialias(AntialiasAttrib.MAuto)
 
         
-        self.messenger.toggleVerbose() # show all events # self is base
+        #self.messenger.toggleVerbose() # show all events # self is base
         # Add the procedure to the task manager.
         #self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
 
@@ -46,7 +46,7 @@ class BcsTest(ShowBase):
         for i in range(0,3):
             dlight = DirectionalLight("light")
             dlnp = self.render.attachNewNode(dlight) # directional light node path
-            dlnp.setHpr(120 * i, -30, 0)
+            dlnp.setHpr((120 * i)+1, -30, 0)
             self.render.setLight(dlnp)
 
 
