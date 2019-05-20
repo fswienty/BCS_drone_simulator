@@ -15,23 +15,31 @@ class CameraController(DirectObject.DirectObject):
         self.cameraControlActive = False
         self.accept("t", self.toggleCameraControl)
 
+        self.camera.setPos(0, -20, 2)
+        self.windowSizeX = self.base.win.getProperties().getXSize()
+        self.windowSizeY = self.base.win.getProperties().getYSize()
+
 
     def toggleCameraControl(self):
+        props = WindowProperties()
         if self.cameraControlActive:
             self.cameraControlActive = False
-            props = WindowProperties()
             props.setCursorHidden(False)
             self.base.win.requestProperties(props)
             self.base.taskMgr.remove("CameraControlTask")
         else:
             self.cameraControlActive = True
-            props = WindowProperties()
             props.setCursorHidden(True)
             self.base.win.requestProperties(props)
             self.base.taskMgr.add(self.cameraControlTask, "CameraControlTask")
 
-
+    # fix me
     def cameraControlTask(self, task):
+        self.windowSizeX = self.base.win.getProperties().getXSize()
+        self.windowSizeY = self.base.win.getProperties().getYSize()
+        #self.windowSizeX -= self.windowSizeX % 2
+        #self.windowSizeY -= self.windowSizeY % 2
+        
         mw = self.base.mouseWatcherNode
         curPos = self.camera.getPos()
         curHpr = self.camera.getHpr()
@@ -44,8 +52,7 @@ class CameraController(DirectObject.DirectObject):
         if mw.hasMouse():
             deltaX = rotSpeed * mw.getMouseX()
             deltaY = rotSpeed * mw.getMouseY()
-            props = self.base.win.getProperties()
-            self.base.win.movePointer(0, int(props.getXSize() / 2), int(props.getYSize() / 2)) # window size has to be a multiple of 2 or this causes trouble
+            self.base.win.movePointer(0, int(self.windowSizeX / 2), int(self.windowSizeY / 2)) # window size has to be a multiple of 2 or this causes trouble
             self.camera.setHpr(curHpr.getX() - deltaX, curHpr.getY() + deltaY, 0)
 
         deltaPos = LVector3f(0, 0, 0)
@@ -57,9 +64,9 @@ class CameraController(DirectObject.DirectObject):
             deltaPos += right * moveSpeed
         if mw.isButtonDown(KeyboardButton.asciiKey(bytes('a','utf-8'))):
             deltaPos -= right * moveSpeed
-        if mw.isButtonDown(KeyboardButton.asciiKey(bytes('q','utf-8'))):
-            deltaPos += up * moveSpeed
         if mw.isButtonDown(KeyboardButton.asciiKey(bytes('e','utf-8'))):
+            deltaPos += up * moveSpeed
+        if mw.isButtonDown(KeyboardButton.asciiKey(bytes('q','utf-8'))):
             deltaPos -= up * moveSpeed
         self.camera.setPos(curPos + deltaPos)
 

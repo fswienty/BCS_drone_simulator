@@ -29,10 +29,14 @@ class Main(ShowBase):
         self.addRoom()
         self.addLights()
         self.render.setAntialias(AntialiasAttrib.MAuto)
-
         self.cameraController = CameraController(self)
 
+        #add some drones
+        self.drone = self.loader.loadModel(self.modelDir + "/drones/drone1.egg")
+        self.drone.reparentTo(self.render)
+
         #self.messenger.toggleVerbose() # show all events # self is base
+        self.taskMgr.add(self.spinDroneTask, "SpinDroneTask")
 
 
     def addRoom(self):
@@ -53,12 +57,12 @@ class Main(ShowBase):
         self.render.setLight(dlnp)
 
 
-    # Define a procedure to move the camera.
-    def spinCameraTask(self, task):
-        angleDegrees = task.time * 16.0
+    # Define a procedure to move the drone.
+    def spinDroneTask(self, task):
+        angleDegrees = task.time * 100.0
         angleRadians = angleDegrees * (pi / 180.0)
-        self.camera.setPos(20 * sin(angleRadians), -20.0 * cos(angleRadians), 10)
-        self.camera.setHpr(angleDegrees, -30, 0)
+        self.drone.setPos(2 * sin(angleRadians), -2.0 * cos(angleRadians), 1)
+        self.drone.setHpr(angleDegrees, -30, 0)
         return Task.cont 
         
 app = Main()
