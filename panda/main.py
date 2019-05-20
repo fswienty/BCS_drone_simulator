@@ -4,7 +4,8 @@ from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 #from direct.actor.Actor import Actor
 #from direct.interval.IntervalGlobal import Sequence
-#from panda3d.core import Point3 # pylint: disable=no-name-in-module
+#from panda3d.core import Point3 
+# pylint: disable=no-name-in-module
 from panda3d.core import Filename
 from panda3d.core import DirectionalLight
 from panda3d.core import AntialiasAttrib
@@ -14,10 +15,9 @@ from panda3d.core import WindowProperties
 from panda3d.core import VBase4
 from panda3d.core import LVector3f
 from panda3d.core import LVecBase3f
-#from panda3d.core import CSDefault
 from camera_controller import CameraController
 
-class BcsTest(ShowBase):
+class Main(ShowBase):
 
     def __init__(self):
         ShowBase.__init__(self)
@@ -61,5 +61,5 @@ class BcsTest(ShowBase):
         self.camera.setHpr(angleDegrees, -30, 0)
         return Task.cont 
         
-app = BcsTest()
+app = Main()
 app.run()
