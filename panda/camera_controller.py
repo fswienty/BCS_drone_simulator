@@ -14,10 +14,7 @@ class CameraController(DirectObject.DirectObject):
         self.camera = base.camera
         self.cameraControlActive = False
         self.accept("t", self.toggleCameraControl)
-
         self.camera.setPos(0, -20, 2)
-        #self.windowSizeX = self.base.win.getProperties().getXSize()
-        #self.windowSizeY = self.base.win.getProperties().getYSize()
 
 
     def toggleCameraControl(self):
