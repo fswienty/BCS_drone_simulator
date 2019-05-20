@@ -11,9 +11,8 @@ from panda3d.core import AntialiasAttrib
 #from panda3d.core import MouseButton
 #from panda3d.core import KeyboardButton
 #from panda3d.core import WindowProperties
-from panda3d.core import VBase4
-from panda3d.core import LVector3f
-#from panda3d.core import LVecBase3f
+from panda3d.core import Vec3
+from panda3d.core import Vec4
 from camera_controller import CameraController
 from panda3d.bullet import BulletWorld
 
@@ -40,7 +39,7 @@ class Main(ShowBase):
 
         # BULLET STUFF
         self.world = BulletWorld()
-        self.world.setGravity(LVector3f(0, 0, -9.81))
+        self.world.setGravity(Vec3(0, 0, -9.81))
 
 
     def addRoom(self):
@@ -55,7 +54,7 @@ class Main(ShowBase):
             dlnp.setHpr((120 * i) + 1, -30, 0)
             self.render.setLight(dlnp)
         dlight = DirectionalLight("light")
-        dlight.setColor(VBase4(0.2, 0.2, 0.2, 0.2))
+        dlight.setColor(Vec4(0.2, 0.2, 0.2, 0.2))
         dlnp = self.render.attachNewNode(dlight) # directional light node path
         dlnp.setHpr(1, 30, 0)
         self.render.setLight(dlnp)

@@ -4,7 +4,7 @@ from direct.showbase import DirectObject
 from panda3d.core import MouseButton
 from panda3d.core import KeyboardButton
 from panda3d.core import WindowProperties
-from panda3d.core import LVector3f
+from panda3d.core import Vec3
 
 class CameraController(DirectObject.DirectObject):
 
@@ -51,7 +51,7 @@ class CameraController(DirectObject.DirectObject):
             self.base.win.movePointer(0, int(windowSizeX / 2), int(windowSizeY / 2))
             self.camera.setHpr(curHpr.getX() - deltaX, curHpr.getY() + deltaY, 0)
 
-        deltaPos = LVector3f(0, 0, 0)
+        deltaPos = Vec3(0, 0, 0)
         if mw.isButtonDown(KeyboardButton.asciiKey(bytes('w','utf-8'))):
             deltaPos += forward * moveSpeed
         if mw.isButtonDown(KeyboardButton.asciiKey(bytes('s','utf-8'))):
