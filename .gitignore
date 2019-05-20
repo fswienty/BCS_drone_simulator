@@ -38,7 +38,8 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-!panda/models/room_test/room_test.egg # to get the .egg model files
+# allow the model egg files in the model folder
+!panda/models/**/*.egg
 MANIFEST
 
 # PyInstaller
