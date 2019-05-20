@@ -1,6 +1,6 @@
 # pylint: disable=no-name-in-module
 from direct.showbase import DirectObject
-from direct.task import Task
+#from direct.task import Task
 from panda3d.core import MouseButton
 from panda3d.core import KeyboardButton
 from panda3d.core import WindowProperties
@@ -16,8 +16,8 @@ class CameraController(DirectObject.DirectObject):
         self.accept("t", self.toggleCameraControl)
 
         self.camera.setPos(0, -20, 2)
-        self.windowSizeX = self.base.win.getProperties().getXSize()
-        self.windowSizeY = self.base.win.getProperties().getYSize()
+        #self.windowSizeX = self.base.win.getProperties().getXSize()
+        #self.windowSizeY = self.base.win.getProperties().getYSize()
 
 
     def toggleCameraControl(self):
@@ -31,15 +31,12 @@ class CameraController(DirectObject.DirectObject):
             self.cameraControlActive = True
             props.setCursorHidden(True)
             self.base.win.requestProperties(props)
-            self.base.taskMgr.add(self.cameraControlTask, "CameraControlTask")
+            windowSizeX = self.base.win.getProperties().getXSize()
+            windowSizeY = self.base.win.getProperties().getYSize()
+            self.base.taskMgr.add(self.cameraControlTask, "CameraControlTask", extraArgs=[windowSizeX, windowSizeY], appendTask=True)
 
-    # fix me
-    def cameraControlTask(self, task):
-        self.windowSizeX = self.base.win.getProperties().getXSize()
-        self.windowSizeY = self.base.win.getProperties().getYSize()
-        #self.windowSizeX -= self.windowSizeX % 2
-        #self.windowSizeY -= self.windowSizeY % 2
-        
+
+    def cameraControlTask(self, windowSizeX, windowSizeY, task):        
         mw = self.base.mouseWatcherNode
         curPos = self.camera.getPos()
         curHpr = self.camera.getHpr()
@@ -50,9 +47,11 @@ class CameraController(DirectObject.DirectObject):
         rotSpeed = 20
 
         if mw.hasMouse():
-            deltaX = rotSpeed * mw.getMouseX()
-            deltaY = rotSpeed * mw.getMouseY()
-            self.base.win.movePointer(0, int(self.windowSizeX / 2), int(self.windowSizeY / 2)) # window size has to be a multiple of 2 or this causes trouble
+            #deltaX = rotSpeed * mw.getMouseX()
+            #deltaY = rotSpeed * mw.getMouseY()
+            deltaX = rotSpeed * (mw.getMouseX() + 2 * int(windowSizeX / 2) / windowSizeX - 1) # dont ask
+            deltaY = rotSpeed * (mw.getMouseY() + 2 * int(windowSizeY / 2) / windowSizeY - 1)
+            self.base.win.movePointer(0, int(windowSizeX / 2), int(windowSizeY / 2))
             self.camera.setHpr(curHpr.getX() - deltaX, curHpr.getY() + deltaY, 0)
 
         deltaPos = LVector3f(0, 0, 0)
@@ -69,5 +68,5 @@ class CameraController(DirectObject.DirectObject):
         if mw.isButtonDown(KeyboardButton.asciiKey(bytes('q','utf-8'))):
             deltaPos -= up * moveSpeed
         self.camera.setPos(curPos + deltaPos)
-
-        return Task.cont
+      
+        return task.cont

@@ -1,7 +1,6 @@
 import sys,os
 from math import pi, sin, cos
 from direct.showbase.ShowBase import ShowBase
-from direct.task import Task
 #from direct.actor.Actor import Actor
 #from direct.interval.IntervalGlobal import Sequence
 #from panda3d.core import Point3 
@@ -9,13 +8,14 @@ from direct.task import Task
 from panda3d.core import Filename
 from panda3d.core import DirectionalLight
 from panda3d.core import AntialiasAttrib
-from panda3d.core import MouseButton
-from panda3d.core import KeyboardButton
-from panda3d.core import WindowProperties
+#from panda3d.core import MouseButton
+#from panda3d.core import KeyboardButton
+#from panda3d.core import WindowProperties
 from panda3d.core import VBase4
 from panda3d.core import LVector3f
-from panda3d.core import LVecBase3f
+#from panda3d.core import LVecBase3f
 from camera_controller import CameraController
+from panda3d.bullet import BulletWorld
 
 class Main(ShowBase):
 
@@ -38,6 +38,10 @@ class Main(ShowBase):
         #self.messenger.toggleVerbose() # show all events # self is base
         self.taskMgr.add(self.spinDroneTask, "SpinDroneTask")
 
+        # BULLET STUFF
+        self.world = BulletWorld()
+        self.world.setGravity(LVector3f(0, 0, -9.81))
+
 
     def addRoom(self):
         self.roomModel = self.loader.loadModel(self.modelDir + "/room_test/room_test.egg")
@@ -55,7 +59,7 @@ class Main(ShowBase):
         dlnp = self.render.attachNewNode(dlight) # directional light node path
         dlnp.setHpr(1, 30, 0)
         self.render.setLight(dlnp)
-
+        
 
     # Define a procedure to move the drone.
     def spinDroneTask(self, task):
@@ -63,7 +67,7 @@ class Main(ShowBase):
         angleRadians = angleDegrees * (pi / 180.0)
         self.drone.setPos(2 * sin(angleRadians), -2.0 * cos(angleRadians), 1)
         self.drone.setHpr(angleDegrees, -30, 0)
-        return Task.cont 
+        return task.cont 
         
 app = Main()
 app.run()
