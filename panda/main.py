@@ -81,9 +81,8 @@ class Main(ShowBase):
             force = dist.normalized()
         else:
             force = dist / 5
-
         pd.applyCentralForce(force * 5)
-        print(pos, force.length())
+        #rint(pos, force.length())
         return task.cont
 
 
