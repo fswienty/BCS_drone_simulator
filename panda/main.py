@@ -37,15 +37,6 @@ class Main(ShowBase):
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
 
-        #add some drones
-        drone = self.loader.loadModel(self.modelDir + "/drones/drone1.egg")
-        drone.reparentTo(self.render)
-
-        self.physicsDrone = None
-
-        #self.messenger.toggleVerbose() # show all events # self is base
-        self.taskMgr.add(self.spinDroneTask, "SpinDroneTask", extraArgs=[drone], appendTask=True)
-
 
     def initBullet(self):
         self.world = BulletWorld()
@@ -66,8 +57,8 @@ class Main(ShowBase):
         model = self.loader.loadModel(self.modelDir + "/drones/drone1.egg")
         model.reparentTo(self.physicsDroneNP)
         self.physicsDrone.applyCentralForce(Vec3(0, 0, -130))
-        self.physicsDrone.setLinearDamping(.5)   
-        self.taskMgr.add(self.addForceToPointTask, "BLA")
+        self.physicsDrone.setLinearDamping(0.8)   
+        self.taskMgr.add(self.addForceToPointTask, "AddForceToPointTask", extraArgs=[self.physicsDrone], appendTask=True)
 
         debugNode = BulletDebugNode('Debug')
         debugNode.showWireframe(True)
@@ -81,14 +72,18 @@ class Main(ShowBase):
         self.taskMgr.add(self.physicsUpdate, "PhysicsUpdate")
         
 
-    def addForceToPointTask(self, task):
-        target = Vec3(4, 4, 4)
+    def addForceToPointTask(self, pd, task):
+        target = Vec3(2, -6, 3)
         pos = self.physicsDroneNP.getPos()
-        force = (target - pos).normalized()
-        force *= 1
-        self.physicsDrone.applyCentralForce(force)
-        print(force)
-        #return task.cont
+        dist = (target - pos)
+        if(dist.lengthSquared() > 5**2):
+            force = dist.normalized()
+        else:
+            force = dist / 5
+
+        pd.applyCentralForce(force * 5)
+        print(pos, force.length())
+        return task.cont
 
 
     def physicsUpdate(self, task):
@@ -114,16 +109,7 @@ class Main(ShowBase):
         dlnp = self.render.attachNewNode(dlight) # directional light node path
         dlnp.setHpr(1, 30, 0)
         self.render.setLight(dlnp)
-        
 
-    # Define a procedure to move the drone.
-    def spinDroneTask(self, drone, task):
-        angleDegrees = task.time * 100.0
-        angleRadians = angleDegrees * (pi / 180.0)
-        drone.setPos(2 * sin(angleRadians), -2.0 * cos(angleRadians), 1)
-        drone.setHpr(angleDegrees, -30, 0)
-        return task.cont 
-        
 
 app = Main()
 app.run()
