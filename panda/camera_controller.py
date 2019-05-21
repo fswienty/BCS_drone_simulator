@@ -14,7 +14,7 @@ class CameraController(DirectObject.DirectObject):
         self.camera = base.camera
         self.cameraControlActive = False
         self.accept("t", self.toggleCameraControl)
-        self.camera.setPos(0, -20, 2)
+        self.camera.setPos(0, -20, 3)
 
 
     def toggleCameraControl(self):
