@@ -26,6 +26,7 @@ class Main(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
 
+        self.accept('escape', sys.exit)
         # setup model directory
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
         self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models" # Convert that to panda's unix-style notation.
@@ -48,25 +49,25 @@ class Main(ShowBase):
 
     def initBullet(self):
         self.world = BulletWorld()
-        self.world.setGravity(Vec3(0, 0, -9.81))
+        self.world.setGravity(Vec3(0, 0, 0))
 
-        shape = BulletPlaneShape(Vec3(0, 0, 1), 1)
         node = BulletRigidBodyNode('Ground') # derived from PandaNode
-        node.addShape(shape)
+        node.addShape(BulletPlaneShape(Vec3(0, 0, 1), 1))
         np = self.render.attachNewNode(node)
         np.setPos(0, 0, 0)
         self.world.attachRigidBody(node)
 
-        shape = BulletSphereShape(0.3)
-        node = BulletRigidBodyNode('Sphere')
-        node.setMass(1.0)
-        node.addShape(shape)
-        self.physicsDrone = self.render.attachNewNode(node)
-        self.physicsDrone.setPos(0, 0, 2)
-        self.world.attachRigidBody(node)
+        self.physicsDrone = BulletRigidBodyNode('Sphere') # derived from PandaNode
+        self.physicsDrone.setMass(1.0) # type: BulletRigidBodyNode # body is now dynamic
+        self.physicsDrone.addShape(BulletSphereShape(0.3))
+        self.physicsDroneNP = self.render.attachNewNode(self.physicsDrone)
+        self.physicsDroneNP.setPos(0, 0, 4)
+        self.world.attachRigidBody(self.physicsDrone)
         model = self.loader.loadModel(self.modelDir + "/drones/drone1.egg")
-        model.flattenLight()
-        model.reparentTo(np)
+        model.reparentTo(self.physicsDroneNP)
+        self.physicsDrone.applyCentralForce(Vec3(0, 0, -130))
+        self.physicsDrone.setLinearDamping(.5)   
+        self.taskMgr.add(self.addForceToPointTask, "BLA")
 
         debugNode = BulletDebugNode('Debug')
         debugNode.showWireframe(True)
@@ -78,6 +79,16 @@ class Main(ShowBase):
         self.world.setDebugNode(debugNP.node())
 
         self.taskMgr.add(self.physicsUpdate, "PhysicsUpdate")
+        
+
+    def addForceToPointTask(self, task):
+        target = Vec3(4, 4, 4)
+        pos = self.physicsDroneNP.getPos()
+        force = (target - pos).normalized()
+        force *= 1
+        self.physicsDrone.applyCentralForce(force)
+        print(force)
+        #return task.cont
 
 
     def physicsUpdate(self, task):
