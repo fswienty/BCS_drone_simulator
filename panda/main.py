@@ -26,6 +26,7 @@ class Main(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
 
+        self.setFrameRateMeter(True)
         self.accept('escape', sys.exit)
         # setup model directory
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
@@ -73,7 +74,7 @@ class Main(ShowBase):
         
 
     def addForceToPointTask(self, pd, task):
-        target = Vec3(2, -6, 3)
+        target = Vec3(2, -6, 2)
         pos = self.physicsDroneNP.getPos()
         dist = (target - pos)
         if(dist.lengthSquared() > 5**2):
