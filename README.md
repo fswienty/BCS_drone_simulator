@@ -7,3 +7,4 @@ anaconda packages:
 pip packages:
     pycma
     panda3d
+    openvr

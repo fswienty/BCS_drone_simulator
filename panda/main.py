@@ -14,7 +14,7 @@ from panda3d.core import AntialiasAttrib
 from panda3d.core import Vec3
 from panda3d.core import Vec4
 from camera_controller import CameraController
-from panda3d.bullet import BulletWorld
+from panda3d.bullet import BulletWorldp
 from panda3d.bullet import BulletPlaneShape
 from panda3d.bullet import BulletBoxShape
 from panda3d.bullet import BulletSphereShape
