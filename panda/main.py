@@ -1,20 +1,14 @@
 import sys,os
 from math import pi, sin, cos
 from direct.showbase.ShowBase import ShowBase
-#from direct.actor.Actor import Actor
-#from direct.interval.IntervalGlobal import Sequence
-#from panda3d.core import Point3 
 # pylint: disable=no-name-in-module
 from panda3d.core import Filename
 from panda3d.core import DirectionalLight
 from panda3d.core import AntialiasAttrib
-#from panda3d.core import MouseButton
-#from panda3d.core import KeyboardButton
-#from panda3d.core import WindowProperties
 from panda3d.core import Vec3
 from panda3d.core import Vec4
 from camera_controller import CameraController
-from panda3d.bullet import BulletWorldp
+from panda3d.bullet import BulletWorld
 from panda3d.bullet import BulletPlaneShape
 from panda3d.bullet import BulletBoxShape
 from panda3d.bullet import BulletSphereShape
