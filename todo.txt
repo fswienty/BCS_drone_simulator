@@ -1,0 +1,7 @@
+multiple drones with individual goals
+write physics stuff to separate class
+add ghost nodes to drones
+add create method for drones
+make drone class
+make more intelligent collision avoidance
+find way to get positions from lighthouse and put them into panda3d in realtime
