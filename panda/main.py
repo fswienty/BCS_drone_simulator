@@ -2,14 +2,15 @@ import sys
 import os
 from math import pi, sin, cos
 from direct.showbase.ShowBase import ShowBase
-# pylint: disable=no-name-in-module
 from drone import Drone
+#from test import Test
+from camera_controller import CameraController
+# pylint: disable=no-name-in-module
 from panda3d.core import Filename
 from panda3d.core import DirectionalLight
 from panda3d.core import AntialiasAttrib
 from panda3d.core import Vec3
 from panda3d.core import Vec4
-from camera_controller import CameraController
 from panda3d.bullet import BulletWorld
 from panda3d.bullet import BulletPlaneShape
 from panda3d.bullet import BulletBoxShape
@@ -31,6 +32,7 @@ class Main(ShowBase):
         self.initRoom()
         self.initLights()
         self.initBullet()
+        self.initDrones()
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
 
@@ -44,22 +46,7 @@ class Main(ShowBase):
         np = self.render.attachNewNode(node)
         np.setPos(0, 0, 0)
         self.world.attachRigidBody(node)
-
-        # self.physicsDrone = BulletRigidBodyNode("Sphere") # derived from PandaNode
-        # self.physicsDrone.setMass(1.0) # type: BulletRigidBodyNode # body is now dynamic
-        # self.physicsDrone.addShape(BulletSphereShape(0.3))
-        # self.physicsDroneNP = self.render.attachNewNode(self.physicsDrone)
-        # self.physicsDroneNP.setPos(0, 0, 4)
-        # self.world.attachRigidBody(self.physicsDrone)
-        # model = self.loader.loadModel(self.modelDir + "/drones/drone1.egg")
-        # model.reparentTo(self.physicsDroneNP)
-        # self.physicsDrone.applyCentralForce(Vec3(0, 0, -130))
-        # self.physicsDrone.setLinearDamping(0.8)   
-        # self.taskMgr.add(self.addForceToPointTask, "AddForceToPointTask", extraArgs=[self.physicsDrone], appendTask=True)
-
-        drone = Drone(Vec3(0, 0, 4), self)
-        drone.setTarget(Vec3(2, -6, .5))
-
+        
         debugNode = BulletDebugNode("Debug")
         debugNode.showWireframe(True)
         debugNode.showConstraints(True)
@@ -68,29 +55,16 @@ class Main(ShowBase):
         debugNP = self.render.attachNewNode(debugNode)
         debugNP.show()
         self.world.setDebugNode(debugNP.node())
-        
-        self.taskMgr.add(self.physicsUpdate, "PhysicsUpdate")
-        
 
-    # def addForceToPointTask(self, pd, task):
-    #     #print("force update!")
-    #     target = Vec3(2, -6, .5)
-    #     pos = self.physicsDroneNP.getPos()
-    #     dist = (target - pos)
-    #     if(dist.lengthSquared() > 5**2):
-    #         force = dist.normalized()
-    #     else:
-    #         force = dist / 5
-    #     pd.applyCentralForce(force * 5)
-    #     #print(pos, force.length())
-    #     return task.cont
+        self.taskMgr.add(self.physicsUpdateTask, "PhysicsUpdate")
 
 
-    def physicsUpdate(self, task):
-        #print("physics update!")
-        dt = self.taskMgr.globalClock.getDt()
-        self.world.doPhysics(dt)
-        return task.cont
+    def initDrones(self):
+        drone1 = Drone(Vec3(0, 0, 4), self)
+        drone1.setTarget(Vec3(2, -6, .5))
+        drone2 = Drone(Vec3(1, -5, 2), self)
+        drone2.setTarget(Vec3(3, 1, 3))
+        self.drones = [drone1, drone2]
 
 
     def initRoom(self):
@@ -110,6 +84,14 @@ class Main(ShowBase):
         dlnp = self.render.attachNewNode(dlight) # directional light node path
         dlnp.setHpr(1, 30, 0)
         self.render.setLight(dlnp)
+
+
+    def physicsUpdateTask(self, task):
+        for drone in self.drones:
+            drone.updateForce()
+        dt = self.taskMgr.globalClock.getDt()
+        self.world.doPhysics(dt)
+        return task.cont
 
 
 app = Main()

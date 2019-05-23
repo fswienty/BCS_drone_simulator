@@ -1,14 +1,13 @@
 # pylint: disable=no-name-in-module
 from panda3d.core import Vec3
-from main import Main
+from panda3d.core import Loader
 from panda3d.bullet import BulletSphereShape
 from panda3d.bullet import BulletRigidBodyNode
 from panda3d.bullet import BulletGhostNode
 
-
 class Drone:
 
-    def __init__(self, position: Vec3, base: Main):
+    def __init__(self, position: Vec3, base):
         self.base = base
 
         self.target = position
@@ -17,7 +16,7 @@ class Drone:
         self.rigidBody.addShape(BulletSphereShape(0.3))
         #self.ghost = BulletGhostNode("GhostSphere")
         #self.ghost.addShape(BulletSphereShape(0.7))
-        self.rigidBodyNP = base.render.attachNewNode(self.rigidBody) # set pos on the nodepath
+        self.rigidBodyNP = base.render.attachNewNode(self.rigidBody)
         self.rigidBodyNP.setPos(position)
         #self.ghost.reparentTo(self.rigidBodyNP)
         base.world.attachRigidBody(self.rigidBody)
@@ -29,12 +28,10 @@ class Drone:
         self.target = target
 
     def updateForce(self):
-        #print("force update!")
         dist = (self.target - self.rigidBodyNP.getPos())
         if(dist.lengthSquared() > 5**2):
             force = dist.normalized()
         else:
             force = dist / 5
         self.rigidBody.applyCentralForce(force * 5)
-        #print(pos, force.length())
     
