@@ -14,8 +14,8 @@ class CameraController(DirectObject.DirectObject):
         self.camera = base.camera
         self.cameraControlActive = False
         self.accept("t", self.toggleCameraControl)
-        self.camera.setPos(5, 0, 3)
-        self.camera.lookAt(0, 0, 2)
+        self.camera.setPos(5, 0, 2)
+        self.camera.lookAt(0, 0, 1)
         base.camLens.setFov(90)
 
 

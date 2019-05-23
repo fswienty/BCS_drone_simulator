@@ -8,7 +8,6 @@ from panda3d.core import DirectionalLight
 from panda3d.core import AntialiasAttrib
 from panda3d.core import Vec3
 from panda3d.core import Vec4
-#from camera_controller import CameraController
 from camera_controller import CameraController
 from panda3d.bullet import BulletWorld
 from panda3d.bullet import BulletPlaneShape
@@ -39,13 +38,13 @@ class Main(ShowBase):
         self.world = BulletWorld()
         self.world.setGravity(Vec3(0, 0, 0))
 
-        node = BulletRigidBodyNode('Ground') # derived from PandaNode
-        node.addShape(BulletPlaneShape(Vec3(0, 0, 1), 1))
+        node = BulletRigidBodyNode("Ground") # derived from PandaNode
+        node.addShape(BulletPlaneShape(Vec3(0, 0, 1), 0))
         np = self.render.attachNewNode(node)
         np.setPos(0, 0, 0)
         self.world.attachRigidBody(node)
 
-        self.physicsDrone = BulletRigidBodyNode('Sphere') # derived from PandaNode
+        self.physicsDrone = BulletRigidBodyNode("Sphere") # derived from PandaNode
         self.physicsDrone.setMass(1.0) # type: BulletRigidBodyNode # body is now dynamic
         self.physicsDrone.addShape(BulletSphereShape(0.3))
         self.physicsDroneNP = self.render.attachNewNode(self.physicsDrone)
@@ -57,7 +56,7 @@ class Main(ShowBase):
         self.physicsDrone.setLinearDamping(0.8)   
         self.taskMgr.add(self.addForceToPointTask, "AddForceToPointTask", extraArgs=[self.physicsDrone], appendTask=True)
 
-        debugNode = BulletDebugNode('Debug')
+        debugNode = BulletDebugNode("Debug")
         debugNode.showWireframe(True)
         debugNode.showConstraints(True)
         debugNode.showBoundingBoxes(False)
@@ -65,12 +64,13 @@ class Main(ShowBase):
         debugNP = self.render.attachNewNode(debugNode)
         debugNP.show()
         self.world.setDebugNode(debugNP.node())
-
+        
         self.taskMgr.add(self.physicsUpdate, "PhysicsUpdate")
         
 
     def addForceToPointTask(self, pd, task):
-        target = Vec3(2, -6, 2)
+        #print("force update!")
+        target = Vec3(2, -6, .5)
         pos = self.physicsDroneNP.getPos()
         dist = (target - pos)
         if(dist.lengthSquared() > 5**2):
@@ -83,15 +83,16 @@ class Main(ShowBase):
 
 
     def physicsUpdate(self, task):
+        #print("physics update!")
         dt = self.taskMgr.globalClock.getDt()
         self.world.doPhysics(dt)
         return task.cont
 
 
     def initRoom(self):
-        self.roomModel = self.loader.loadModel(self.modelDir + "/room_test/room_test.egg")
-        self.roomModel.setPos(0, 0, 1)
-        self.roomModel.reparentTo(self.render)
+        roomModel = self.loader.loadModel(self.modelDir + "/room_test/room_test.egg")
+        roomModel.setPos(0, 0, 0)
+        roomModel.reparentTo(self.render)
 
 
     def initLights(self):
