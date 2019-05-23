@@ -8,3 +8,6 @@ pip packages:
     pycma
     panda3d
     openvr
+
+clone from github & pip install:
+    cflib

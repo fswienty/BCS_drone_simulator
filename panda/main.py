@@ -2,8 +2,6 @@ import sys
 import os
 from math import pi, sin, cos
 from direct.showbase.ShowBase import ShowBase
-import cflib
-from cflib.crazyflie import Crazyflie
 # pylint: disable=no-name-in-module
 from panda3d.core import Filename
 from panda3d.core import DirectionalLight
