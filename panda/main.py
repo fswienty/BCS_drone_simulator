@@ -3,6 +3,7 @@ import os
 from math import pi, sin, cos
 from direct.showbase.ShowBase import ShowBase
 # pylint: disable=no-name-in-module
+from drone import Drone
 from panda3d.core import Filename
 from panda3d.core import DirectionalLight
 from panda3d.core import AntialiasAttrib
@@ -44,17 +45,20 @@ class Main(ShowBase):
         np.setPos(0, 0, 0)
         self.world.attachRigidBody(node)
 
-        self.physicsDrone = BulletRigidBodyNode("Sphere") # derived from PandaNode
-        self.physicsDrone.setMass(1.0) # type: BulletRigidBodyNode # body is now dynamic
-        self.physicsDrone.addShape(BulletSphereShape(0.3))
-        self.physicsDroneNP = self.render.attachNewNode(self.physicsDrone)
-        self.physicsDroneNP.setPos(0, 0, 4)
-        self.world.attachRigidBody(self.physicsDrone)
-        model = self.loader.loadModel(self.modelDir + "/drones/drone1.egg")
-        model.reparentTo(self.physicsDroneNP)
-        self.physicsDrone.applyCentralForce(Vec3(0, 0, -130))
-        self.physicsDrone.setLinearDamping(0.8)   
-        self.taskMgr.add(self.addForceToPointTask, "AddForceToPointTask", extraArgs=[self.physicsDrone], appendTask=True)
+        # self.physicsDrone = BulletRigidBodyNode("Sphere") # derived from PandaNode
+        # self.physicsDrone.setMass(1.0) # type: BulletRigidBodyNode # body is now dynamic
+        # self.physicsDrone.addShape(BulletSphereShape(0.3))
+        # self.physicsDroneNP = self.render.attachNewNode(self.physicsDrone)
+        # self.physicsDroneNP.setPos(0, 0, 4)
+        # self.world.attachRigidBody(self.physicsDrone)
+        # model = self.loader.loadModel(self.modelDir + "/drones/drone1.egg")
+        # model.reparentTo(self.physicsDroneNP)
+        # self.physicsDrone.applyCentralForce(Vec3(0, 0, -130))
+        # self.physicsDrone.setLinearDamping(0.8)   
+        # self.taskMgr.add(self.addForceToPointTask, "AddForceToPointTask", extraArgs=[self.physicsDrone], appendTask=True)
+
+        drone = Drone(Vec3(0, 0, 4), self)
+        drone.setTarget(Vec3(2, -6, .5))
 
         debugNode = BulletDebugNode("Debug")
         debugNode.showWireframe(True)
@@ -68,18 +72,18 @@ class Main(ShowBase):
         self.taskMgr.add(self.physicsUpdate, "PhysicsUpdate")
         
 
-    def addForceToPointTask(self, pd, task):
-        #print("force update!")
-        target = Vec3(2, -6, .5)
-        pos = self.physicsDroneNP.getPos()
-        dist = (target - pos)
-        if(dist.lengthSquared() > 5**2):
-            force = dist.normalized()
-        else:
-            force = dist / 5
-        pd.applyCentralForce(force * 5)
-        #rint(pos, force.length())
-        return task.cont
+    # def addForceToPointTask(self, pd, task):
+    #     #print("force update!")
+    #     target = Vec3(2, -6, .5)
+    #     pos = self.physicsDroneNP.getPos()
+    #     dist = (target - pos)
+    #     if(dist.lengthSquared() > 5**2):
+    #         force = dist.normalized()
+    #     else:
+    #         force = dist / 5
+    #     pd.applyCentralForce(force * 5)
+    #     #print(pos, force.length())
+    #     return task.cont
 
 
     def physicsUpdate(self, task):

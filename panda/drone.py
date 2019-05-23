@@ -13,11 +13,13 @@ class Drone:
 
         self.target = position
         self.rigidBody = BulletRigidBodyNode("RigidSphere") # derived from PandaNode
-        self.rigidBody.setMass(1.0) # type: BulletRigidBodyNode # body is now dynamic
+        self.rigidBody.setMass(1.0) # body is now dynamic
         self.rigidBody.addShape(BulletSphereShape(0.3))
-        self.ghost = BulletGhostNode("GhostSphere")
+        #self.ghost = BulletGhostNode("GhostSphere")
+        #self.ghost.addShape(BulletSphereShape(0.7))
         self.rigidBodyNP = base.render.attachNewNode(self.rigidBody) # set pos on the nodepath
         self.rigidBodyNP.setPos(position)
+        #self.ghost.reparentTo(self.rigidBodyNP)
         base.world.attachRigidBody(self.rigidBody)
         model = base.loader.loadModel(base.modelDir + "/drones/drone1.egg")
         model.reparentTo(self.rigidBodyNP)
@@ -27,5 +29,12 @@ class Drone:
         self.target = target
 
     def updateForce(self):
-        pass
+        #print("force update!")
+        dist = (self.target - self.rigidBodyNP.getPos())
+        if(dist.lengthSquared() > 5**2):
+            force = dist.normalized()
+        else:
+            force = dist / 5
+        self.rigidBody.applyCentralForce(force * 5)
+        #print(pos, force.length())
     
