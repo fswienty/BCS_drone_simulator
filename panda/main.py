@@ -25,16 +25,16 @@ class Main(ShowBase):
 
         self.setFrameRateMeter(True)
         self.accept('escape', sys.exit)
+        self.render.setAntialias(AntialiasAttrib.MAuto)
+        self.cameraController = CameraController(self)
         # setup model directory
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
         self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models" # Convert that to panda's unix-style notation.
         # setup scene
-        self.initRoom()
-        self.initLights()
         self.initBullet()
-        self.initDrones()
-        self.render.setAntialias(AntialiasAttrib.MAuto)
-        self.cameraController = CameraController(self)
+        self.spawnRoom()
+        self.spawnLights()
+        self.spawnDrones()
 
 
     def initBullet(self):
@@ -59,7 +59,7 @@ class Main(ShowBase):
         self.taskMgr.add(self.physicsUpdateTask, "PhysicsUpdate")
 
 
-    def initDrones(self):
+    def spawnDrones(self):
         drone1 = Drone(Vec3(0, 0, 4), self)
         drone1.setTarget(Vec3(2, -6, .5))
         drone2 = Drone(Vec3(1, -5, 2), self)
@@ -67,13 +67,13 @@ class Main(ShowBase):
         self.drones = [drone1, drone2]
 
 
-    def initRoom(self):
+    def spawnRoom(self):
         roomModel = self.loader.loadModel(self.modelDir + "/room_test/room_test.egg")
         roomModel.setPos(0, 0, 0)
         roomModel.reparentTo(self.render)
 
 
-    def initLights(self):
+    def spawnLights(self):
         for i in range(0,3):
             dlight = DirectionalLight("light")
             dlnp = self.render.attachNewNode(dlight) # directional light node path

@@ -10,7 +10,6 @@ class Drone:
     def __init__(self, position: Vec3, base):
         self.base = base
 
-        self.target = position
         self.rigidBody = BulletRigidBodyNode("RigidSphere") # derived from PandaNode
         self.rigidBody.setMass(1.0) # body is now dynamic
         self.rigidBody.addShape(BulletSphereShape(0.3))
@@ -22,6 +21,8 @@ class Drone:
         base.world.attachRigidBody(self.rigidBody)
         model = base.loader.loadModel(base.modelDir + "/drones/drone1.egg")
         model.reparentTo(self.rigidBodyNP)
+
+        self.target = position
         self.rigidBody.setLinearDamping(0.8)
 
     def setTarget(self, target: Vec3):
