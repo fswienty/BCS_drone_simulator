@@ -42,7 +42,7 @@ class CameraController(DirectObject.DirectObject):
         forward = self.camera.getQuat().getForward()
         right = self.camera.getQuat().getRight()
         up = self.camera.getQuat().getUp()
-        moveSpeed = .1
+        moveSpeed = .05
         rotSpeed = 20
 
         if mw.hasMouse():
@@ -55,17 +55,19 @@ class CameraController(DirectObject.DirectObject):
 
         deltaPos = Vec3(0, 0, 0)
         if mw.isButtonDown(KeyboardButton.asciiKey(bytes('w','utf-8'))):
-            deltaPos += forward * moveSpeed
+            deltaPos += forward
         if mw.isButtonDown(KeyboardButton.asciiKey(bytes('s','utf-8'))):
-            deltaPos -= forward * moveSpeed
+            deltaPos -= forward
         if mw.isButtonDown(KeyboardButton.asciiKey(bytes('d','utf-8'))):
-            deltaPos += right * moveSpeed
+            deltaPos += right
         if mw.isButtonDown(KeyboardButton.asciiKey(bytes('a','utf-8'))):
-            deltaPos -= right * moveSpeed
+            deltaPos -= right
         if mw.isButtonDown(KeyboardButton.asciiKey(bytes('e','utf-8'))):
-            deltaPos += up * moveSpeed
+            deltaPos += up
         if mw.isButtonDown(KeyboardButton.asciiKey(bytes('q','utf-8'))):
-            deltaPos -= up * moveSpeed
+            deltaPos -= up
+        deltaPos.normalize()
+        deltaPos *= moveSpeed
         self.camera.setPos(curPos + deltaPos)
       
         return task.cont
