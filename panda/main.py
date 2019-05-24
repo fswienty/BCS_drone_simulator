@@ -60,11 +60,14 @@ class Main(ShowBase):
 
 
     def spawnDrones(self):
-        drone1 = Drone(Vec3(0, 0, 4), self)
-        drone1.setTarget(Vec3(1, -5, 2))
-        drone2 = Drone(Vec3(1, -4.5, 2), self)
-        drone2.setTarget(Vec3(3, 1, 3))
-        self.drones = [drone1, drone2]
+        self.drones = []
+        self.drones.append(Drone(Vec3(0, 0, 4), self))
+        self.drones.append(Drone(Vec3(1, -1, 2), self))
+        self.drones.append(Drone(Vec3(4, 1, 1), self))
+
+        self.drones[0].setTarget(Vec3(1, -2, 2))
+        self.drones[1].setTarget(Vec3(3, 1, 1))
+        self.drones[2].setTarget(Vec3(0, 0, 3))
 
         self.taskMgr.add(self.updateDronesTask, "DronesUpdate")
 

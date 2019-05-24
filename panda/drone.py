@@ -17,10 +17,9 @@ class Drone:
         self.rigidBodyNP.setPos(position)
 
         self.ghost = BulletGhostNode("GhostSphere")
-        self.ghost.addShape(BulletSphereShape(0.7))
+        self.ghost.addShape(BulletSphereShape(1.5))
         self.ghostNP = base.render.attachNewNode(self.ghost)
         self.ghostNP.setPos(position)
-        #self.ghostNP.reparentTo(self.rigidBodyNP)
 
         base.world.attach(self.rigidBody)
         base.world.attach(self.ghost)
@@ -29,6 +28,7 @@ class Drone:
 
         self.target = position
         self.rigidBody.setLinearDamping(0.8)
+
 
     def setTarget(self, target: Vec3):
         self.target = target
