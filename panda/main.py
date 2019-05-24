@@ -61,10 +61,12 @@ class Main(ShowBase):
 
     def spawnDrones(self):
         drone1 = Drone(Vec3(0, 0, 4), self)
-        drone1.setTarget(Vec3(2, -6, .5))
-        drone2 = Drone(Vec3(1, -5, 2), self)
+        drone1.setTarget(Vec3(1, -5, 2))
+        drone2 = Drone(Vec3(1, -4.5, 2), self)
         drone2.setTarget(Vec3(3, 1, 3))
         self.drones = [drone1, drone2]
+
+        self.taskMgr.add(self.updateDronesTask, "DronesUpdate")
 
 
     def spawnRoom(self):
@@ -86,9 +88,14 @@ class Main(ShowBase):
         self.render.setLight(dlnp)
 
 
-    def physicsUpdateTask(self, task):
+    def updateDronesTask(self, task):
         for drone in self.drones:
             drone.updateForce()
+            drone.updateGhost()
+        return task.cont
+
+
+    def physicsUpdateTask(self, task):
         dt = self.taskMgr.globalClock.getDt()
         self.world.doPhysics(dt)
         return task.cont
