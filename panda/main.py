@@ -62,19 +62,21 @@ class Main(ShowBase):
     def spawnDrones(self):
         self.drones = []
         self.drones.append(Drone(Vec3(0, 0, 4), self))
-        self.drones.append(Drone(Vec3(1, -1, 2), self))
-        self.drones.append(Drone(Vec3(4, 1, 1), self))
+        self.drones.append(Drone(Vec3(2, -1, 2), self))
+        self.drones.append(Drone(Vec3(4, 1, 1), self, printCollisions=True))
 
         self.drones[0].setTarget(Vec3(1, -2, 2))
-        self.drones[1].setTarget(Vec3(3, 1, 1))
-        self.drones[2].setTarget(Vec3(0, 0, 3))
+        self.drones[1].setTarget(Vec3(3, 1, 1.2))
+        self.drones[2].setTarget(Vec3(0, 0, 2))
+
+        #self.drones[0].printCollisions = True
 
         self.taskMgr.add(self.updateDronesTask, "DronesUpdate")
 
 
     def spawnRoom(self):
         roomModel = self.loader.loadModel(self.modelDir + "/room_test/room_test.egg")
-        roomModel.setPos(0, 0, 0)
+        #roomModel.setPos(0, 0, 0)
         roomModel.reparentTo(self.render)
 
 
@@ -92,6 +94,7 @@ class Main(ShowBase):
 
 
     def updateDronesTask(self, task):
+        print("##############")
         for drone in self.drones:
             drone.updateForce()
             drone.updateGhost()
