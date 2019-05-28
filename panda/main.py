@@ -59,22 +59,15 @@ class Main(ShowBase):
         debugNP.show()
         self.world.setDebugNode(debugNP.node())
 
-        #self.taskMgr.add(self.physicsUpdateTask, "PhysicsUpdate")
-
 
     def spawnDrones(self):
         self.drones = []
         self.drones.append(Drone(Vec3(0, 0, 4), self))
-        self.drones.append(Drone(Vec3(2, -1, 2), self))
+        self.drones.append(Drone(Vec3(2, 3, 2), self))
         self.drones.append(Drone(Vec3(4, 1, 1), self))
-
-        # self.drones[0].setTarget(Vec3(1, -2, 2))
-        # self.drones[1].setTarget(Vec3(3, 1, 1.2))
-        # self.drones[2].setTarget(Vec3(0, 0, 2))
-
-        #self.drones[0].printCollisions = True
-
-        #self.taskMgr.add(self.updateDronesTask, "DronesUpdate")
+        self.drones.append(Drone(Vec3(2, 2, 1), self))
+        self.drones.append(Drone(Vec3(1, 1, 1), self))
+        self.drones.append(Drone(Vec3(0, 2, 1), self))
 
 
     def spawnRoom(self):

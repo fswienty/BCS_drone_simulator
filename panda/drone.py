@@ -15,7 +15,7 @@ class Drone:
 
         self.rigidBody = BulletRigidBodyNode("RigidSphere") # derived from PandaNode
         self.rigidBody.setMass(1.0) # body is now dynamic
-        self.rigidBody.addShape(BulletSphereShape(0.1))
+        self.rigidBody.addShape(BulletSphereShape(0.2))
         self.rigidBody.setLinearSleepThreshold(0)
         self.rigidBody.setFriction(0)
         self.rigidBodyNP = base.render.attachNewNode(self.rigidBody)
@@ -23,7 +23,7 @@ class Drone:
         self.rigidBodyNP.setCollideMask(BitMask32.bit(1))
         
         self.ghost = BulletGhostNode("GhostSphere")
-        self.ghost.addShape(BulletSphereShape(0.3))
+        self.ghost.addShape(BulletSphereShape(0.5))
         self.ghostNP = base.render.attachNewNode(self.ghost)
         self.ghostNP.setPos(position)
         self.ghostNP.setCollideMask(BitMask32.bit(2))
@@ -67,7 +67,7 @@ class Drone:
 
     def _updateForce(self):
         dist = (self.target - self.rigidBodyNP.getPos())
-        if(dist.lengthSquared() > 5**2):
+        if(dist.lengthSquared() > 5 * 5):
             force = dist.normalized()
         else:
             force = dist / 5
@@ -84,7 +84,7 @@ class Drone:
 
     def _checkCompletion(self):
         diff = self.getPos() - self.target
-        if diff.lengthSquared() < 0.2**2:
+        if diff.lengthSquared() < 0.2 * 0.2:
             self.setTarget(random=True)
 
     
