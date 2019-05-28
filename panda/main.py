@@ -25,8 +25,11 @@ class Main(ShowBase):
 
         self.setFrameRateMeter(True)
         self.accept('escape', sys.exit)
+        self.isPaused = True
+        self.accept('space', self.togglePause)
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
+        self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in m
         # setup model directory
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
         self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models" # Convert that to panda's unix-style notation.
@@ -56,27 +59,27 @@ class Main(ShowBase):
         debugNP.show()
         self.world.setDebugNode(debugNP.node())
 
-        self.taskMgr.add(self.physicsUpdateTask, "PhysicsUpdate")
+        #self.taskMgr.add(self.physicsUpdateTask, "PhysicsUpdate")
 
 
     def spawnDrones(self):
         self.drones = []
         self.drones.append(Drone(Vec3(0, 0, 4), self))
         self.drones.append(Drone(Vec3(2, -1, 2), self))
-        self.drones.append(Drone(Vec3(4, 1, 1), self, printCollisions=True))
+        self.drones.append(Drone(Vec3(4, 1, 1), self))
 
-        self.drones[0].setTarget(Vec3(1, -2, 2))
-        self.drones[1].setTarget(Vec3(3, 1, 1.2))
-        self.drones[2].setTarget(Vec3(0, 0, 2))
+        # self.drones[0].setTarget(Vec3(1, -2, 2))
+        # self.drones[1].setTarget(Vec3(3, 1, 1.2))
+        # self.drones[2].setTarget(Vec3(0, 0, 2))
 
         #self.drones[0].printCollisions = True
 
-        self.taskMgr.add(self.updateDronesTask, "DronesUpdate")
+        #self.taskMgr.add(self.updateDronesTask, "DronesUpdate")
 
 
     def spawnRoom(self):
+        # room size: x=3.40m y=4.56m z=2.56m 
         roomModel = self.loader.loadModel(self.modelDir + "/room_test/room_test.egg")
-        #roomModel.setPos(0, 0, 0)
         roomModel.reparentTo(self.render)
 
 
@@ -94,17 +97,27 @@ class Main(ShowBase):
 
 
     def updateDronesTask(self, task):
-        print("##############")
+        #print("##############")
         for drone in self.drones:
-            drone.updateForce()
-            drone.updateGhost()
+            drone.update()
         return task.cont
 
 
-    def physicsUpdateTask(self, task):
+    def updatePhysicsTask(self, task):
         dt = self.taskMgr.globalClock.getDt()
         self.world.doPhysics(dt)
         return task.cont
+
+
+    def togglePause(self):
+        if self.isPaused == True:
+            self.isPaused = False
+            self.taskMgr.add(self.updateDronesTask, "UpdateDrones")
+            self.taskMgr.add(self.updatePhysicsTask, "UpdatePhysics")
+        else:
+            self.isPaused = True
+            self.taskMgr.remove("UpdateDrones")
+            self.taskMgr.remove("UpdatePhysics")
 
 
 app = Main()

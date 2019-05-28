@@ -17,6 +17,7 @@ class CameraController(DirectObject.DirectObject):
         self.camera.setPos(5, 0, 2)
         self.camera.lookAt(0, 0, 1)
         base.camLens.setFov(90)
+        base.camLens.setNear(.1)
 
 
     def toggleCameraControl(self):
