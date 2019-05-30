@@ -1,5 +1,4 @@
 import random
-from random import uniform
 # pylint: disable=no-name-in-module
 from panda3d.core import Vec3
 from panda3d.core import Loader
@@ -10,8 +9,9 @@ from panda3d.bullet import BulletGhostNode
 
 class Drone:
 
-    def __init__(self, position: Vec3, base, printDebugInfo=False):
-        self.base = base
+    def __init__(self, position: Vec3, manager, printDebugInfo=False):
+        self.base = manager.base
+        self.manager = manager
 
         self.rigidBody = BulletRigidBodyNode("RigidSphere") # derived from PandaNode
         self.rigidBody.setMass(1.0) # body is now dynamic
@@ -21,7 +21,7 @@ class Drone:
         self.rigidBodyNP = base.render.attachNewNode(self.rigidBody)
         self.rigidBodyNP.setPos(position)
         self.rigidBodyNP.setCollideMask(BitMask32.bit(1))
-        
+
         self.ghost = BulletGhostNode("GhostSphere")
         self.ghost.addShape(BulletSphereShape(0.5))
         self.ghostNP = base.render.attachNewNode(self.ghost)
@@ -49,15 +49,8 @@ class Drone:
         if random == False:
             self.target = target
         else:
-            self.target = self._getRandomRoomCoordinate()
+            self.target = self.manager.getRandomRoomCoordinate()
         
-
-    def _getRandomRoomCoordinate(self) -> Vec3:
-        newX = uniform(-self.base.roomSize.x/2, self.base.roomSize.x/2)
-        newY = uniform(-self.base.roomSize.y/2, self.base.roomSize.y/2)
-        newZ = uniform(0, self.base.roomSize.z)
-        return Vec3(newX, newY, newZ)        
-
 
     def update(self):
         self._updateForce()
@@ -66,7 +59,7 @@ class Drone:
 
 
     def _updateForce(self):
-        dist = (self.target - self.rigidBodyNP.getPos())
+        dist = (self.target - self.getPos())
         if(dist.lengthSquared() > 5 * 5):
             force = dist.normalized()
         else:

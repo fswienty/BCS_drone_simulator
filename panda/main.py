@@ -5,6 +5,7 @@ from direct.showbase.ShowBase import ShowBase
 from drone import Drone
 #from test import Test
 from camera_controller import CameraController
+from drone_manager import DroneManager
 # pylint: disable=no-name-in-module
 from panda3d.core import Filename
 from panda3d.core import DirectionalLight
@@ -29,6 +30,7 @@ class Main(ShowBase):
         self.accept('space', self.togglePause)
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
+        self.droneManager = DroneManager(self)
         self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in m
         # setup model directory
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
@@ -51,7 +53,7 @@ class Main(ShowBase):
         self.world.attachRigidBody(node)
         
         debugNode = BulletDebugNode("Debug")
-        debugNode.showWireframe(False)
+        debugNode.showWireframe(True)
         debugNode.showConstraints(True)
         debugNode.showBoundingBoxes(False)
         debugNode.showNormals(True)
@@ -61,19 +63,15 @@ class Main(ShowBase):
 
 
     def spawnDrones(self):
-        self.drones = []
+        # self.drones = []
         # self.drones.append(Drone(Vec3(0, 0, 4), self))
         # self.drones.append(Drone(Vec3(2, 3, 2), self))
         # self.drones.append(Drone(Vec3(4, 1, 1), self))
         # self.drones.append(Drone(Vec3(2, 2, 1), self))
         # self.drones.append(Drone(Vec3(1, 1, 1), self))
         # self.drones.append(Drone(Vec3(0, 2, 1), self))
-
-        self.drones.append(Drone(Vec3(0, -2, 2), self))
-        self.drones.append(Drone(Vec3(0, 2, 2), self))
-        self.drones[0].setTarget(Vec3(0, 2, 2))
-        self.drones[1].setTarget(Vec3(0, -2, 2))    
-
+        self.droneManager.spawnDrones()
+        
 
     def spawnRoom(self):
         # room size: x=3.40m y=4.56m z=2.56m 
@@ -94,13 +92,6 @@ class Main(ShowBase):
         self.render.setLight(dlnp)
 
 
-    def updateDronesTask(self, task):
-        #print("##############")
-        for drone in self.drones:
-            drone.update()
-        return task.cont
-
-
     def updatePhysicsTask(self, task):
         dt = self.taskMgr.globalClock.getDt()
         self.world.doPhysics(dt)
@@ -110,7 +101,7 @@ class Main(ShowBase):
     def togglePause(self):
         if self.isPaused == True:
             self.isPaused = False
-            self.taskMgr.add(self.updateDronesTask, "UpdateDrones")
+            self.taskMgr.add(self.droneManager.updateDronesTask, "UpdateDrones")
             self.taskMgr.add(self.updatePhysicsTask, "UpdatePhysics")
         else:
             self.isPaused = True
