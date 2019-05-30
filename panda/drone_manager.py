@@ -11,18 +11,29 @@ class DroneManager:
 
 
     def spawnDrones(self):
-        self.drones["1"] = Drone("1", Vec3(0, -2, 2), self, printDebugInfo=True)
-        self.drones["2"] = Drone("2", Vec3(0, 2, 2), self)
+        # self.drones["1"] = Drone("1", Vec3(0, -2, 2), self, printDebugInfo=False)
+        # self.drones["2"] = Drone("2", Vec3(0, 2, 2.2), self)
+        # self.drones.get("1").setTarget(Vec3(0, 2, 2))
+        # self.drones.get("2").setTarget(Vec3(0, -2, 2))
 
-        self.drones.get("1").setTarget(Vec3(0, 2, 2))
-        self.drones.get("2").setTarget(Vec3(0, -2, 2))
+        self.drones["1"] = Drone("1", Vec3(0, -2, 2), self)
+        self.drones["2"] = Drone("2", Vec3(0, 2, 2.2), self)
+        self.drones["3"] = Drone("1", Vec3(1, -2, 2), self)
+        self.drones["4"] = Drone("2", Vec3(1, 2, 2.2), self)
+        self.drones["5"] = Drone("1", Vec3(-1, -2, 2), self)
+        self.drones["6"] = Drone("2", Vec3(-1, 2, 2.2), self)
+
 
 
     def updateDronesTask(self, task):
         for drone in self.drones.values():
             drone.update()
         return task.cont
-        
+
+
+    def handleCollisions(self): # currently implemented in drone class
+        pass
+
 
     def getRandomRoomCoordinate(self) -> Vec3:
         newX = random.uniform(-self.base.roomSize.x/2, self.base.roomSize.x/2)

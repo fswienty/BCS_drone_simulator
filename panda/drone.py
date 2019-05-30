@@ -9,14 +9,19 @@ from panda3d.bullet import BulletGhostNode
 
 class Drone:
 
+    MASS = 1.0
+    RIGIDBODYRADIUS = 0.1
+    GHOSTRADIUS = 0.5
+    LINEARDAMPING = 1.0
+
     def __init__(self, name: str, position: Vec3, manager, printDebugInfo=False):
         self.name = name
         self.base = manager.base
         self.manager = manager
 
         self.rigidBody = BulletRigidBodyNode("RigidSphere") # derived from PandaNode
-        self.rigidBody.setMass(1.0) # body is now dynamic
-        self.rigidBody.addShape(BulletSphereShape(0.1))
+        self.rigidBody.setMass(self.MASS) # body is now dynamic
+        self.rigidBody.addShape(BulletSphereShape(self.RIGIDBODYRADIUS))
         self.rigidBody.setLinearSleepThreshold(0)
         self.rigidBody.setFriction(0)
         self.rigidBodyNP = self.base.render.attachNewNode(self.rigidBody)
@@ -24,12 +29,10 @@ class Drone:
         self.rigidBodyNP.setCollideMask(BitMask32.bit(1))
 
         self.ghost = BulletGhostNode(self.name) # give drone the same identifier as the drone has in the dict
-        self.ghost.addShape(BulletSphereShape(0.5))
+        self.ghost.addShape(BulletSphereShape(self.GHOSTRADIUS))
         self.ghostNP = self.base.render.attachNewNode(self.ghost)
         self.ghostNP.setPos(position)
         self.ghostNP.setCollideMask(BitMask32.bit(2))
-
-        self.ghost.ls
 
 
         self.base.world.attach(self.rigidBody)
@@ -39,7 +42,7 @@ class Drone:
         model.reparentTo(self.rigidBodyNP)
 
         self.target = position
-        self.rigidBody.setLinearDamping(0.8)
+        self.rigidBody.setLinearDamping(self.LINEARDAMPING)
 
         self.printDebugInfo = printDebugInfo
         if self.printDebugInfo == True: # put a second drone model on top of drone that outputs debug stuff
@@ -53,12 +56,19 @@ class Drone:
             self.target = target
         else:
             self.target = self.manager.getRandomRoomCoordinate()
-        
+    
+
+    def addForce(self, force: Vec3):
+        self.rigidBody.applyCentralForce(force)
+
 
     def update(self):
         self._updateForce()
         self._updateGhost()
         self._checkCompletion()
+        self._handleCollisions()
+
+        self._printDebugInfo()
 
 
     def _updateForce(self):
@@ -67,26 +77,34 @@ class Drone:
             force = dist.normalized()
         else:
             force = dist / 5
-        self.rigidBody.applyCentralForce(force * 5)
-
-
-    def addForce(self, force: Vec3):
-        self.rigidBody.applyCentralForce(force)
+        self.addForce(force * 10)
 
 
     def _updateGhost(self):
-        self.ghostNP.setPos(self.rigidBodyNP.getPos())
-        if self.printDebugInfo == True: 
-            print("Drone", self.name, " Amount of overlapping nodes: ", self.ghost.getNumOverlappingNodes())
-            for node in self.ghost.getOverlappingNodes():
-                print(node.name)
-                self.manager.getDrone(node.name).addForce(Vec3(0,0,10))
+        self.ghostNP.setPos(self.getPos())
+
+
+    def _handleCollisions(self):
+        for node in self.ghost.getOverlappingNodes():
+            other = self.manager.getDrone(node.name)
+            
+            dist = other.getPos() - self.getPos()
+            mult = max([0, 2 * self.GHOSTRADIUS - dist.length()])
+            other.addForce(dist * mult * 20)
 
 
     def _checkCompletion(self):
         diff = self.getPos() - self.target
         if diff.length() < 0.2:
             self.setTarget(random=True)
+
+
+    def _printDebugInfo(self):
+        if self.printDebugInfo == True: 
+            print("Drone", self.name, " Amount of overlapping nodes: ", self.ghost.getNumOverlappingNodes())
+            for node in self.ghost.getOverlappingNodes():
+                print(node.name)
+                self.manager.getDrone(node.name).addForce(Vec3(0,0,10))
 
     
     def getPos(self) -> Vec3:
