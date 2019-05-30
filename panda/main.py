@@ -46,12 +46,14 @@ class Main(ShowBase):
         self.world = BulletWorld()
         self.world.setGravity(Vec3(0, 0, 0))
 
-        node = BulletRigidBodyNode("Ground") # derived from PandaNode
-        node.addShape(BulletPlaneShape(Vec3(0, 0, 1), 0))
-        np = self.render.attachNewNode(node)
-        np.setPos(0, 0, 0)
-        self.world.attachRigidBody(node)
+        # add ground
+        # node = BulletRigidBodyNode("Ground") # derived from PandaNode
+        # node.addShape(BulletPlaneShape(Vec3(0, 0, 1), 0))
+        # np = self.render.attachNewNode(node)
+        # np.setPos(0, 0, 0)
+        # self.world.attachRigidBody(node)
         
+        # add debug node
         debugNode = BulletDebugNode("Debug")
         debugNode.showWireframe(True)
         debugNode.showConstraints(True)
@@ -63,13 +65,6 @@ class Main(ShowBase):
 
 
     def spawnDrones(self):
-        # self.drones = []
-        # self.drones.append(Drone(Vec3(0, 0, 4), self))
-        # self.drones.append(Drone(Vec3(2, 3, 2), self))
-        # self.drones.append(Drone(Vec3(4, 1, 1), self))
-        # self.drones.append(Drone(Vec3(2, 2, 1), self))
-        # self.drones.append(Drone(Vec3(1, 1, 1), self))
-        # self.drones.append(Drone(Vec3(0, 2, 1), self))
         self.droneManager.spawnDrones()
         
 
