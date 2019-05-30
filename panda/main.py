@@ -51,7 +51,7 @@ class Main(ShowBase):
         self.world.attachRigidBody(node)
         
         debugNode = BulletDebugNode("Debug")
-        debugNode.showWireframe(True)
+        debugNode.showWireframe(False)
         debugNode.showConstraints(True)
         debugNode.showBoundingBoxes(False)
         debugNode.showNormals(True)
@@ -62,12 +62,17 @@ class Main(ShowBase):
 
     def spawnDrones(self):
         self.drones = []
-        self.drones.append(Drone(Vec3(0, 0, 4), self))
-        self.drones.append(Drone(Vec3(2, 3, 2), self))
-        self.drones.append(Drone(Vec3(4, 1, 1), self))
-        self.drones.append(Drone(Vec3(2, 2, 1), self))
-        self.drones.append(Drone(Vec3(1, 1, 1), self))
-        self.drones.append(Drone(Vec3(0, 2, 1), self))
+        # self.drones.append(Drone(Vec3(0, 0, 4), self))
+        # self.drones.append(Drone(Vec3(2, 3, 2), self))
+        # self.drones.append(Drone(Vec3(4, 1, 1), self))
+        # self.drones.append(Drone(Vec3(2, 2, 1), self))
+        # self.drones.append(Drone(Vec3(1, 1, 1), self))
+        # self.drones.append(Drone(Vec3(0, 2, 1), self))
+
+        self.drones.append(Drone(Vec3(0, -2, 2), self))
+        self.drones.append(Drone(Vec3(0, 2, 2), self))
+        self.drones[0].setTarget(Vec3(0, 2, 2))
+        self.drones[1].setTarget(Vec3(0, -2, 2))    
 
 
     def spawnRoom(self):
