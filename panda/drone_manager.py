@@ -15,20 +15,14 @@ class DroneManager:
         self.spawnDrone("5", Vec3(-1, -2, 2))
         self.spawnDrone("6", Vec3(-1, 2, 2.2))
 
-    def spawnDrone(self, name: str, position: Vec3):
-        # self.drones["1"] = Drone("1", Vec3(0, -2, 2), self, printDebugInfo=False)
-        # self.drones["2"] = Drone("2", Vec3(0, 2, 2.2), self)
-        # self.drones.get("1").setTarget(Vec3(0, 2, 2))
-        # self.drones.get("2").setTarget(Vec3(0, -2, 2))
-        self.drones[name] = Drone(name, position, self)
+        # self.spawnDrone("1", Vec3(0, -2, 2), printDebugInfo=False)
+        # self.spawnDrone("2", Vec3(0, 2, 2))
+        # self.getDrone("1").setTarget(Vec3(0, 2, 2))
+        # self.getDrone("2").setTarget(Vec3(0, -2, 2))
 
-        # self.drones["1"] = Drone("1", Vec3(0, -2, 2), self)
-        # self.drones["2"] = Drone("2", Vec3(0, 2, 2.2), self)
-        # self.drones["3"] = Drone("3", Vec3(1, -2, 2), self)
-        # self.drones["4"] = Drone("4", Vec3(1, 2, 2.2), self)
-        # self.drones["5"] = Drone("5", Vec3(-1, -2, 2), self)
-        # self.drones["6"] = Drone("6", Vec3(-1, 2, 2.2), self)
 
+    def spawnDrone(self, name: str, position: Vec3, printDebugInfo=False):
+        self.drones[name] = Drone(name, position, self, printDebugInfo=printDebugInfo)
 
 
     def updateDronesTask(self, task):

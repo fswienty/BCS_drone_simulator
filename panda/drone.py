@@ -12,7 +12,7 @@ class Drone:
     MASS = 1.0
     RIGIDBODYRADIUS = 0.1
     GHOSTRADIUS = 0.5
-    LINEARDAMPING = 0.9
+    LINEARDAMPING = 0.8
 
     def __init__(self, name: str, position: Vec3, manager, printDebugInfo=False):
         self.name = name
@@ -33,7 +33,6 @@ class Drone:
         self.ghostNP = self.base.render.attachNewNode(self.ghost)
         self.ghostNP.setPos(position)
         self.ghostNP.setCollideMask(BitMask32.bit(2))
-
 
         self.base.world.attach(self.rigidBody)
         self.base.world.attach(self.ghost)
@@ -79,7 +78,7 @@ class Drone:
             
             direction = other.getPos() - self.getPos()
             mult = max([0, 2 * self.GHOSTRADIUS - direction.length()])
-            other.addForce(direction.normalize() * mult * 200)
+            other.addForce(direction.normalized() * mult * 5)
 
 
     def _checkCompletion(self):
@@ -92,8 +91,10 @@ class Drone:
         if self.printDebugInfo == True: 
             print("Drone", self.name, " Amount of overlapping nodes: ", self.ghost.getNumOverlappingNodes())
             for node in self.ghost.getOverlappingNodes():
-                print(node.name)
-                self.manager.getDrone(node.name).addForce(Vec3(0,0,10))
+                other = self.manager.getDrone(node.name)
+                direction = other.getPos() - self.getPos()
+                mult = max([0, 2 * self.GHOSTRADIUS - direction.length()])
+                force = direction.normalized() * mult * 20
 
 
     def setTarget(self, target: Vec3 = Vec3(0, 0, 0), random=False):
