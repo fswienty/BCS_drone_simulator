@@ -30,7 +30,6 @@ class Main(ShowBase):
         self.accept('space', self.togglePause)
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
-        self.droneManager = DroneManager(self)
         self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in m
         # setup model directory
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
@@ -39,7 +38,8 @@ class Main(ShowBase):
         self.initBullet()
         self.spawnRoom()
         self.spawnLights()
-        self.spawnDrones()
+
+        self.droneManager = DroneManager(self)
 
 
     def initBullet(self):
@@ -64,8 +64,8 @@ class Main(ShowBase):
         self.world.setDebugNode(debugNP.node())
 
 
-    def spawnDrones(self):
-        self.droneManager.spawnDrones()
+    # def spawnDrones(self):
+    #     self.droneManager.spawnDrones()
         
 
     def spawnRoom(self):

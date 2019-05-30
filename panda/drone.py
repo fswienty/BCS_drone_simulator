@@ -12,7 +12,7 @@ class Drone:
     MASS = 1.0
     RIGIDBODYRADIUS = 0.1
     GHOSTRADIUS = 0.5
-    LINEARDAMPING = 1.0
+    LINEARDAMPING = 0.9
 
     def __init__(self, name: str, position: Vec3, manager, printDebugInfo=False):
         self.name = name
@@ -51,17 +51,6 @@ class Drone:
             model.reparentTo(self.rigidBodyNP)
 
 
-    def setTarget(self, target: Vec3 = Vec3(0, 0, 0), random=False):
-        if random == False:
-            self.target = target
-        else:
-            self.target = self.manager.getRandomRoomCoordinate()
-    
-
-    def addForce(self, force: Vec3):
-        self.rigidBody.applyCentralForce(force)
-
-
     def update(self):
         self._updateForce()
         self._updateGhost()
@@ -77,7 +66,7 @@ class Drone:
             force = dist.normalized()
         else:
             force = dist / 5
-        self.addForce(force * 10)
+        self.addForce(force * 5)
 
 
     def _updateGhost(self):
@@ -88,9 +77,9 @@ class Drone:
         for node in self.ghost.getOverlappingNodes():
             other = self.manager.getDrone(node.name)
             
-            dist = other.getPos() - self.getPos()
-            mult = max([0, 2 * self.GHOSTRADIUS - dist.length()])
-            other.addForce(dist * mult * 20)
+            direction = other.getPos() - self.getPos()
+            mult = max([0, 2 * self.GHOSTRADIUS - direction.length()])
+            other.addForce(direction.normalize() * mult * 200)
 
 
     def _checkCompletion(self):
@@ -105,6 +94,17 @@ class Drone:
             for node in self.ghost.getOverlappingNodes():
                 print(node.name)
                 self.manager.getDrone(node.name).addForce(Vec3(0,0,10))
+
+
+    def setTarget(self, target: Vec3 = Vec3(0, 0, 0), random=False):
+        if random == False:
+            self.target = target
+        else:
+            self.target = self.manager.getRandomRoomCoordinate()
+    
+
+    def addForce(self, force: Vec3):
+        self.rigidBody.applyCentralForce(force)
 
     
     def getPos(self) -> Vec3:
