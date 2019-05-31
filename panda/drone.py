@@ -50,13 +50,8 @@ class Drone:
             model.setPos(0, 0, .2)
             model.reparentTo(self.rigidBodyNP)
 
-        ls = LineSegs()
-        ls.setThickness(1)
-        ls.setColor(1.0, 0.0, 0.0, 1.0)
-        ls.moveTo(self.getPos())
-        ls.drawTo(self.target)
-        node = ls.create()
-        self.LineNP = self.base.render.attachNewNode(node)
+        # initialize line renderer
+        self.LineNP = self.base.render.attachNewNode(LineSegs().create())
 
 
     def update(self):
