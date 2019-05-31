@@ -55,7 +55,7 @@ class Main(ShowBase):
         
         # add debug node
         debugNode = BulletDebugNode("Debug")
-        debugNode.showWireframe(True)
+        debugNode.showWireframe(False)
         debugNode.showConstraints(True)
         debugNode.showBoundingBoxes(False)
         debugNode.showNormals(True)

@@ -3,16 +3,17 @@ import random
 from panda3d.core import Vec3
 from panda3d.core import Loader
 from panda3d.core import BitMask32
+from panda3d.core import LineSegs
 from panda3d.bullet import BulletSphereShape
 from panda3d.bullet import BulletRigidBodyNode
 from panda3d.bullet import BulletGhostNode
 
 class Drone:
 
-    MASS = 1.0
+    RIGIDBODYMASS = 1.0
     RIGIDBODYRADIUS = 0.1
     GHOSTRADIUS = 0.5
-    LINEARDAMPING = 0.8
+    LINEARDAMPING = 0.9
 
     def __init__(self, name: str, position: Vec3, manager, printDebugInfo=False):
         self.name = name
@@ -20,7 +21,7 @@ class Drone:
         self.manager = manager
 
         self.rigidBody = BulletRigidBodyNode("RigidSphere") # derived from PandaNode
-        self.rigidBody.setMass(self.MASS) # body is now dynamic
+        self.rigidBody.setMass(self.RIGIDBODYMASS) # body is now dynamic
         self.rigidBody.addShape(BulletSphereShape(self.RIGIDBODYRADIUS))
         self.rigidBody.setLinearSleepThreshold(0)
         self.rigidBody.setFriction(0)
@@ -49,6 +50,14 @@ class Drone:
             model.setPos(0, 0, .2)
             model.reparentTo(self.rigidBodyNP)
 
+        ls = LineSegs()
+        ls.setThickness(1)
+        ls.setColor(1.0, 0.0, 0.0, 1.0)
+        ls.moveTo(self.getPos())
+        ls.drawTo(self.target)
+        node = ls.create()
+        self.LineNP = self.base.render.attachNewNode(node)
+
 
     def update(self):
         self._updateForce()
@@ -57,15 +66,20 @@ class Drone:
         self._handleCollisions()
 
         self._printDebugInfo()
+        self.getLine()
 
 
     def _updateForce(self):
+        MAXFORCE = 1
+        FORCEFALLOFFDISTANCE = 1
         dist = (self.target - self.getPos())
-        if(dist.length() > 5):
-            force = dist.normalized()
+        if(dist.length() > FORCEFALLOFFDISTANCE):
+            force = dist.normalized() * MAXFORCE
         else:
-            force = dist / 5
-        self.addForce(force * 5)
+            force = dist * MAXFORCE / FORCEFALLOFFDISTANCE
+        velMult = self.getVel().length() + .1
+        velMult = velMult
+        self.addForce(force * 3)
 
 
     def _updateGhost(self):
@@ -76,9 +90,15 @@ class Drone:
         for node in self.ghost.getOverlappingNodes():
             other = self.manager.getDrone(node.name)
             
-            direction = other.getPos() - self.getPos()
-            mult = max([0, 2 * self.GHOSTRADIUS - direction.length()])
-            other.addForce(direction.normalized() * mult * 5)
+            dist = other.getPos() - self.getPos()
+            if dist.length() < 0.3:
+                print("BONK")
+            distMult = max([0, 2 * self.GHOSTRADIUS - dist.length()])
+            distMult = distMult**2
+            # velMult = other.getVel().length() + self.getVel().length() + 1
+            velMult = self.getVel().length() + 1
+            velMult = velMult**2
+            self.addForce(-dist.normalized() * distMult * velMult * 5)
 
 
     def _checkCompletion(self):
@@ -91,10 +111,7 @@ class Drone:
         if self.printDebugInfo == True: 
             print("Drone", self.name, " Amount of overlapping nodes: ", self.ghost.getNumOverlappingNodes())
             for node in self.ghost.getOverlappingNodes():
-                other = self.manager.getDrone(node.name)
-                direction = other.getPos() - self.getPos()
-                mult = max([0, 2 * self.GHOSTRADIUS - direction.length()])
-                force = direction.normalized() * mult * 20
+                print(node)
 
 
     def setTarget(self, target: Vec3 = Vec3(0, 0, 0), random=False):
@@ -111,5 +128,17 @@ class Drone:
     def getPos(self) -> Vec3:
         return self.rigidBodyNP.getPos()
 
+
     def getVel(self) -> Vec3:
         return self.rigidBody.getLinearVelocity()
+
+
+    def getLine(self):
+        self.LineNP.removeNode()
+        ls = LineSegs()
+        ls.setThickness(1)
+        ls.setColor(1.0, 0.0, 0.0, 1.0)
+        ls.moveTo(self.getPos())
+        ls.drawTo(self.target)
+        node = ls.create()
+        self.LineNP = self.base.render.attachNewNode(node)
