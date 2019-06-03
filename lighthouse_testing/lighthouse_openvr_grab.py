@@ -14,7 +14,7 @@ from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.crazyflie.syncLogger import SyncLogger
 
 # URI to the Crazyflie to connect to
-uri = 'radio://0/80/2M'
+uri = 'radio://0/80/2M/E7E7E7E7E3'
 
 print('Opening')
 vr = openvr.init(openvr.VRApplication_Other)
