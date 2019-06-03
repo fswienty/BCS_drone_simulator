@@ -5,7 +5,7 @@ anaconda packages:
     matplotlib
 
 pip packages:
-    pycma
+    cma
     panda3d
     openvr
 
