@@ -81,18 +81,27 @@ def simple_sequence():
 
 
 def what_am_i_even_doing():
+
+    tfm = CoordTransform()
+    center_floor = tfm.transformF2F(0.5, 0.5, 0)
+
     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
         with PositionHlCommander(
                 scf,
-                x=0.195, y=-0.04, z=0.175,
+                x=center_floor[0], y=center_floor[1], z=center_floor[2],
                 default_velocity=0.3,
                 default_height=0.5,
                 controller=PositionHlCommander.CONTROLLER_MELLINGER) as pc:
             # Go to a coordinate
-            pc.go_to(0.205, -0.02, 1.375)
-            pc.go_to(0.195, -0.04, 0.175)
-            
-
+            fastSpeed = 1.0 # not more than 1.4!
+            pc.go_to(*tfm.transformF2F(0.5, 0.5, 1))
+            pc.go_to(*tfm.transformF2F(0, 0, 1), fastSpeed)
+            pc.go_to(*tfm.transformF2F(1, 0, 1), fastSpeed)
+            pc.go_to(*tfm.transformF2F(1, 1, 1), fastSpeed)
+            pc.go_to(*tfm.transformF2F(0, 1, 1), fastSpeed)
+            pc.go_to(*tfm.transformF2F(0, 0, 1), fastSpeed)
+            pc.go_to(*tfm.transformF2F(0.5, 0.5, 1), fastSpeed)
+            pc.go_to(*tfm.transformF2F(0.5, 0.5, 0))            
 
 
 if __name__ == '__main__':
