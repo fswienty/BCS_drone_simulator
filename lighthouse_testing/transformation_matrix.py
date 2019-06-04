@@ -40,7 +40,6 @@ class CoordTransform:
 
 
 
-mat = CoordTransform()
 # print("[0, 0, 0]->", mat.transform(Vec3(0,0,0)))
 # print("[1, 0, 0]->", mat.transform(Vec3(1,0,0)))
 # print("[0, 1, 0]->", mat.transform(Vec3(0,1,0)))
