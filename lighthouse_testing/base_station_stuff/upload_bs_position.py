@@ -40,10 +40,10 @@ from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 
 logging.basicConfig(level=logging.ERROR)
 
-
 class WriteMem:
     def __init__(self, uri, bs1, bs2):
         self.data_written = False
+        self.got_data = False
 
         with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
             mems = scf.cf.mem.get_mems(MemoryElement.TYPE_LH)
@@ -52,6 +52,7 @@ class WriteMem:
             if count != 1:
                 raise Exception('Unexpected nr of memories found:', count)
 
+            # WRITE
             mems[0].geometry_data = [bs1, bs2]
 
             print('Writing data')
@@ -60,9 +61,21 @@ class WriteMem:
             while not self.data_written:
                 time.sleep(1)
 
+            # READ
+            print('Requesting data')
+            mems[0].update(self._data_updated)
+
+            while not self.got_data:
+                time.sleep(1)
+
+
     def _data_written(self, mem, addr):
         self.data_written = True
         print('Data written')
+
+    def _data_updated(self, mem):
+        mem.dump()
+        self.got_data = True
 
 
 if __name__ == '__main__':
@@ -80,7 +93,6 @@ if __name__ == '__main__':
     bs1 = LighthouseBsGeometry()
     bs1.origin = numberList[0:3]
     bs1.rotation_matrix = [numberList[3:6], numberList[6:9], numberList[9:12]]
-
     bs2 = LighthouseBsGeometry()
     bs2.origin = numberList[12:15]
     bs2.rotation_matrix = [numberList[15:18], numberList[18:21], numberList[21:24]]
