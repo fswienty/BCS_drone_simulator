@@ -27,6 +27,9 @@ Crazyflie
 """
 import logging
 import time
+import os
+import sys
+import re
 
 import cflib.crtp  # noqa
 from cflib.crazyflie import Crazyflie
@@ -64,25 +67,22 @@ class WriteMem:
 
 if __name__ == '__main__':
     # URI to the Crazyflie to connect to
-    uri = 'radio://0/80/2M'
+    uri = 'radio://0/80/2M/E7E7E7E7E1'
 
     # Initialize the low-level drivers (don't list the debug drivers)
     cflib.crtp.init_drivers(enable_debug_driver=False)
 
+    with open(os.path.join(sys.path[0], "bs_position.txt"), encoding="utf-8") as f:
+        text = f.read()
+    match = re.findall(r'-?\d.\d+', text)
+    numberList = [float(i) for i in match]
+
     bs1 = LighthouseBsGeometry()
-    bs1.origin = [1.0, 2.0, 3.0]
-    bs1.rotation_matrix = [
-        [4.0, 5.0, 6.0],
-        [7.0, 8.0, 9.0],
-        [10.0, 11.0, 12.0],
-    ]
+    bs1.origin = numberList[0:3]
+    bs1.rotation_matrix = [numberList[3:6], numberList[6:9], numberList[9:12]]
 
     bs2 = LighthouseBsGeometry()
-    bs2.origin = [21.0, 22.0, 23.0]
-    bs2.rotation_matrix = [
-        [24.0, 25.0, 26.0],
-        [27.0, 28.0, 29.0],
-        [30.0, 31.0, 32.0],
-    ]
+    bs2.origin = numberList[12:15]
+    bs2.rotation_matrix = [numberList[15:18], numberList[18:21], numberList[21:24]]
 
     WriteMem(uri, bs1, bs2)

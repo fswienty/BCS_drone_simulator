@@ -36,7 +36,7 @@ from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.position_hl_commander import PositionHlCommander
 
-from transformation_matrix import CoordTransform
+from transformation import CoordTransform
 
 # URI to the Crazyflie to connect to
 uri = 'radio://0/80/2M/E7E7E7E7E0'
@@ -77,10 +77,7 @@ def simple_sequence():
             pc.go_to(0.0, 0.0, 1.0)
 
 
-
-
-
-def what_am_i_even_doing():
+def rectangle_sequence():
 
     tfm = CoordTransform()
     center_floor = tfm.transformF2F(0.5, 0.5, 0)
@@ -92,8 +89,7 @@ def what_am_i_even_doing():
                 default_velocity=0.3,
                 default_height=0.5,
                 controller=PositionHlCommander.CONTROLLER_MELLINGER) as pc:
-            # Go to a coordinate
-            fastSpeed = 1.0 # not more than 1.4!
+            fastSpeed = .5 # not more than 1.4!
             pc.go_to(*tfm.transformF2F(0.5, 0.5, 1))
             pc.go_to(*tfm.transformF2F(0, 0, 1), fastSpeed)
             pc.go_to(*tfm.transformF2F(1, 0, 1), fastSpeed)
@@ -109,4 +105,4 @@ if __name__ == '__main__':
 
     # simple_sequence()
     # slightly_more_complex_usage()
-    what_am_i_even_doing()
+    rectangle_sequence()

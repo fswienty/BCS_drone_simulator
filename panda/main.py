@@ -3,7 +3,6 @@ import os
 from math import pi, sin, cos
 from direct.showbase.ShowBase import ShowBase
 from drone import Drone
-#from test import Test
 from camera_controller import CameraController
 from drone_manager import DroneManager
 # pylint: disable=no-name-in-module
