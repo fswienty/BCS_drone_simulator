@@ -41,7 +41,7 @@ import time
 from transformation import CoordTransform
 
 # URI to the Crazyflie to connect to
-uri = 'radio://0/80/2M/E7E7E7E7E0'
+uri = 'radio://0/80/2M/E7E7E7E7E1'
 
 
 def slightly_more_complex_usage():
@@ -129,12 +129,12 @@ def square():
                                 pc.down(.5)
                                 print(pc.get_position())
 
-def go_to_test():
+def double_square():
         with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
                 with PositionHlCommander(
                         scf,
                         x=0, y=0, z=0,
-                        default_velocity=0.3,
+                        default_velocity=0.5,
                         default_height=0.2,
                         controller=PositionHlCommander.CONTROLLER_MELLINGER) as pc:
                                 size = .8
@@ -147,26 +147,27 @@ def go_to_test():
                                 pc.go_to(-size,-size,max_height)
                                 pc.go_to(size,-size,max_height)
                                 pc.go_to(size,size,max_height)
-                                pc.go_to(-size,size,)
+                                pc.go_to(-size,size,max_height)
                                 pc.go_to(-size,-size,max_height)
                                 pc.go_to(0,0,.2)
 
 
-def go_to_test2():
+def room_border():
         with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
                 with PositionHlCommander(
                         scf,
                         x=0, y=0, z=0,
                         default_velocity=0.3,
                         default_height=0.2,
-                        controller=PositionHlCommander.CONTROLLER_MELLINGER) as pc:
-                                size = .8
-                                pc.go_to(-size,-size,1)
-                                pc.go_to(-size,-size,2)
-                                pc.go_to(size,-size,2)
-                                pc.go_to(size,-size,1)
-                                pc.go_to(-size,-size,1)
-                                pc.go_to(0,0,.2)
+                        controller=PositionHlCommander.CONTROLLER_PID) as pc:
+                                height = 0.4
+                                pc.go_to(-1.3,-1.8,height)
+                                pc.go_to(1.3,-1.8,height)
+                                pc.go_to(1.3,1.8,height)
+                                pc.go_to(-1.3,1.8,height)
+                                pc.go_to(-1.3,-1.8,height)
+
+                                
 
   
 def test():
@@ -177,9 +178,7 @@ def test():
                         default_velocity=0.3,
                         default_height=0.2,
                         controller=PositionHlCommander.CONTROLLER_MELLINGER) as pc:
-                                pc.go_to(0,0,1)
-                                pc.go_to(-1,-1,.2)
-                                pc.go_to(-1,-1,1.8)
+                                pc.go_to(-1.3,-1.8,0.3)
 
 
 
@@ -190,5 +189,6 @@ if __name__ == '__main__':
         # slightly_more_complex_usage()
         # rectangle_sequence()
         # square()
-        go_to_test()
-        #test()
+        # double_square()
+        # test()
+        room_border()
