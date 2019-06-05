@@ -31,11 +31,13 @@ The PositionHlCommander uses position setpoints.
 
 Change the URI variable to your Crazyflie configuration.
 """
+
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.positioning.position_hl_commander import PositionHlCommander
 
+import time
 from transformation import CoordTransform
 
 # URI to the Crazyflie to connect to
@@ -78,7 +80,6 @@ def simple_sequence():
 
 
 def rectangle_sequence():
-
     tfm = CoordTransform()
     center_floor = tfm.transformF2F(0.5, 0.5, 0)
 
@@ -97,12 +98,97 @@ def rectangle_sequence():
             pc.go_to(*tfm.transformF2F(0, 1, 1), fastSpeed)
             pc.go_to(*tfm.transformF2F(0, 0, 1), fastSpeed)
             pc.go_to(*tfm.transformF2F(0.5, 0.5, 1), fastSpeed)
-            pc.go_to(*tfm.transformF2F(0.5, 0.5, 0))            
+            pc.go_to(*tfm.transformF2F(0.5, 0.5, 0))   
+
+
+def square():
+        with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
+                with PositionHlCommander(
+                        scf,
+                        x=0, y=0, z=0,
+                        default_velocity=0.3,
+                        default_height=0.2,
+                        controller=PositionHlCommander.CONTROLLER_MELLINGER) as pc:
+                                print(pc.get_position())
+                                pc.up(.5)
+                                print(pc.get_position())
+                                pc.right(.5)
+                                print(pc.get_position())
+                                pc.forward(.5)
+                                print(pc.get_position())
+                                pc.left(1)
+                                print(pc.get_position())
+                                pc.back(1)
+                                print(pc.get_position())
+                                pc.right(1)
+                                print(pc.get_position())
+                                pc.forward(.5)
+                                print(pc.get_position())
+                                pc.left(.5)
+                                print(pc.get_position())
+                                pc.down(.5)
+                                print(pc.get_position())
+
+def go_to_test():
+        with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
+                with PositionHlCommander(
+                        scf,
+                        x=0, y=0, z=0,
+                        default_velocity=0.3,
+                        default_height=0.2,
+                        controller=PositionHlCommander.CONTROLLER_MELLINGER) as pc:
+                                size = .8
+                                max_height = 1.8
+                                pc.go_to(-size,-size,1)
+                                pc.go_to(size,-size,1)
+                                pc.go_to(size,size,1)
+                                pc.go_to(-size,size,1)
+                                pc.go_to(-size,-size,1)
+                                pc.go_to(-size,-size,max_height)
+                                pc.go_to(size,-size,max_height)
+                                pc.go_to(size,size,max_height)
+                                pc.go_to(-size,size,)
+                                pc.go_to(-size,-size,max_height)
+                                pc.go_to(0,0,.2)
+
+
+def go_to_test2():
+        with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
+                with PositionHlCommander(
+                        scf,
+                        x=0, y=0, z=0,
+                        default_velocity=0.3,
+                        default_height=0.2,
+                        controller=PositionHlCommander.CONTROLLER_MELLINGER) as pc:
+                                size = .8
+                                pc.go_to(-size,-size,1)
+                                pc.go_to(-size,-size,2)
+                                pc.go_to(size,-size,2)
+                                pc.go_to(size,-size,1)
+                                pc.go_to(-size,-size,1)
+                                pc.go_to(0,0,.2)
+
+  
+def test():
+        with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
+                with PositionHlCommander(
+                        scf,
+                        x=0, y=0, z=0,
+                        default_velocity=0.3,
+                        default_height=0.2,
+                        controller=PositionHlCommander.CONTROLLER_MELLINGER) as pc:
+                                pc.go_to(0,0,1)
+                                pc.go_to(-1,-1,.2)
+                                pc.go_to(-1,-1,1.8)
+
 
 
 if __name__ == '__main__':
-    cflib.crtp.init_drivers(enable_debug_driver=False)
+        cflib.crtp.init_drivers(enable_debug_driver=False)
 
-    # simple_sequence()
-    # slightly_more_complex_usage()
-    rectangle_sequence()
+        # simple_sequence()
+        # slightly_more_complex_usage()
+        # rectangle_sequence()
+        # square()
+        go_to_test()
+        #test()
