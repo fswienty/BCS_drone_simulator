@@ -22,8 +22,7 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Example of how to write to the Lighthouse base station geometry memory in a
-Crazyflie
+Uploads the coordinates in bs_position.txt (must be located in the same directory as this python file) to the crazyflie with the specified address.
 """
 import logging
 import time
