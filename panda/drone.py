@@ -1,4 +1,5 @@
 import random
+import re
 # pylint: disable=no-name-in-module
 from panda3d.core import Vec3
 from panda3d.core import Loader
@@ -15,26 +16,30 @@ class Drone:
     GHOSTRADIUS = 0.5
     LINEARDAMPING = 0.9
 
-    def __init__(self, name: str, position: Vec3, manager, printDebugInfo=False):
+    def __init__(self, manager, name: str, position: Vec3, printDebugInfo=False):
         self.name = name
         self.base = manager.base
         self.manager = manager
 
+        # add the rigidbody to the drone, which has a mass and linear damping
         self.rigidBody = BulletRigidBodyNode("RigidSphere") # derived from PandaNode
         self.rigidBody.setMass(self.RIGIDBODYMASS) # body is now dynamic
         self.rigidBody.addShape(BulletSphereShape(self.RIGIDBODYRADIUS))
         self.rigidBody.setLinearSleepThreshold(0)
         self.rigidBody.setFriction(0)
+        self.rigidBody.setLinearDamping(self.LINEARDAMPING)
         self.rigidBodyNP = self.base.render.attachNewNode(self.rigidBody)
         self.rigidBodyNP.setPos(position)
         self.rigidBodyNP.setCollideMask(BitMask32.bit(1))
 
-        self.ghost = BulletGhostNode(self.name) # give drone the same identifier as the drone has in the dict
+        # add the ghost to the drone which acts as a sensor for nearby drones
+        self.ghost = BulletGhostNode(self.name) # give drone the same identifier that the drone has in the dict
         self.ghost.addShape(BulletSphereShape(self.GHOSTRADIUS))
         self.ghostNP = self.base.render.attachNewNode(self.ghost)
         self.ghostNP.setPos(position)
         self.ghostNP.setCollideMask(BitMask32.bit(2))
 
+        # add a 3d model to the drone to be able to see it in the 3d scene
         self.base.world.attach(self.rigidBody)
         self.base.world.attach(self.ghost)
         model = self.base.loader.loadModel(self.base.modelDir + "/drones/drone1.egg")
@@ -42,7 +47,7 @@ class Drone:
         model.reparentTo(self.rigidBodyNP)
 
         self.target = position
-        self.rigidBody.setLinearDamping(self.LINEARDAMPING)
+        
 
         self.printDebugInfo = printDebugInfo
         if self.printDebugInfo == True: # put a second drone model on top of drone that outputs debug stuff
@@ -83,17 +88,18 @@ class Drone:
 
     def _handleCollisions(self):
         for node in self.ghost.getOverlappingNodes():
-            other = self.manager.getDrone(node.name)
-            
-            dist = other.getPos() - self.getPos()
-            if dist.length() < 0.3:
-                print("BONK")
-            distMult = max([0, 2 * self.GHOSTRADIUS - dist.length()])
-            distMult = distMult**2
-            # velMult = other.getVel().length() + self.getVel().length() + 1
-            velMult = self.getVel().length() + 1
-            velMult = velMult**2
-            self.addForce(-dist.normalized() * distMult * velMult * 5)
+            if node.name.startswith("drone"):
+                other = self.manager.getDrone(node.name)
+                
+                dist = other.getPos() - self.getPos()
+                if dist.length() < 0.3:
+                    print("BONK")
+                distMult = max([0, 2 * self.GHOSTRADIUS - dist.length()])
+                distMult = distMult**2
+                # velMult = other.getVel().length() + self.getVel().length() + 1
+                velMult = self.getVel().length()
+                velMult = velMult**2 + 1
+                self.addForce(-dist.normalized() * distMult * velMult * 5)
 
 
     def _checkCompletion(self):

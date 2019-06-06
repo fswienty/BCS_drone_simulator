@@ -30,9 +30,11 @@ class Main(ShowBase):
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
         self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in m
+
         # setup model directory
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
         self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models" # Convert that to panda's unix-style notation.
+
         # setup scene
         self.initBullet()
         self.spawnRoom()
@@ -46,11 +48,11 @@ class Main(ShowBase):
         self.world.setGravity(Vec3(0, 0, 0))
 
         # add ground
-        # node = BulletRigidBodyNode("Ground") # derived from PandaNode
-        # node.addShape(BulletPlaneShape(Vec3(0, 0, 1), 0))
-        # np = self.render.attachNewNode(node)
-        # np.setPos(0, 0, 0)
-        # self.world.attachRigidBody(node)
+        node = BulletRigidBodyNode("Ground") # derived from PandaNode
+        node.addShape(BulletPlaneShape(Vec3(0, 0, 1), 0))
+        np = self.render.attachNewNode(node)
+        np.setPos(0, 0, 0)
+        self.world.attachRigidBody(node)
         
         # add debug node
         debugNode = BulletDebugNode("Debug")
@@ -61,10 +63,6 @@ class Main(ShowBase):
         debugNP = self.render.attachNewNode(debugNode)
         debugNP.show()
         self.world.setDebugNode(debugNP.node())
-
-
-    # def spawnDrones(self):
-    #     self.droneManager.spawnDrones()
         
 
     def spawnRoom(self):

@@ -8,25 +8,25 @@ class DroneManager:
     def __init__(self, base):
         self.base = base
         self.drones = {}
-        self.spawnDrone("1", Vec3(0, -2, 2))
-        self.spawnDrone("2", Vec3(0, 2, 2.2))
-        self.spawnDrone("3", Vec3(1, -2, 2))
-        self.spawnDrone("4", Vec3(1, 2, 2))
-        self.spawnDrone("5", Vec3(-1, -2, 2))
-        self.spawnDrone("6", Vec3(-1, 2, 2))
-        self.spawnDrone("7", Vec3(1, 2, .5))
-        self.spawnDrone("8", Vec3(-1, 2, .5))
-        self.spawnDrone("9", Vec3(1, -2, .5))
-        self.spawnDrone("10", Vec3(-1, -2, .5))
+        self.spawnDrone("drone1", Vec3(0, -2, 2))
+        self.spawnDrone("drone2", Vec3(0, 2, 2.2))
+        self.spawnDrone("drone3", Vec3(1, -2, 2))
+        self.spawnDrone("drone4", Vec3(1, 2, 2))
+        self.spawnDrone("drone5", Vec3(-1, -2, 2))
+        self.spawnDrone("drone6", Vec3(-1, 2, 2))
+        self.spawnDrone("drone7", Vec3(1, 2, .5))
+        self.spawnDrone("drone8", Vec3(-1, 2, .5))
+        self.spawnDrone("drone9", Vec3(1, -2, .5))
+        self.spawnDrone("drone10", Vec3(-1, -2, .5))
 
         # self.spawnDrone("1", Vec3(0, -2, 2), printDebugInfo=False)
         # self.spawnDrone("2", Vec3(0, 2, 2))
         # self.getDrone("1").setTarget(Vec3(0, 2, 2))
         # self.getDrone("2").setTarget(Vec3(0, -2, 2))
 
-
+    # naming scheme: droneX, where X something unique
     def spawnDrone(self, name: str, position: Vec3, printDebugInfo=False):
-        self.drones[name] = Drone(name, position, self, printDebugInfo=printDebugInfo)
+        self.drones[name] = Drone(self, name, position, printDebugInfo=printDebugInfo)
 
 
     def updateDronesTask(self, task):

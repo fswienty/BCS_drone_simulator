@@ -6,12 +6,8 @@ import re
 with open(os.path.join(sys.path[0], "bs_position.txt"), encoding="utf-8") as f:
     text = f.read()
 
-match = re.findall(r'-?\d.\d+', text)
-numberList = [float(i) for i in match]
-print(numberList[0:3])
-print([numberList[3:6], numberList[6:9], numberList[9:12]])
-print(numberList[12:15])
-print([numberList[15:18], numberList[18:21], numberList[21:24]])    
+match = re.search(r'-?\d', "drone45434")
+print(match.value)
 
 
 # bs1 = LighthouseBsGeometry()
