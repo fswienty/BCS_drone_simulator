@@ -14,6 +14,9 @@ class Drone:
     RIGIDBODYMASS = 1.0
     RIGIDBODYRADIUS = 0.1
     GHOSTRADIUS = 0.5
+
+    MAXFORCE = .5
+    FORCEFALLOFFDISTANCE = .5
     LINEARDAMPING = 0.9
 
     def __init__(self, manager, name: str, position: Vec3, printDebugInfo=False):
@@ -55,8 +58,9 @@ class Drone:
             model.setPos(0, 0, .2)
             model.reparentTo(self.rigidBodyNP)
 
-        # initialize line renderer
-        self.LineNP = self.base.render.attachNewNode(LineSegs().create())
+        # initialize line renderers
+        self.targetLineNP = self.base.render.attachNewNode(LineSegs().create())
+        self.velocityLineNP = self.base.render.attachNewNode(LineSegs().create())
 
 
     def update(self):
@@ -66,20 +70,19 @@ class Drone:
         self._handleCollisions()
 
         self._printDebugInfo()
-        self.getLine()
+        self._drawTargetLine()
+        self._drawVelocityLine()
 
 
     def _updateForce(self):
-        MAXFORCE = 1
-        FORCEFALLOFFDISTANCE = 1
         dist = (self.target - self.getPos())
-        if(dist.length() > FORCEFALLOFFDISTANCE):
-            force = dist.normalized() * MAXFORCE
+        if(dist.length() > self.FORCEFALLOFFDISTANCE):
+            force = dist.normalized() * self.MAXFORCE
         else:
-            force = dist * MAXFORCE / FORCEFALLOFFDISTANCE
+            force = dist * self.MAXFORCE / self.FORCEFALLOFFDISTANCE
         velMult = self.getVel().length() + .1
         velMult = velMult
-        self.addForce(force * 3)
+        self._addForce(force * 3)
 
 
     def _updateGhost(self):
@@ -99,7 +102,7 @@ class Drone:
                 # velMult = other.getVel().length() + self.getVel().length() + 1
                 velMult = self.getVel().length()
                 velMult = velMult**2 + 1
-                self.addForce(-dist.normalized() * distMult * velMult * 5)
+                self._addForce(-dist.normalized() * distMult * velMult * 5)
 
 
     def _checkCompletion(self):
@@ -122,7 +125,7 @@ class Drone:
             self.target = self.manager.getRandomRoomCoordinate()
     
 
-    def addForce(self, force: Vec3):
+    def _addForce(self, force: Vec3):
         self.rigidBody.applyCentralForce(force)
 
     
@@ -134,12 +137,23 @@ class Drone:
         return self.rigidBody.getLinearVelocity()
 
 
-    def getLine(self):
-        self.LineNP.removeNode()
+    def _drawTargetLine(self):
+        self.targetLineNP.removeNode()
         ls = LineSegs()
-        ls.setThickness(1)
+        #ls.setThickness(1)
         ls.setColor(1.0, 0.0, 0.0, 1.0)
         ls.moveTo(self.getPos())
         ls.drawTo(self.target)
         node = ls.create()
-        self.LineNP = self.base.render.attachNewNode(node)
+        self.targetLineNP = self.base.render.attachNewNode(node)
+
+    
+    def _drawVelocityLine(self):
+        self.velocityLineNP.removeNode()
+        ls = LineSegs()
+        #ls.setThickness(1)
+        ls.setColor(0.0, 0.0, 1.0, 1.0)
+        ls.moveTo(self.getPos())
+        ls.drawTo(self.getPos() + self.getVel())
+        node = ls.create()
+        self.velocityLineNP = self.base.render.attachNewNode(node)        

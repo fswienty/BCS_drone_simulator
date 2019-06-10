@@ -35,6 +35,11 @@ class DroneManager:
         return task.cont
 
 
+    def recordDronesTask(self, task):
+        
+        return task.cont
+
+
     def handleCollisions(self): # currently implemented in drone class
         pass
 
