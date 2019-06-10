@@ -5,6 +5,7 @@ from direct.showbase.ShowBase import ShowBase
 from drone import Drone
 from camera_controller import CameraController
 from drone_manager import DroneManager
+from recorder import DroneRecorder
 # pylint: disable=no-name-in-module
 from panda3d.core import Filename
 from panda3d.core import DirectionalLight
@@ -41,6 +42,8 @@ class Main(ShowBase):
         self.spawnLights()
 
         self.droneManager = DroneManager(self)
+        self.droneRecorder = DroneRecorder(self.droneManager)
+        self.accept('m', self.droneRecorder.save)
 
 
     def initBullet(self):
@@ -94,7 +97,7 @@ class Main(ShowBase):
         if self.isPaused == True:
             self.isPaused = False
             self.taskMgr.add(self.droneManager.updateDronesTask, "UpdateDrones")
-            self.taskMgr.doMethodLater(0, self.droneManager.recordDronesTask, "RecordDrones")
+            self.taskMgr.doMethodLater(0, self.droneRecorder.recordDronesTask, "RecordDrones")
             self.taskMgr.add(self.updatePhysicsTask, "UpdatePhysics")
         else:
             self.isPaused = True
