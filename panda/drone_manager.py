@@ -2,6 +2,7 @@ import random
 from drone import Drone
 # pylint: disable=no-name-in-module
 from panda3d.core import Vec3
+import numpy as np
 
 class DroneManager:
     
@@ -19,6 +20,8 @@ class DroneManager:
         self.spawnDrone("drone9", Vec3(1, -2, .5))
         self.spawnDrone("drone10", Vec3(-1, -2, .5))
 
+        self.recordingLst = []
+        self.recording = np.array([])
         # self.spawnDrone("1", Vec3(0, -2, 2), printDebugInfo=False)
         # self.spawnDrone("2", Vec3(0, 2, 2))
         # self.getDrone("1").setTarget(Vec3(0, 2, 2))
@@ -36,12 +39,20 @@ class DroneManager:
 
 
     def recordDronesTask(self, task):
-        
-        return task.cont
+        task.delayTime = 0.2
+        #tt = np.load("trajectories/pos_traj.npy")
+        #np.save("trajectories/jerk_traj.npy", error_calc.jerk_traj)
+        self.recordingLst.append(self.getAllPositions())
+        #print("####################")
+        #print(np.asarray(self.recordingLst))
+        return task.again
 
-
-    def handleCollisions(self): # currently implemented in drone class
-        pass
+    def getAllPositions(self):
+        lst = []
+        for drone in self.drones.values():
+            pos = drone.getPos()
+            lst.append([pos.x, pos.y, pos.z])
+        return lst
 
 
     def getRandomRoomCoordinate(self) -> Vec3:
@@ -50,6 +61,9 @@ class DroneManager:
         newZ = random.uniform(0, self.base.roomSize.z)
         return Vec3(newX, newY, newZ)  
 
-    
+
     def getDrone(self, name: str) -> Drone:
         return self.drones.get(name)
+
+    # timestep, drone, axis
+

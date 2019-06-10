@@ -93,7 +93,6 @@ class Drone:
         for node in self.ghost.getOverlappingNodes():
             if node.name.startswith("drone"):
                 other = self.manager.getDrone(node.name)
-                
                 dist = other.getPos() - self.getPos()
                 if dist.length() < 0.3:
                     print("BONK")
@@ -131,6 +130,7 @@ class Drone:
     
     def getPos(self) -> Vec3:
         return self.rigidBodyNP.getPos()
+
 
 
     def getVel(self) -> Vec3:

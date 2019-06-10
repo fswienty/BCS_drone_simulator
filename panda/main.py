@@ -94,10 +94,12 @@ class Main(ShowBase):
         if self.isPaused == True:
             self.isPaused = False
             self.taskMgr.add(self.droneManager.updateDronesTask, "UpdateDrones")
+            self.taskMgr.doMethodLater(0, self.droneManager.recordDronesTask, "RecordDrones")
             self.taskMgr.add(self.updatePhysicsTask, "UpdatePhysics")
         else:
             self.isPaused = True
             self.taskMgr.remove("UpdateDrones")
+            self.taskMgr.remove("RecordDrones")
             self.taskMgr.remove("UpdatePhysics")
 
 
