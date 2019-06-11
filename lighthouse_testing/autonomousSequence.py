@@ -33,6 +33,7 @@ mode. It aims at documenting how to set the Crazyflie in position control mode
 and how to send setpoints.
 """
 import time
+from math import sin, cos
 
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
@@ -55,6 +56,15 @@ sequence = [
     (-1.1, -1.6, 1, 0),
     (0, 0, .5, 0),
     (0, 0, .2, 0),
+]
+
+start = [
+    (0, 0, .7, 0)
+]
+
+land = [
+    (0, 0, .5, 0),
+    (0, 0, .2, 0)
 ]
 
 
@@ -107,16 +117,18 @@ def reset_estimator(scf):
 
     wait_for_position_estimator(cf)
 
-
+pos_callback = []
 def position_callback(timestamp, data, logconf):
     x = data['kalman.stateX']
     y = data['kalman.stateY']
     z = data['kalman.stateZ']
-    print('pos: ({}, {}, {})'.format(x, y, z))
+    #print('pos: ({}, {}, {})'.format(x, y, z))
+    #print('pos: ({}, {})'.format(x, y))
+    pos_callback = [x, y]
 
 
 def start_position_printing(scf):
-    log_conf = LogConfig(name='Position', period_in_ms=500)
+    log_conf = LogConfig(name='Position', period_in_ms=200)
     log_conf.add_variable('kalman.stateX', 'float')
     log_conf.add_variable('kalman.stateY', 'float')
     log_conf.add_variable('kalman.stateZ', 'float')
@@ -131,14 +143,42 @@ def run_sequence(scf, sequence):
 
     cf.param.set_value('flightmode.posSet', '1')
 
-    for position in sequence:
-        print('Setting position {}'.format(position))
-        for _ in range(20):
+    # for position in sequence:
+    #     print('Setting position {}'.format(position))
+    #     for _ in range(20):
+    #         cf.commander.send_position_setpoint(position[0],
+    #                                             position[1],
+    #                                             position[2],
+    #                                             position[3])
+    #         time.sleep(0.1)    
+
+    for position in start:
+        #print('Setting position {}'.format(position))
+        for _ in range(10):
             cf.commander.send_position_setpoint(position[0],
                                                 position[1],
                                                 position[2],
                                                 position[3])
-            time.sleep(0.1)            
+            time.sleep(0.2)  
+
+    for i in range(0, 50):
+        t = time.perf_counter() * 3
+        x = sin(t) * .5
+        y = cos(t) * .5
+        cf.commander.send_position_setpoint(x, y, .7, 0)
+        #print('pos: ({}, {})'.format(x, y))
+        print(pos_callback, [x, y])
+        print([i - j for i, j in zip(pos_callback, [x, y])])
+        time.sleep(0.2)
+
+    for position in land:
+        #print('Setting position {}'.format(position))
+        for _ in range(10):
+            cf.commander.send_position_setpoint(position[0],
+                                                position[1],
+                                                position[2],
+                                                position[3])
+            time.sleep(0.2)  
 
     # dont use this
     # for position in sequence:
