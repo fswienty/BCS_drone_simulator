@@ -23,7 +23,7 @@ class Main(ShowBase):
 
     def __init__(self):
         ShowBase.__init__(self)
-
+        
         self.setFrameRateMeter(True)
         self.accept('escape', sys.exit)
         self.isPaused = True
