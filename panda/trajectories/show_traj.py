@@ -26,7 +26,7 @@ def update(val):
         trail = max(0, step-10)
         #ax.plot3D(tt[0:step,i,0], tt[0:step,i,1], tt[0:step,i,2])
         ax.plot3D(tt[trail:step,i,0], tt[trail:step,i,1], tt[trail:step,i,2])
-        #ax.scatter(tt[0:step,i,0], tt[0:step,i,1], tt[0:step,i,2])
+        ax.scatter(tt[step-1,i,0], tt[step-1,i,1], tt[step-1,i,2])
     fig.canvas.draw_idle()
 
 s_step.on_changed(update)
