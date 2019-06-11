@@ -46,7 +46,7 @@ from cflib.crazyflie.commander import Commander
 uri = 'radio://0/80/2M/E7E7E7E7E1'
 
 # Change the sequence according to your setup
-#             x    y    z  YAW
+# x    y    z  YAW
 sequence = [
     (0, 0, .5, 0),
     (-1.1, -1.6, 1, 0),
