@@ -30,7 +30,9 @@ class Main(ShowBase):
         self.accept('space', self.togglePause)
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
-        self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in m
+        #self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in meters
+        self.roomSize = Vec3(2, 3, 1.5) # confined dimensions because the room and drone coordinated dont match up yet
+
 
         # setup model directory
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:

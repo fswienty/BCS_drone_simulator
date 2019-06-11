@@ -1,8 +1,4 @@
 make more intelligent collision avoidance
 
-
 lighthouse->panda: find way to get positions from lighthouse and put them into panda3d in realtime
 panda->lighthouse: update real life drones with positions from the virtual ones
-
-find out how to control drones better, like with velocity vectors, check out figure8.py
-record trajectories, playback with forward and rewind

@@ -153,7 +153,7 @@ def run_sequence(scf, sequence):
             cf.commander.send_position_setpoint(position[0], position[1], position[2], position[3])
             time.sleep(0.2)  
 
-    for i in range(0, 50):
+    for i in range(0, 20):
         t = time.perf_counter() * 3
         x = sin(t) * .5
         y = cos(t) * .5
@@ -177,6 +177,6 @@ if __name__ == '__main__':
     cflib.crtp.init_drivers(enable_debug_driver=False)
 
     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-        # reset_estimator(scf)
+        reset_estimator(scf)
         start_position_printing(scf)
         run_sequence(scf, sequence)

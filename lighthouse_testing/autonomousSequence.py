@@ -188,6 +188,6 @@ if __name__ == '__main__':
     cflib.crtp.init_drivers(enable_debug_driver=False)
 
     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-        # reset_estimator(scf)
+        reset_estimator(scf)
         start_position_printing(scf)
         run_sequence(scf, yawstuff)

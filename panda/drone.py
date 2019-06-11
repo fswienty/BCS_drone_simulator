@@ -132,7 +132,6 @@ class Drone:
         return self.rigidBodyNP.getPos()
 
 
-
     def getVel(self) -> Vec3:
         return self.rigidBody.getLinearVelocity()
 
