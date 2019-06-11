@@ -123,8 +123,6 @@ def position_callback(timestamp, data, logconf):
     y = data['kalman.stateY']
     z = data['kalman.stateZ']
     #print('pos: ({}, {}, {})'.format(x, y, z))
-    #print('pos: ({}, {})'.format(x, y))
-    pos_callback = [x, y]
 
 
 def start_position_printing(scf):
@@ -146,19 +144,13 @@ def run_sequence(scf, sequence):
     # for position in sequence:
     #     print('Setting position {}'.format(position))
     #     for _ in range(20):
-    #         cf.commander.send_position_setpoint(position[0],
-    #                                             position[1],
-    #                                             position[2],
-    #                                             position[3])
+    #         cf.commander.send_position_setpoint(position[0], position[1], position[2], position[3])
     #         time.sleep(0.1)    
 
     for position in start:
         #print('Setting position {}'.format(position))
         for _ in range(10):
-            cf.commander.send_position_setpoint(position[0],
-                                                position[1],
-                                                position[2],
-                                                position[3])
+            cf.commander.send_position_setpoint(position[0], position[1], position[2], position[3])
             time.sleep(0.2)  
 
     for i in range(0, 50):
@@ -172,10 +164,7 @@ def run_sequence(scf, sequence):
     for position in land:
         #print('Setting position {}'.format(position))
         for _ in range(10):
-            cf.commander.send_position_setpoint(position[0],
-                                                position[1],
-                                                position[2],
-                                                position[3])
+            cf.commander.send_position_setpoint(position[0], position[1], position[2], position[3])
             time.sleep(0.2)           
 
     cf.commander.send_stop_setpoint()

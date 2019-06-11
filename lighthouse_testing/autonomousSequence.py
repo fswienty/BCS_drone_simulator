@@ -58,6 +58,16 @@ sequence = [
     (0, 0, .2, 0),
 ]
 
+yawstuff = [
+    (0, 0, .5, 0),
+    (0, 0, .5, 90),
+    (0, 0, .5, 180),
+    (0, 0, .5, 270),
+    (0, 0, .5, 360),
+    (0, 0, .5, 0),
+    (0, 0, .2, 0)
+]
+
 start = [
     (0, 0, .7, 0)
 ]
@@ -124,7 +134,6 @@ def position_callback(timestamp, data, logconf):
     z = data['kalman.stateZ']
     #print('pos: ({}, {}, {})'.format(x, y, z))
     #print('pos: ({}, {})'.format(x, y))
-    pos_callback = [x, y]
 
 
 def start_position_printing(scf):
@@ -143,40 +152,31 @@ def run_sequence(scf, sequence):
 
     cf.param.set_value('flightmode.posSet', '1')
 
-    # for position in sequence:
-    #     print('Setting position {}'.format(position))
-    #     for _ in range(20):
-    #         cf.commander.send_position_setpoint(position[0],
-    #                                             position[1],
-    #                                             position[2],
-    #                                             position[3])
-    #         time.sleep(0.1)    
+    for position in sequence:
+        print('Setting position {}'.format(position))
+        for _ in range(15):
+            cf.commander.send_position_setpoint(position[0], position[1],  position[2], position[3])
+            time.sleep(0.1)    
 
-    for position in start:
-        #print('Setting position {}'.format(position))
-        for _ in range(10):
-            cf.commander.send_position_setpoint(position[0],
-                                                position[1],
-                                                position[2],
-                                                position[3])
-            time.sleep(0.2)  
+    # for position in start:
+    #     #print('Setting position {}'.format(position))
+    #     for _ in range(10):
+    #         cf.commander.send_position_setpoint(position[0], position[1], position[2], position[3])
+    #         time.sleep(0.2)  
 
-    for i in range(0, 50):
-        t = time.perf_counter() * 3
-        x = sin(t) * .5
-        y = cos(t) * .5
-        cf.commander.send_position_setpoint(x, y, .7, 0)
-        #print('pos: ({}, {})'.format(x, y))
-        time.sleep(0.2)
+    # for i in range(0, 50):
+    #     t = time.perf_counter() * 3
+    #     x = sin(t) * .5
+    #     y = cos(t) * .5
+    #     cf.commander.send_position_setpoint(x, y, .7, 0)
+    #     #print('pos: ({}, {})'.format(x, y))
+    #     time.sleep(0.2)
 
-    for position in land:
-        #print('Setting position {}'.format(position))
-        for _ in range(10):
-            cf.commander.send_position_setpoint(position[0],
-                                                position[1],
-                                                position[2],
-                                                position[3])
-            time.sleep(0.2)           
+    # for position in land:
+    #     #print('Setting position {}'.format(position))
+    #     for _ in range(10):
+    #         cf.commander.send_position_setpoint(position[0], position[1], position[2], position[3])
+    #         time.sleep(0.2)           
 
     cf.commander.send_stop_setpoint()
     # Make sure that the last packet leaves before the link is closed
@@ -190,4 +190,4 @@ if __name__ == '__main__':
     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
         # reset_estimator(scf)
         start_position_printing(scf)
-        run_sequence(scf, sequence)
+        run_sequence(scf, yawstuff)
