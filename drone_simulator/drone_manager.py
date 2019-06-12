@@ -1,5 +1,5 @@
 import random
-from drones.drone import Drone
+from drone import Drone
 # pylint: disable=no-name-in-module
 from panda3d.core import Vec3
 import numpy as np

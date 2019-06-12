@@ -4,7 +4,7 @@ from math import pi, sin, cos
 from direct.showbase.ShowBase import ShowBase
 #from drones.drone import Drone
 from camera_controller import CameraController
-from drones.drone_manager import DroneManager
+from drone_manager import DroneManager
 from recorder import DroneRecorder
 # pylint: disable=no-name-in-module
 from panda3d.core import Filename
@@ -19,11 +19,11 @@ from panda3d.bullet import BulletSphereShape
 from panda3d.bullet import BulletRigidBodyNode
 from panda3d.bullet import BulletDebugNode
 
-class Main(ShowBase):
+class DroneSimulator(ShowBase):
 
     def __init__(self):
         ShowBase.__init__(self)
-        
+
         self.setFrameRateMeter(True)
         self.accept('escape', sys.exit)
         self.isPaused = True
@@ -108,5 +108,5 @@ class Main(ShowBase):
             self.taskMgr.remove("UpdatePhysics")
 
 if __name__ == "__main__":
-    app = Main()
+    app = DroneSimulator()
     app.run()
