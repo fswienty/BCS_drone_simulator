@@ -2,9 +2,9 @@ import sys
 import os
 from math import pi, sin, cos
 from direct.showbase.ShowBase import ShowBase
-from drone import Drone
+#from drones.drone import Drone
 from camera_controller import CameraController
-from drone_manager import DroneManager
+from drones.drone_manager import DroneManager
 from recorder import DroneRecorder
 # pylint: disable=no-name-in-module
 from panda3d.core import Filename
@@ -107,6 +107,6 @@ class Main(ShowBase):
             self.taskMgr.remove("RecordDrones")
             self.taskMgr.remove("UpdatePhysics")
 
-
-app = Main()
-app.run()
+if __name__ == "__main__":
+    app = Main()
+    app.run()

@@ -19,10 +19,17 @@ class Drone:
     FORCEFALLOFFDISTANCE = .5
     LINEARDAMPING = 0.9
 
-    def __init__(self, manager, name: str, position: Vec3, printDebugInfo=False):
-        self.name = name
+    def __init__(self, manager, name: str, position: Vec3, uri="drone address", printDebugInfo=False):
+
         self.base = manager.base
         self.manager = manager
+        self.name = name  
+        self.manager.drones[self.name] = self # put the drone into the drone manager's dictionary
+        
+        self.isLinked = False # true if the virtual drone is linked to a real drone
+        self.uri = uri
+        if self.uri != "drone address":
+            self.isLinked = True
 
         # add the rigidbody to the drone, which has a mass and linear damping
         self.rigidBody = BulletRigidBodyNode("RigidSphere") # derived from PandaNode
@@ -51,7 +58,6 @@ class Drone:
 
         self.target = position
         
-
         self.printDebugInfo = printDebugInfo
         if self.printDebugInfo == True: # put a second drone model on top of drone that outputs debug stuff
             model = self.base.loader.loadModel(self.base.modelDir + "/drones/drone1.egg")
@@ -69,9 +75,17 @@ class Drone:
         self._checkCompletion()
         self._handleCollisions()
 
-        self._printDebugInfo()
+        if self.isLinked:
+            self.broadcastPosition()
+
         self._drawTargetLine()
         self._drawVelocityLine()
+
+        self._printDebugInfo()
+
+
+    def broadcastPosition(self):
+        pass
 
 
     def _updateForce(self):

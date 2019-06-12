@@ -1,7 +1,7 @@
 import os
 import sys
 import numpy as np
-from drone import Drone
+from drones.drone import Drone
 # pylint: disable=no-name-in-module
 from panda3d.core import Vec3
 
