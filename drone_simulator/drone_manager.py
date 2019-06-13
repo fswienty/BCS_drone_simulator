@@ -24,14 +24,13 @@ class DroneManager(DirectObject.DirectObject):
         # Drone(self, "drone6", self.getRandomRoomCoordinate())
         # Drone(self, "drone7", self.getRandomRoomCoordinate())
 
-        self.base.taskMgr.doMethodLater(0, self.updateDronesTask, "UpdateDrones")
+        self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
         self.isStarted = False
         self.isUpdating = False
         self.accept('1', self.startAll)
         self.accept('2', self.toggleUpdateDrones)
-        self.accept('3', self.returnToWaitingPosition)
-        self.accept('4', self.landAll)
+        self.accept('3', self.landAllRoutine)
 
 
     def startAll(self):
@@ -41,8 +40,15 @@ class DroneManager(DirectObject.DirectObject):
             pos = drone.getPos()
             drone.setTarget(target=Vec3(pos[0], pos[1], 1))
 
-    
-    def landAll(self):
+
+    def returnToWaitingPosition(self, task):
+        self.isUpdating == False
+        print("returning to waiting positions")
+        for drone in self.drones.values():
+            drone.returnToWaitingPosition()
+
+
+    def landAll(self, task):
         print("landing all")
         self.isStarted = False
         for drone in self.drones.values():
@@ -50,6 +56,13 @@ class DroneManager(DirectObject.DirectObject):
             drone.setTarget(target=Vec3(pos[0], pos[1], 0.3))
 
 
+    def landAllRoutine(self):
+        if self.isStarted == False:
+            print("drones are not started")
+            return
+        self.base.taskMgr.doMethodLater(0, self.returnToWaitingPosition, "returnToWaitingPosition")
+        self.base.taskMgr.doMethodLater(5, self.landAll, "landAll")
+        
 
     def toggleUpdateDrones(self):
         if self.isUpdating == False:
@@ -63,12 +76,6 @@ class DroneManager(DirectObject.DirectObject):
             self.isUpdating = False
             for drone in self.drones.values():
                 drone.setTarget(target=drone.getPos())
-
-
-    def returnToWaitingPosition(self):
-        if self.isUpdating == True:
-            for drone in self.drones.values():
-                drone.returnToWaitingPosition()
 
 
     def updateDronesTask(self, task):

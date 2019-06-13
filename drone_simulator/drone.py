@@ -91,12 +91,13 @@ class Drone:
 
 
     def sendPosition(self):
-        print("sending position")
+        #print("sending position")
         # cf = self.scf.cf
         # cf.param.set_value('flightmode.posSet', '1')
         # pos = self.getPos()
         # print('Setting position {} | {} | {}'.format(pos[0], pos[1], pos[2]))
         # cf.commander.send_position_setpoint(pos[0], pos[1], pos[2], 0)
+        pass
 
 
     def disconnect(self):
