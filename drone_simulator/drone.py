@@ -1,5 +1,14 @@
 import random
 import re
+import time
+
+import cflib.crtp
+from cflib.crazyflie import Crazyflie
+from cflib.crazyflie.log import LogConfig
+from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
+from cflib.crazyflie.syncLogger import SyncLogger
+from cflib.crazyflie.commander import Commander
+
 # pylint: disable=no-name-in-module
 from panda3d.core import Vec3
 from panda3d.core import Loader
@@ -30,6 +39,9 @@ class Drone:
         self.uri = uri
         if self.uri != "drone address":
             self.isLinked = True
+            print("initializing drivers")
+            cflib.crtp.init_drivers(enable_debug_driver=False)
+            self.connect()
 
         # add the rigidbody to the drone, which has a mass and linear damping
         self.rigidBody = BulletRigidBodyNode("RigidSphere") # derived from PandaNode
@@ -57,6 +69,7 @@ class Drone:
         model.reparentTo(self.rigidBodyNP)
 
         self.target = position
+        self.waitingPosition = Vec3(position[0], position[1], 1)
         
         self.printDebugInfo = printDebugInfo
         if self.printDebugInfo == True: # put a second drone model on top of drone that outputs debug stuff
@@ -69,23 +82,50 @@ class Drone:
         self.velocityLineNP = self.base.render.attachNewNode(LineSegs().create())
 
 
+    # connect to a real drone with the uri
+    def connect(self):
+        print("connecting")
+        # with SyncCrazyflie(self.uri, cf=Crazyflie(rw_cache='./cache')) as self.scf:
+        #     #reset_estimator(self.scf)
+        #     pass
+
+
+    def sendPosition(self):
+        print("sending position")
+        # cf = self.scf.cf
+        # cf.param.set_value('flightmode.posSet', '1')
+        # pos = self.getPos()
+        # print('Setting position {} | {} | {}'.format(pos[0], pos[1], pos[2]))
+        # cf.commander.send_position_setpoint(pos[0], pos[1], pos[2], 0)
+
+
+    def disconnect(self):
+        print("disconnecting")
+        # cf = self.scf.cf
+        # cf.param.set_value('flightmode.posSet', '1')
+        # pos = self.getPos()
+        # print('Landing at {} | {}'.format(pos[0], pos[1]))
+        # for _ in range(15):
+        #     cf.commander.send_position_setpoint(pos[0], pos[1], 0.3, 0)
+        #     time.sleep(0.1)  
+
+
+    def returnToWaitingPosition(self):
+        self.setTarget(self.waitingPosition)
+
+
     def update(self):
         self._updateForce()
         self._updateGhost()
-        self._checkCompletion()
         self._handleCollisions()
 
         if self.isLinked:
-            self.broadcastPosition()
+            self.sendPosition()
 
         self._drawTargetLine()
         self._drawVelocityLine()
 
         self._printDebugInfo()
-
-
-    def broadcastPosition(self):
-        pass
 
 
     def _updateForce(self):
@@ -116,12 +156,6 @@ class Drone:
                 velMult = self.getVel().length()
                 velMult = velMult**2 + 1
                 self._addForce(-dist.normalized() * distMult * velMult * 5)
-
-
-    def _checkCompletion(self):
-        diff = self.getPos() - self.target
-        if diff.length() < 0.2:
-            self.setTarget(random=True)
 
 
     def _printDebugInfo(self):

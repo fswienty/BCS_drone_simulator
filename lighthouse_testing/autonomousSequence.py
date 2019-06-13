@@ -155,7 +155,7 @@ def run_sequence(scf, sequence):
     for position in sequence:
         print('Setting position {}'.format(position))
         for _ in range(15):
-            cf.commander.send_position_setpoint(position[0], position[1],  position[2], position[3])
+            cf.commander.send_position_setpoint(position[0], position[1], position[2], position[3])
             time.sleep(0.1)    
 
     # for position in start:

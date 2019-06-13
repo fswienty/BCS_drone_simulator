@@ -1,8 +1,6 @@
 import sys
 import os
-from math import pi, sin, cos
 from direct.showbase.ShowBase import ShowBase
-#from drones.drone import Drone
 from camera_controller import CameraController
 from drone_manager import DroneManager
 from recorder import DroneRecorder
@@ -25,14 +23,11 @@ class DroneSimulator(ShowBase):
         ShowBase.__init__(self)
 
         self.setFrameRateMeter(True)
-        self.accept('escape', sys.exit)
+        self.accept('escape', self.endApplication)
         self.isPaused = True
         self.accept('space', self.togglePause)
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
-        #self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in meters
-        self.roomSize = Vec3(2, 3, 1.5) # confined dimensions because the room and drone coordinated dont match up yet
-
 
         # setup model directory
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
@@ -68,6 +63,8 @@ class DroneSimulator(ShowBase):
         debugNP = self.render.attachNewNode(debugNode)
         debugNP.show()
         self.world.setDebugNode(debugNP.node())
+
+        self.taskMgr.add(self.updatePhysicsTask, "UpdatePhysics")
         
 
     def spawnRoom(self):
@@ -98,14 +95,20 @@ class DroneSimulator(ShowBase):
     def togglePause(self):
         if self.isPaused == True:
             self.isPaused = False
-            self.taskMgr.add(self.droneManager.updateDronesTask, "UpdateDrones")
+            # self.taskMgr.add(self.droneManager.updateDronesTask, "UpdateDrones")
             self.taskMgr.doMethodLater(0, self.droneRecorder.recordDronesTask, "RecordDrones")
-            self.taskMgr.add(self.updatePhysicsTask, "UpdatePhysics")
+            # self.taskMgr.add(self.updatePhysicsTask, "UpdatePhysics")
         else:
             self.isPaused = True
-            self.taskMgr.remove("UpdateDrones")
+            # self.taskMgr.remove("UpdateDrones")
             self.taskMgr.remove("RecordDrones")
-            self.taskMgr.remove("UpdatePhysics")
+            # self.taskMgr.remove("UpdatePhysics")
+
+
+    def endApplication(self):
+        print("ending application")
+        self.destroy()
+        #sys.exit()
 
 if __name__ == "__main__":
     app = DroneSimulator()
