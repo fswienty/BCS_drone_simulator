@@ -35,13 +35,11 @@ class Drone:
         self.name = name  
         self.manager.drones[self.name] = self # put the drone into the drone manager's dictionary
         
-        self.isLinked = False # true if the virtual drone is linked to a real drone
+        self.canConnect = False # true if the virtual drone is linked to a real drone
+        self.isConnected = False # wether to connection to a real drone is currently active
         self.uri = uri
         if self.uri != "drone address":
-            self.isLinked = True
-            print("initializing drivers")
-            cflib.crtp.init_drivers(enable_debug_driver=False)
-            self.connect()
+            self.canConnect = True
 
         # add the rigidbody to the drone, which has a mass and linear damping
         self.rigidBody = BulletRigidBodyNode("RigidSphere") # derived from PandaNode
@@ -85,33 +83,27 @@ class Drone:
     # connect to a real drone with the uri
     def connect(self):
         print("connecting")
-        # with SyncCrazyflie(self.uri, cf=Crazyflie(rw_cache='./cache')) as self.scf:
-        #     #reset_estimator(self.scf)
-        #     pass
+        self.isConnected = True
+        self.scf = SyncCrazyflie(self.uri, cf=Crazyflie(rw_cache='./cache'))
+        self.scf.open_link()
 
 
     def sendPosition(self):
         #print("sending position")
-        # cf = self.scf.cf
-        # cf.param.set_value('flightmode.posSet', '1')
-        # pos = self.getPos()
-        # print('Setting position {} | {} | {}'.format(pos[0], pos[1], pos[2]))
-        # cf.commander.send_position_setpoint(pos[0], pos[1], pos[2], 0)
-        pass
+        cf = self.scf.cf
+        cf.param.set_value('flightmode.posSet', '1')
+        pos = self.getPos()
+        print('Setting position {} | {} | {}'.format(pos[0], pos[1], pos[2]))
+        cf.commander.send_position_setpoint(pos[0], pos[1], pos[2], 0)
 
 
     def disconnect(self):
         print("disconnecting")
-        # cf = self.scf.cf
-        # cf.param.set_value('flightmode.posSet', '1')
-        # pos = self.getPos()
-        # print('Landing at {} | {}'.format(pos[0], pos[1]))
-        # for _ in range(15):
-        #     cf.commander.send_position_setpoint(pos[0], pos[1], 0.3, 0)
-        #     time.sleep(0.1)
-        
-        # cf.commander.send_stop_setpoint()
-        # time.sleep(0.1)
+        self.isConnected = False
+        cf = self.scf.cf
+        cf.commander.send_stop_setpoint()
+        time.sleep(0.1)
+        self.scf.close_link()
 
 
     def returnToWaitingPosition(self):
@@ -129,7 +121,7 @@ class Drone:
         self._updateGhost()
         self._handleCollisions()
 
-        if self.isLinked:
+        if self.isConnected:
             self.sendPosition()
 
         self._drawTargetLine()

@@ -28,6 +28,8 @@ class DroneManager(DirectObject.DirectObject):
         self.accept('1', self.startLandAll)
         self.accept('2', self.toggleUpdateDrones)
         self.accept('3', self.returnToWaitingPosition)
+        self.accept('9', self.connectAll)
+        self.accept('0', self.disconnectAll)
 
 
     def startLandAll(self):
@@ -60,7 +62,7 @@ class DroneManager(DirectObject.DirectObject):
                 print("can't toggle drone update, drones are not started")
                 return
             self.isUpdating = True
-            print("setting new random target")
+            print("setting new random targets")
             for drone in self.drones.values():
                 drone.setTarget(random=True)
         else:
@@ -68,6 +70,23 @@ class DroneManager(DirectObject.DirectObject):
             print("stopping drones")
             for drone in self.drones.values():
                 drone.setTarget(target=drone.getPos())
+
+
+    def connectAll(self):
+        print("initializing drivers")
+        cflib.crtp.init_drivers(enable_debug_driver=False)
+        print("connecting drones")
+        for drone in self.drones.values():
+            if drone.canConnect:
+                drone.connect()
+
+
+    def disconnectAll(self):
+        print("disconnecting drones")
+        for drone in self.drones.values():
+            if drone.isConnected:
+                drone.disconnect()
+
 
 
     def updateDronesTask(self, task):
