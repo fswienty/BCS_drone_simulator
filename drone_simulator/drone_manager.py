@@ -16,21 +16,30 @@ class DroneManager(DirectObject.DirectObject):
         self.roomSize = Vec3(2, 2, 1.3) # confined dimensions because the room and drone coordinated dont match up yet
 
         self.drones = {}
-        Drone(self, "drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
+        # Drone(self, "drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
         # Drone(self, "drone1", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
-        Drone(self, "drone2", Vec3(1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E2")
+        # Drone(self, "drone2", Vec3(1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E2")
         # Drone(self, "drone3", Vec3(-1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E3")
-        Drone(self, "drone4", Vec3(-1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E4")
+        # Drone(self, "drone4", Vec3(-1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E4")
+
+        #Drone(self, "drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E2")
+
+        Drone(self, "drone0", Vec3(0, 0, .3))
+        Drone(self, "drone1", Vec3(1, 1, .3))
+        Drone(self, "drone2", Vec3(1, -1, .3))
+        Drone(self, "drone3", Vec3(-1, 1, .3))
+        Drone(self, "drone4", Vec3(-1, -1, .3))
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
         self.isStarted = False
+        self.isConnected = False
         self.isUpdating = False
         self.accept('1', self.startLandAll)
         self.accept('2', self.toggleUpdateDrones)
         self.accept('3', self.returnToWaitingPosition)
-        self.accept('9', self.connectAll)
-        self.accept('0', self.disconnectAll)
+        self.accept('0', self.toggleConnection)
+        # self.accept('0', self.disconnectAll)
         # self.accept('r', self.resetAllEstimators)
 
 
@@ -74,17 +83,27 @@ class DroneManager(DirectObject.DirectObject):
                 drone.setTarget(target=drone.getPos())
 
 
-    def connectAll(self):
-        print("initializing drivers")
-        cflib.crtp.init_drivers(enable_debug_driver=False)
-        print("connecting drones")
-        for drone in self.drones.values():
-            if drone.canConnect:
-                drone.connect()
+    def toggleConnection(self):
+        #connect drones
+        if self.isConnected == False:
+            self.isConnected = True
+            print("initializing drivers")
+            cflib.crtp.init_drivers(enable_debug_driver=False)
+            print("connecting drones")
+            for drone in self.drones.values():
+                if drone.canConnect:
+                    drone.connect()
+        #disconnect drones
+        else:
+            self.isConnected = False
+            print("disconnecting drones")
+            for drone in self.drones.values():
+                if drone.isConnected:
+                    drone.disconnect()           
 
 
     def disconnectAll(self):
-        print("disconnecting drones")
+        
         for drone in self.drones.values():
             if drone.isConnected:
                 drone.disconnect()

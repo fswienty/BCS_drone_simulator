@@ -20,13 +20,13 @@ from panda3d.bullet import BulletGhostNode
 
 class Drone:
 
-    RIGIDBODYMASS = 1.0
+    RIGIDBODYMASS = 1
     RIGIDBODYRADIUS = 0.1
     GHOSTRADIUS = 0.5
 
-    MAXFORCE = .3
+    MAXFORCE = .5
     FORCEFALLOFFDISTANCE = .5
-    LINEARDAMPING = 0.9
+    LINEARDAMPING = .9
 
     def __init__(self, manager, name: str, position: Vec3, uri="drone address", printDebugInfo=False):
 
@@ -82,7 +82,7 @@ class Drone:
 
     # connect to a real drone with the uri
     def connect(self):
-        print("connecting")
+        print(self.name, "@", self.uri, "connecting")
         self.isConnected = True
         self.scf = SyncCrazyflie(self.uri, cf=Crazyflie(rw_cache='./cache'))
         self.scf.open_link()
@@ -94,12 +94,12 @@ class Drone:
         cf = self.scf.cf
         cf.param.set_value('flightmode.posSet', '1')
         pos = self.getPos()
-        print('Setting position {} | {} | {}'.format(pos[0], pos[1], pos[2]))
+        # print('Setting position {} | {} | {}'.format(pos[0], pos[1], pos[2]))
         cf.commander.send_position_setpoint(pos[0], pos[1], pos[2], 0)
 
 
     def disconnect(self):
-        print("disconnecting")
+        print(self.name, "@", self.uri, "disconnecting")
         self.isConnected = False
         cf = self.scf.cf
         cf.commander.send_stop_setpoint()
@@ -110,12 +110,6 @@ class Drone:
     def returnToWaitingPosition(self):
         self.setTarget(self.waitingPosition)
 
-
-    def isInWaitingPosition(self) -> bool:
-        diff = self.getPos() - self.waitingPosition
-        if diff.length < 0.1:
-            return True
-        return False
 
     def update(self):
         self._updateForce()
@@ -151,7 +145,7 @@ class Drone:
             if node.name.startswith("drone"):
                 other = self.manager.getDrone(node.name)
                 dist = other.getPos() - self.getPos()
-                if dist.length() < 0.3:
+                if dist.length() < 0.2:
                     print("BONK")
                 distMult = max([0, 2 * self.GHOSTRADIUS - dist.length()])
                 distMult = distMult**2
