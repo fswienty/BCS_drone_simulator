@@ -25,47 +25,47 @@ class DroneManager(DirectObject.DirectObject):
 
         self.isStarted = False
         self.isUpdating = False
-        self.accept('1', self.startAll)
+        self.accept('1', self.startLandAll)
         self.accept('2', self.toggleUpdateDrones)
-        self.accept('3', self.landAll)
+        self.accept('3', self.returnToWaitingPosition)
 
 
-    def startAll(self):
-        print("starting all")
-        self.isStarted = True
-        for drone in self.drones.values():
-            pos = drone.getPos()
-            drone.setTarget(target=Vec3(pos[0], pos[1], 1))
+    def startLandAll(self):
+        if self.isStarted == False:
+            self.isStarted = True
+            print("starting all")
+            for drone in self.drones.values():
+                pos = drone.getPos()
+                drone.setTarget(target=Vec3(pos[0], pos[1], 1))
+        else:
+            self.isStarted = False
+            print("landing all")
+            for drone in self.drones.values():
+                pos = drone.getPos()
+                drone.setTarget(target=Vec3(pos[0], pos[1], .2))
 
 
-    def returnToWaitingPosition(self, task):
-        self.isUpdating == False
-        print("returning to waiting positions")
-        for drone in self.drones.values():
-            drone.returnToWaitingPosition()
+    def returnToWaitingPosition(self):
+        if self.isStarted == True:
+            print("returning to waiting positions")
+            for drone in self.drones.values():
+                drone.returnToWaitingPosition()
+        else:
+            print("can't return to waiting position, drones are not started")
 
-
-    def landAll(self, task):
-        for drone in self.drones.values():
-            drone.returnToWaitingPosition()
-        for drone in self.drones.values():
-            drone.land()
-
-
-    def landAllTask(self, task):
-        pass
-        
 
     def toggleUpdateDrones(self):
         if self.isUpdating == False:
             if self.isStarted == False:
-                print("drones are not started yet")
+                print("can't toggle drone update, drones are not started")
                 return
             self.isUpdating = True
+            print("setting new random target")
             for drone in self.drones.values():
                 drone.setTarget(random=True)
         else:
             self.isUpdating = False
+            print("stopping drones")
             for drone in self.drones.values():
                 drone.setTarget(target=drone.getPos())
 
