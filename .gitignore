@@ -39,7 +39,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 # allow the model egg files in the model folder
-!panda/models/**/*.egg
+!**/models/**/*.egg
+!**/models/*.egg
 MANIFEST
 
 # PyInstaller
