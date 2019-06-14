@@ -16,8 +16,8 @@ class DroneManager(DirectObject.DirectObject):
         self.roomSize = Vec3(2, 3, 1.5) # confined dimensions because the room and drone coordinated dont match up yet
 
         self.drones = {}
-        Drone(self, "drone1", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E1")
-        # Drone(self, "drone2", Vec3(1, 1, .3))
+        Drone(self, "drone1", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
+        Drone(self, "drone2", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
         # Drone(self, "drone3", Vec3(-1, -1, .3))
         # Drone(self, "drone4", Vec3(1, -1, .3))
 

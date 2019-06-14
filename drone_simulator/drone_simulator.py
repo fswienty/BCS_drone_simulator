@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 from direct.showbase.ShowBase import ShowBase
 from camera_controller import CameraController
 from drone_manager import DroneManager
@@ -107,8 +108,9 @@ class DroneSimulator(ShowBase):
 
     def endApplication(self):
         print("ending application")
+        self.taskMgr.removeTasksMatching("*")
         self.destroy()
-        #sys.exit()
+        sys.exit()
 
 if __name__ == "__main__":
     app = DroneSimulator()
