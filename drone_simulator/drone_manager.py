@@ -17,12 +17,9 @@ class DroneManager(DirectObject.DirectObject):
 
         self.drones = {}
         Drone(self, "drone1", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E1")
-        Drone(self, "drone2", Vec3(1, 1, .3))
-        Drone(self, "drone3", Vec3(-1, -1, .3))
-        Drone(self, "drone4", Vec3(1, -1, .3))
-        # Drone(self, "drone5", self.getRandomRoomCoordinate())
-        # Drone(self, "drone6", self.getRandomRoomCoordinate())
-        # Drone(self, "drone7", self.getRandomRoomCoordinate())
+        # Drone(self, "drone2", Vec3(1, 1, .3))
+        # Drone(self, "drone3", Vec3(-1, -1, .3))
+        # Drone(self, "drone4", Vec3(1, -1, .3))
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
@@ -30,7 +27,7 @@ class DroneManager(DirectObject.DirectObject):
         self.isUpdating = False
         self.accept('1', self.startAll)
         self.accept('2', self.toggleUpdateDrones)
-        self.accept('3', self.landAllRoutine)
+        self.accept('3', self.landAll)
 
 
     def startAll(self):
@@ -49,19 +46,14 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def landAll(self, task):
-        print("landing all")
-        self.isStarted = False
         for drone in self.drones.values():
-            pos = drone.getPos()
-            drone.setTarget(target=Vec3(pos[0], pos[1], 0.3))
+            drone.returnToWaitingPosition()
+        for drone in self.drones.values():
+            drone.land()
 
 
-    def landAllRoutine(self):
-        if self.isStarted == False:
-            print("drones are not started")
-            return
-        self.base.taskMgr.doMethodLater(0, self.returnToWaitingPosition, "returnToWaitingPosition")
-        self.base.taskMgr.doMethodLater(5, self.landAll, "landAll")
+    def landAllTask(self, task):
+        pass
         
 
     def toggleUpdateDrones(self):

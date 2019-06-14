@@ -154,7 +154,7 @@ def run_sequence(scf, sequence):
 
     for position in sequence:
         print('Setting position {}'.format(position))
-        for _ in range(15):
+        for _ in range(35):
             cf.commander.send_position_setpoint(position[0], position[1], position[2], position[3])
             time.sleep(0.1)    
 
@@ -190,4 +190,4 @@ if __name__ == '__main__':
     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
         reset_estimator(scf)
         start_position_printing(scf)
-        run_sequence(scf, yawstuff)
+        run_sequence(scf, sequence)

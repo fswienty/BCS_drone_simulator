@@ -28,7 +28,7 @@ class DroneSimulator(ShowBase):
         self.accept('space', self.togglePause)
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
-
+        
         # setup model directory
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
         self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models" # Convert that to panda's unix-style notation.

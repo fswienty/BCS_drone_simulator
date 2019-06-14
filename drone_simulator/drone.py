@@ -108,12 +108,21 @@ class Drone:
         # print('Landing at {} | {}'.format(pos[0], pos[1]))
         # for _ in range(15):
         #     cf.commander.send_position_setpoint(pos[0], pos[1], 0.3, 0)
-        #     time.sleep(0.1)  
+        #     time.sleep(0.1)
+        
+        # cf.commander.send_stop_setpoint()
+        # time.sleep(0.1)
 
 
     def returnToWaitingPosition(self):
         self.setTarget(self.waitingPosition)
 
+
+    def isInWaitingPosition(self) -> bool:
+        diff = self.getPos() - self.waitingPosition
+        if diff.length < 0.1:
+            return True
+        return False
 
     def update(self):
         self._updateForce()
