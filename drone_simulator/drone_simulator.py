@@ -24,7 +24,7 @@ class DroneSimulator(ShowBase):
         ShowBase.__init__(self)
 
         self.setFrameRateMeter(True)
-        self.accept('escape', self.endApplication)
+        # self.accept('escape', self.endApplication)
         self.isPaused = True
         self.accept('space', self.togglePause)
         self.render.setAntialias(AntialiasAttrib.MAuto)

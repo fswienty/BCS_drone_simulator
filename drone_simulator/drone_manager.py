@@ -13,13 +13,14 @@ class DroneManager(DirectObject.DirectObject):
     def __init__(self, base):
         self.base = base
         #self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in meters
-        self.roomSize = Vec3(2, 3, 1.5) # confined dimensions because the room and drone coordinated dont match up yet
+        self.roomSize = Vec3(2, 2, 1.3) # confined dimensions because the room and drone coordinated dont match up yet
 
         self.drones = {}
-        Drone(self, "drone1", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
-        Drone(self, "drone2", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
-        # Drone(self, "drone3", Vec3(-1, -1, .3))
-        # Drone(self, "drone4", Vec3(1, -1, .3))
+        Drone(self, "drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
+        # Drone(self, "drone1", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
+        Drone(self, "drone2", Vec3(1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E2")
+        # Drone(self, "drone3", Vec3(-1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E3")
+        Drone(self, "drone4", Vec3(-1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E4")
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
@@ -30,6 +31,7 @@ class DroneManager(DirectObject.DirectObject):
         self.accept('3', self.returnToWaitingPosition)
         self.accept('9', self.connectAll)
         self.accept('0', self.disconnectAll)
+        # self.accept('r', self.resetAllEstimators)
 
 
     def startLandAll(self):
@@ -88,7 +90,6 @@ class DroneManager(DirectObject.DirectObject):
                 drone.disconnect()
 
 
-
     def updateDronesTask(self, task):
         for drone in self.drones.values():
             drone.update()
@@ -104,6 +105,7 @@ class DroneManager(DirectObject.DirectObject):
 
     def getDrone(self, name: str) -> Drone:
         return self.drones.get(name)
+
 
     def getAllPositions(self):
         lst = []
