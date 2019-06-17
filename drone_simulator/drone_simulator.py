@@ -11,6 +11,7 @@ from panda3d.core import DirectionalLight
 from panda3d.core import AntialiasAttrib
 from panda3d.core import Vec3
 from panda3d.core import Vec4
+from panda3d.core import WindowProperties
 from panda3d.bullet import BulletWorld
 from panda3d.bullet import BulletPlaneShape
 from panda3d.bullet import BulletBoxShape
@@ -23,10 +24,15 @@ class DroneSimulator(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
 
+        # set resolution
+        wp = WindowProperties()
+        wp.setSize(1600, 1200)
+        self.win.requestProperties(wp)
+
         self.setFrameRateMeter(True)
         # self.accept('escape', self.endApplication)
-        self.isPaused = True
-        self.accept('space', self.togglePause)
+        self.isPaused = False
+        #self.accept('space', self.togglePause)
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
         
