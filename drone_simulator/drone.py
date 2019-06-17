@@ -73,11 +73,11 @@ class Drone:
         self.base.world.attach(self.rigidBody)
         self.base.world.attach(self.ghost)
         model = self.base.loader.loadModel(self.base.modelDir + "/drones/drone1.egg")
-        model.setScale(0.3)
+        model.setScale(0.2)
         model.reparentTo(self.rigidBodyNP)
 
         self.target = position
-        self.waitingPosition = Vec3(position[0], position[1], 1)
+        self.waitingPosition = Vec3(position[0], position[1], 0.7)
         
         self.printDebugInfo = printDebugInfo
         if self.printDebugInfo == True: # put a second drone model on top of drone that outputs debug stuff
