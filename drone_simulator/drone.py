@@ -20,23 +20,23 @@ from panda3d.bullet import BulletGhostNode
 
 class Drone:
 
-    # RIGIDBODYMASS = 1
-    # RIGIDBODYRADIUS = 0.1
-    # GHOSTRADIUS = 0.5
-
-    # MAXFORCE = .5
-    # AVOIDANCEFORCE = 5
-    # FORCEFALLOFFDISTANCE = .5
-    # LINEARDAMPING = .9
-
     RIGIDBODYMASS = 1
     RIGIDBODYRADIUS = 0.1
-    GHOSTRADIUS = 0.3
+    GHOSTRADIUS = 0.5
 
-    NAVIGATIONFORCE = 1
-    AVOIDANCEFORCE = 10
+    NAVIGATIONFORCE = .5
+    AVOIDANCEFORCE = 5
     FORCEFALLOFFDISTANCE = .5
-    LINEARDAMPING = 0.95
+    LINEARDAMPING = .9
+
+    # RIGIDBODYMASS = 1
+    # RIGIDBODYRADIUS = 0.1
+    # GHOSTRADIUS = 0.3
+
+    # NAVIGATIONFORCE = 1
+    # AVOIDANCEFORCE = 10
+    # FORCEFALLOFFDISTANCE = .5
+    # LINEARDAMPING = 0.95
 
     def __init__(self, manager, name: str, position: Vec3, uri="drone address", printDebugInfo=False):
 

@@ -37,12 +37,14 @@ class DroneManager(DirectObject.DirectObject):
 
         self.formations = {}
         self.formations["square"] = loadFormation("square.txt")
+        self.formations["squareInv"] = loadFormation("square_inv.txt")
         self.formations["line"] = loadFormation("line.txt")
         self.formations["uprightSquare"] = loadFormation("upright_Square.txt")
 
         self.accept('1', self.applyFormation, extraArgs=["square"])
-        self.accept('2', self.applyFormation, extraArgs=["line"])
-        self.accept('3', self.applyFormation, extraArgs=["uprightSquare"])
+        self.accept('2', self.applyFormation, extraArgs=["squareInv"])
+        self.accept('3', self.applyFormation, extraArgs=["line"])
+        self.accept('4', self.applyFormation, extraArgs=["uprightSquare"])
 
         self.loadUI()
 
