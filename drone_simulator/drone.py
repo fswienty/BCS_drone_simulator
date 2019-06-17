@@ -20,23 +20,23 @@ from panda3d.bullet import BulletGhostNode
 
 class Drone:
 
-    RIGIDBODYMASS = 1
-    RIGIDBODYRADIUS = 0.1
-    GHOSTRADIUS = 0.5
-
-    NAVIGATIONFORCE = .5
-    AVOIDANCEFORCE = 5
-    FORCEFALLOFFDISTANCE = .5
-    LINEARDAMPING = .9
-
     # RIGIDBODYMASS = 1
     # RIGIDBODYRADIUS = 0.1
-    # GHOSTRADIUS = 0.3
+    # GHOSTRADIUS = 0.5
 
-    # NAVIGATIONFORCE = 1
-    # AVOIDANCEFORCE = 10
+    # NAVIGATIONFORCE = .5
+    # AVOIDANCEFORCE = 5
     # FORCEFALLOFFDISTANCE = .5
-    # LINEARDAMPING = 0.95
+    # LINEARDAMPING = .9
+
+    RIGIDBODYMASS = 1
+    RIGIDBODYRADIUS = 0.1
+    GHOSTRADIUS = 0.3
+
+    NAVIGATIONFORCE = 1
+    AVOIDANCEFORCE = 25
+    FORCEFALLOFFDISTANCE = .5
+    LINEARDAMPING = 0.95
 
     def __init__(self, manager, name: str, position: Vec3, uri="drone address", printDebugInfo=False):
 
@@ -135,6 +135,10 @@ class Drone:
         self._printDebugInfo()
 
 
+    def _updateGhost(self):
+        self.ghostNP.setPos(self.getPos())
+
+
     def _updateForce(self):
         dist = (self.target - self.getPos())
         if(dist.length() > self.FORCEFALLOFFDISTANCE):
@@ -146,10 +150,6 @@ class Drone:
         self._addForce(force * 3)
 
 
-    def _updateGhost(self):
-        self.ghostNP.setPos(self.getPos())
-
-
     def _handleCollisions(self):
         for node in self.ghost.getOverlappingNodes():
             if node.name.startswith("drone"):
@@ -158,10 +158,10 @@ class Drone:
                 if dist.length() < 0.2:
                     print("BONK")
                 distMult = max([0, 2 * self.GHOSTRADIUS - dist.length()])
-                distMult = distMult**2
+                distMult = distMult
                 # velMult = other.getVel().length() + self.getVel().length() + 1
                 velMult = self.getVel().length()
-                velMult = velMult**2 + 1
+                velMult = velMult + .5
                 self._addForce(-dist.normalized() * distMult * velMult * self.AVOIDANCEFORCE)
 
 
