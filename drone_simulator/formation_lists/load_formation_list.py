@@ -2,7 +2,7 @@ import numpy as np
 import os, sys
 import re
 
-def loadPositionList(name: str):
+def loadFormationList(name: str):
     with open(os.path.join(sys.path[0], name), "r") as file:
         text = file.read()
         # parse the number of drones
@@ -22,4 +22,4 @@ def loadPositionList(name: str):
     return arr
 
 #print(loadPositionList("positions.txt"))
-loadPositionList("positions.txt")
+loadFormationList("positions.txt")
