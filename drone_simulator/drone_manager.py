@@ -14,32 +14,35 @@ class DroneManager(DirectObject.DirectObject):
     def __init__(self, base):
         self.base = base
         #self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in meters
-        self.roomSize = Vec3(2, 2, 1.3) # confined dimensions because the room and drone coordinated dont match up yet
+        self.roomSize = Vec3(1.5, 2, 1.3) # confined dimensions because the room and drone coordinated dont match up yet
 
         self.drones = {}
-        # Drone(self, "drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
-        # Drone(self, "drone1", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
-        # Drone(self, "drone2", Vec3(1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E2")
+        Drone(self, "drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
+        Drone(self, "drone1", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
+        Drone(self, "drone2", Vec3(1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E2")
         # Drone(self, "drone3", Vec3(-1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E3")
-        # Drone(self, "drone4", Vec3(-1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E4")
+        Drone(self, "drone4", Vec3(-1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E4")
 
         #Drone(self, "drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E2")
 
-        Drone(self, "drone0", Vec3(0, 0, .3))
-        Drone(self, "drone1", Vec3(1, 1, .3))
-        Drone(self, "drone2", Vec3(1, -1, .3))
-        Drone(self, "drone3", Vec3(-1, 1, .3))
+        # Drone(self, "drone0", Vec3(0, 0, .3))
+        # Drone(self, "drone1", Vec3(1, 1, .3))
+        # Drone(self, "drone2", Vec3(1, -1, .3))
+        # Drone(self, "drone3", Vec3(-1, 1, .3))
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
         self.isStarted = False
         self.isConnected = False
-        #self.isUpdating = False
-        self.accept('1', self.applyFormation, extraArgs=["square"])
 
         self.formations = {}
         self.formations["square"] = loadFormation("square.txt")
         self.formations["line"] = loadFormation("line.txt")
+        self.formations["uprightSquare"] = loadFormation("upright_Square.txt")
+
+        self.accept('1', self.applyFormation, extraArgs=["square"])
+        self.accept('2', self.applyFormation, extraArgs=["line"])
+        self.accept('3', self.applyFormation, extraArgs=["uprightSquare"])
 
         self.loadUI()
 
@@ -135,9 +138,14 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def applyFormation(self, name: str):
+        if self.isStarted == False:
+            print("Can't apply formation, drones are not started")
+            return
+        droneList = list(self.drones.values())
+        formation = self.formations[name]
         for i in range(0, self.drones.__len__()):
-            print(i)
-
+            droneList[i].setTarget(Vec3(formation[i,0], formation[i,1], formation[i,2]))
+            
 
     def updateDronesTask(self, task):
         for drone in self.drones.values():

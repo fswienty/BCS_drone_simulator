@@ -20,19 +20,29 @@ from panda3d.bullet import BulletGhostNode
 
 class Drone:
 
+    # RIGIDBODYMASS = 1
+    # RIGIDBODYRADIUS = 0.1
+    # GHOSTRADIUS = 0.5
+
+    # MAXFORCE = .5
+    # AVOIDANCEFORCE = 5
+    # FORCEFALLOFFDISTANCE = .5
+    # LINEARDAMPING = .9
+
     RIGIDBODYMASS = 1
     RIGIDBODYRADIUS = 0.1
-    GHOSTRADIUS = 0.5
+    GHOSTRADIUS = 0.3
 
-    MAXFORCE = .5
+    NAVIGATIONFORCE = 1
+    AVOIDANCEFORCE = 10
     FORCEFALLOFFDISTANCE = .5
-    LINEARDAMPING = .9
+    LINEARDAMPING = 0.95
 
     def __init__(self, manager, name: str, position: Vec3, uri="drone address", printDebugInfo=False):
 
         self.base = manager.base
         self.manager = manager
-        self.name = name  
+        self.name = name
         self.manager.drones[self.name] = self # put the drone into the drone manager's dictionary
         
         self.canConnect = False # true if the virtual drone is linked to a real drone
@@ -128,9 +138,9 @@ class Drone:
     def _updateForce(self):
         dist = (self.target - self.getPos())
         if(dist.length() > self.FORCEFALLOFFDISTANCE):
-            force = dist.normalized() * self.MAXFORCE
+            force = dist.normalized() * self.NAVIGATIONFORCE
         else:
-            force = dist * self.MAXFORCE / self.FORCEFALLOFFDISTANCE
+            force = dist * self.NAVIGATIONFORCE / self.FORCEFALLOFFDISTANCE
         velMult = self.getVel().length() + .1
         velMult = velMult
         self._addForce(force * 3)
@@ -152,7 +162,7 @@ class Drone:
                 # velMult = other.getVel().length() + self.getVel().length() + 1
                 velMult = self.getVel().length()
                 velMult = velMult**2 + 1
-                self._addForce(-dist.normalized() * distMult * velMult * 5)
+                self._addForce(-dist.normalized() * distMult * velMult * self.AVOIDANCEFORCE)
 
 
     def _printDebugInfo(self):
