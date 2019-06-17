@@ -30,9 +30,7 @@ class DroneSimulator(ShowBase):
         self.win.requestProperties(wp)
 
         self.setFrameRateMeter(True)
-        # self.accept('escape', self.endApplication)
         self.isPaused = False
-        #self.accept('space', self.togglePause)
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
         
@@ -47,7 +45,6 @@ class DroneSimulator(ShowBase):
 
         self.droneManager = DroneManager(self)
         self.droneRecorder = DroneRecorder(self.droneManager)
-        self.accept('m', self.droneRecorder.save)
 
 
     def initBullet(self):
@@ -99,24 +96,12 @@ class DroneSimulator(ShowBase):
         return task.cont
 
 
-    def togglePause(self):
-        if self.isPaused == True:
-            self.isPaused = False
-            # self.taskMgr.add(self.droneManager.updateDronesTask, "UpdateDrones")
-            self.taskMgr.doMethodLater(0, self.droneRecorder.recordDronesTask, "RecordDrones")
-            # self.taskMgr.add(self.updatePhysicsTask, "UpdatePhysics")
-        else:
-            self.isPaused = True
-            # self.taskMgr.remove("UpdateDrones")
-            self.taskMgr.remove("RecordDrones")
-            # self.taskMgr.remove("UpdatePhysics")
-
-
     def endApplication(self):
         print("ending application")
         self.taskMgr.removeTasksMatching("*")
         self.destroy()
         sys.exit()
+
 
 if __name__ == "__main__":
     app = DroneSimulator()
