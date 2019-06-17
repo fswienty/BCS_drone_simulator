@@ -7,6 +7,7 @@ from panda3d.core import Vec3
 from direct.showbase import DirectObject
 from direct.gui.DirectGui import DirectButton
 from direct.gui.DirectGui import DirectFrame
+from formations.load_formation_list import loadFormation
 
 class DroneManager(DirectObject.DirectObject):
     
@@ -28,21 +29,21 @@ class DroneManager(DirectObject.DirectObject):
         Drone(self, "drone1", Vec3(1, 1, .3))
         Drone(self, "drone2", Vec3(1, -1, .3))
         Drone(self, "drone3", Vec3(-1, 1, .3))
-        Drone(self, "drone4", Vec3(-1, -1, .3))
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
         self.isStarted = False
         self.isConnected = False
         #self.isUpdating = False
-        self.accept('1', self.startLandAll)
-        self.accept('2', self.setRandomTargets)
-        self.accept('3', self.returnToWaitingPosition)
-        self.accept('0', self.toggleConnections)
-        # self.accept('0', self.disconnectAll)
-        # self.accept('r', self.resetAllEstimators)
+        self.accept('1', self.applyFormation, extraArgs=["square"])
 
-        # Setup Buttons
+        self.formations = {}
+        self.formations["square"] = loadFormation("square.txt")
+        self.formations["line"] = loadFormation("line.txt")
+
+        self.loadUI()
+
+    def loadUI(self):
         buttonSize = (-4, 4, -.2, .8)
         buttonDistance = 0.15
 
@@ -67,10 +68,6 @@ class DroneManager(DirectObject.DirectObject):
         self.buttonToggleConnection.reparentTo(frame)
         self.buttonToggleConnection.setPos(Vec3(0,0,-4*buttonDistance))
 
-
-
-    def ButtonTest(self):
-        print("button pressed")
 
     def startLandAll(self):
         if self.isStarted == False:
@@ -99,21 +96,6 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def setRandomTargets(self):
-        # if self.isUpdating == False:
-        #     if self.isStarted == False:
-        #         print("can't toggle drone update, drones are not started")
-        #         return
-        #     self.isUpdating = True
-        #     self.buttonRandomTargets["text"] = "Deactivate"
-        #     print("setting new random targets")
-        #     for drone in self.drones.values():
-        #         drone.setTarget(random=True)
-        # else:
-        #     self.isUpdating = False
-        #     self.buttonRandomTargets["text"] = "Activate"
-        #     print("stopping drones")
-        #     for drone in self.drones.values():
-        #         drone.setTarget(target=drone.getPos())
         if self.isStarted == False:
             print("can't set random targets, drones are not started")
             return
@@ -152,11 +134,9 @@ class DroneManager(DirectObject.DirectObject):
                     drone.disconnect()           
 
 
-    def disconnectAll(self):
-        
-        for drone in self.drones.values():
-            if drone.isConnected:
-                drone.disconnect()
+    def applyFormation(self, name: str):
+        for i in range(0, self.drones.__len__()):
+            print(i)
 
 
     def updateDronesTask(self, task):
