@@ -2,6 +2,7 @@ import sys
 import os
 import time
 from direct.showbase.ShowBase import ShowBase
+import scanner
 from camera_controller import CameraController
 from drone_manager import DroneManager
 from recorder import DroneRecorder
@@ -21,7 +22,7 @@ from panda3d.bullet import BulletDebugNode
 
 class DroneSimulator(ShowBase):
 
-    def __init__(self):
+    def __init__(self, droneList):
         ShowBase.__init__(self)
 
         # set resolution
@@ -41,7 +42,7 @@ class DroneSimulator(ShowBase):
         self.initRoom()
         self.initLights()
 
-        self.droneManager = DroneManager(self)
+        self.droneManager = DroneManager(self, droneList)
         self.droneRecorder = DroneRecorder(self.droneManager)
 
 
@@ -95,5 +96,6 @@ class DroneSimulator(ShowBase):
 
 
 if __name__ == "__main__":
-    app = DroneSimulator()
+    droneList = scanner.scanAndReset() # get initial positions of available drones and reset their estimators
+    app = DroneSimulator(droneList)
     app.run()
