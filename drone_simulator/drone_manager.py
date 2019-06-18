@@ -7,7 +7,7 @@ from panda3d.core import Vec3
 from direct.showbase import DirectObject
 from direct.gui.DirectGui import DirectButton
 from direct.gui.DirectGui import DirectFrame
-from formations.load_formation_list import loadFormation
+from formations.formation_loader import FormationLoader
 
 class DroneManager(DirectObject.DirectObject):
     
@@ -15,7 +15,9 @@ class DroneManager(DirectObject.DirectObject):
         self.base = base
         #self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in meters
         self.roomSize = Vec3(1.5, 2, 1.3) # confined dimensions because the room and drone coordinated dont match up yet
-
+        self.loadUI()
+        
+        # initialize drones
         self.drones = {}
         Drone(self, "drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
         Drone(self, "drone1", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
@@ -35,18 +37,20 @@ class DroneManager(DirectObject.DirectObject):
         self.isStarted = False
         self.isConnected = False
 
+        # load formations and set up hotkeys for them
         self.formations = {}
-        self.formations["square"] = loadFormation("square.txt")
-        self.formations["squareInv"] = loadFormation("square_inv.txt")
-        self.formations["line"] = loadFormation("line.txt")
-        self.formations["uprightSquare"] = loadFormation("upright_Square.txt")
+    
+        self.loadFormation("square")
+        self.loadFormation("square_inv")
+        self.loadFormation("line")
+        self.loadFormation("upright_square")
 
         self.accept('1', self.applyFormation, extraArgs=["square"])
-        self.accept('2', self.applyFormation, extraArgs=["squareInv"])
+        self.accept('2', self.applyFormation, extraArgs=["square_inv"])
         self.accept('3', self.applyFormation, extraArgs=["line"])
-        self.accept('4', self.applyFormation, extraArgs=["uprightSquare"])
+        self.accept('4', self.applyFormation, extraArgs=["upright_square"])
 
-        self.loadUI()
+
 
     def loadUI(self):
         buttonSize = (-4, 4, -.2, .8)
@@ -139,12 +143,19 @@ class DroneManager(DirectObject.DirectObject):
                     drone.disconnect()           
 
 
+    def loadFormation(self, name):
+        self.formations[name] = FormationLoader(name)
+
+
     def applyFormation(self, name: str):
+        if self.formations[name].drones != self.drones.__len__():
+            print("Amount of drones in simulation is not equal to amount of drones required for formation")
+            return
         if self.isStarted == False:
             print("Can't apply formation, drones are not started")
             return
         droneList = list(self.drones.values())
-        formation = self.formations[name]
+        formation = self.formations[name].array
         for i in range(0, self.drones.__len__()):
             droneList[i].setTarget(Vec3(formation[i,0], formation[i,1], formation[i,2]))
             

@@ -96,13 +96,6 @@ class DroneSimulator(ShowBase):
         return task.cont
 
 
-    def endApplication(self):
-        print("ending application")
-        self.taskMgr.removeTasksMatching("*")
-        self.destroy()
-        sys.exit()
-
-
 if __name__ == "__main__":
     app = DroneSimulator()
     app.run()
