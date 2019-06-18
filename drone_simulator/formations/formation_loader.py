@@ -28,14 +28,14 @@ class FormationLoader():
         (self.array, self.drones) = self._loadFormation("{}.txt".format(name))
 
     def _loadFormation(self, name: str) -> (np.array, int):
-        drones = self._file_len(name)
+        drones = self._getRowCount(name)
         arr = np.loadtxt(os.path.join(os.path.dirname(os.path.abspath(__file__)), name))
         arr = arr.reshape((drones, 3))
         return (arr, drones)
 
-    def _file_len(self, name):
+    def _getRowCount(self, name):
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), name)) as f:
-            for i, l in enumerate(f):
+            for i, _ in enumerate(f):
                 pass
         return i + 1
 
