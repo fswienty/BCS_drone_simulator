@@ -43,10 +43,9 @@ class Drone:
         self.base = manager.base
         self.manager = manager
         self.name = name
-        self.manager.drones[self.name] = self # put the drone into the drone manager's dictionary
         
-        self.canConnect = False # true if the virtual drone is linked to a real drone
-        self.isConnected = False # wether to connection to a real drone is currently active
+        self.canConnect = False # true if the virtual drone has a uri to connect to a real drone
+        self.isConnected = False # true if the connection to a real drone is currently active
         self.uri = uri
         if self.uri != "drone address":
             self.canConnect = True
@@ -92,6 +91,8 @@ class Drone:
 
     # connect to a real drone with the uri
     def connect(self):
+        if self.canConnect == False:
+            return
         print(self.name, "@", self.uri, "connecting")
         self.isConnected = True
         self.scf = SyncCrazyflie(self.uri, cf=Crazyflie(rw_cache='./cache'))
@@ -181,6 +182,10 @@ class Drone:
 
     def _addForce(self, force: Vec3):
         self.rigidBody.applyCentralForce(force)
+
+
+    def setPos(self, position: Vec3):
+        self.rigidBodyNP.setPos(Vec3)
 
     
     def getPos(self) -> Vec3:

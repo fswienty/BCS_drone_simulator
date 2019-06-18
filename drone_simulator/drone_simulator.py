@@ -30,7 +30,6 @@ class DroneSimulator(ShowBase):
         self.win.requestProperties(wp)
 
         self.setFrameRateMeter(True)
-        self.isPaused = False
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
         
@@ -38,10 +37,9 @@ class DroneSimulator(ShowBase):
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
         self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models" # Convert that to panda's unix-style notation.
 
-        # setup scene
         self.initBullet()
-        self.spawnRoom()
-        self.spawnLights()
+        self.initRoom()
+        self.initLights()
 
         self.droneManager = DroneManager(self)
         self.droneRecorder = DroneRecorder(self.droneManager)
@@ -71,13 +69,13 @@ class DroneSimulator(ShowBase):
         self.taskMgr.add(self.updatePhysicsTask, "UpdatePhysics")
         
 
-    def spawnRoom(self):
+    def initRoom(self):
         # room size: x=3.40m y=4.56m z=2.56m 
         roomModel = self.loader.loadModel(self.modelDir + "/room_test/room_test.egg")
         roomModel.reparentTo(self.render)
 
 
-    def spawnLights(self):
+    def initLights(self):
         for i in range(0,3):
             dlight = DirectionalLight("light")
             dlnp = self.render.attachNewNode(dlight) # directional light node path

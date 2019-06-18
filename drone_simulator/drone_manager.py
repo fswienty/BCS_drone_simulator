@@ -15,29 +15,26 @@ class DroneManager(DirectObject.DirectObject):
         self.base = base
         #self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in meters
         self.roomSize = Vec3(1.5, 2, 1.3) # confined dimensions because the room and drone coordinated dont match up yet
-        self.loadUI()
-        
-        # initialize drones
+        self.initDrones()
+        self.initFormations()
+        self.initUI()
+
+
+    def initDrones(self):
+        self.isStarted = False
+        self.isConnected = False
         self.drones = {}
-        Drone(self, "drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
-        Drone(self, "drone1", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
-        Drone(self, "drone2", Vec3(1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E2")
-        # Drone(self, "drone3", Vec3(-1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E3")
-        Drone(self, "drone4", Vec3(-1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E4")
 
-        #Drone(self, "drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E2")
-
-        # Drone(self, "drone0", Vec3(0, 0, .3))
-        # Drone(self, "drone1", Vec3(1, 1, .3))
-        # Drone(self, "drone2", Vec3(1, -1, .3))
-        # Drone(self, "drone3", Vec3(-1, 1, .3))
+        self.loadDrone("drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
+        self.loadDrone("drone1", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
+        self.loadDrone("drone2", Vec3(1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E2")
+        # self.loadDrone("drone3", Vec3(-1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E3")
+        self.loadDrone("drone4", Vec3(-1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E4")
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
-        self.isStarted = False
-        self.isConnected = False
 
-        # load formations and set up hotkeys for them
+    def initFormations(self):
         self.formations = {}
     
         self.loadFormation("square")
@@ -51,8 +48,7 @@ class DroneManager(DirectObject.DirectObject):
         self.accept('4', self.applyFormation, extraArgs=["upright_square"])
 
 
-
-    def loadUI(self):
+    def initUI(self):
         buttonSize = (-4, 4, -.2, .8)
         buttonDistance = 0.15
 
@@ -96,12 +92,12 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def returnToWaitingPosition(self):
-        if self.isStarted == True:
-            print("returning to waiting positions")
-            for drone in self.drones.values():
-                drone.returnToWaitingPosition()
-        else:
+        if self.isStarted == False:
             print("can't return to waiting position, drones are not started")
+            return
+        print("returning to waiting positions")
+        for drone in self.drones.values():
+            drone.returnToWaitingPosition()
 
 
     def setRandomTargets(self):
@@ -131,8 +127,7 @@ class DroneManager(DirectObject.DirectObject):
             cflib.crtp.init_drivers(enable_debug_driver=False)
             print("connecting drones")
             for drone in self.drones.values():
-                if drone.canConnect:
-                    drone.connect()
+                drone.connect()
         #disconnect drones
         else:
             self.isConnected = False
@@ -171,6 +166,10 @@ class DroneManager(DirectObject.DirectObject):
         newY = random.uniform(-self.roomSize.y/2, self.roomSize.y/2)
         newZ = random.uniform(0+0.3, self.roomSize.z)
         return Vec3(newX, newY, newZ)  
+
+
+    def loadDrone(self, name: str, position: Vec3, uri="drone address", printDebugInfo=False):
+        self.drones[name] = Drone(self, name, position, uri=uri, printDebugInfo=printDebugInfo)
 
 
     def getDrone(self, name: str) -> Drone:
