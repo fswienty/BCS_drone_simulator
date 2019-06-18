@@ -29,7 +29,7 @@ class DroneManager(DirectObject.DirectObject):
         self.loadDrone("drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
         self.loadDrone("drone1", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
         self.loadDrone("drone2", Vec3(1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E2")
-        # self.loadDrone("drone3", Vec3(-1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E3")
+        #self.loadDrone("drone3", Vec3(-1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E3")
         self.loadDrone("drone4", Vec3(-1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E4")
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
