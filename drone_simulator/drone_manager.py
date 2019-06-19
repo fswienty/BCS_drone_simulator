@@ -26,6 +26,7 @@ class DroneManager(DirectObject.DirectObject):
         self.isConnected = False
         self.drones = {}
 
+        # the drone names must be droneX where x is some unique integer
         self.loadDrone("drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
         self.loadDrone("drone1", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
         self.loadDrone("drone2", Vec3(1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E2")
@@ -155,15 +156,27 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def applyFormation(self, name: str):
-        if self.formations[name].drones != self.drones.__len__():
-            print("Amount of drones in simulation is not equal to amount of drones required for formation")
-            return
+        # if self.formations[name].drones != self.drones.__len__():
+        #     print("Amount of drones in simulation is not equal to amount of drones required for formation")
+        #     return
         if self.isStarted == False:
             print("Can't apply formation, drones are not started")
             return
+        
+        requiredDrones = self.formations[name].drones
+        availableDrones = self.drones.__len__()
+        maxNumber = availableDrones
+        if requiredDrones > availableDrones:
+            print("The formation contains more points than there are drones available")
+            
+        if requiredDrones < availableDrones:
+            print("The formation contains less points than there are drones available, some drones will remain stationary")
+            maxNumber = requiredDrones
+
+        print("applying {} formation".format(name))
         droneList = list(self.drones.values())
         formation = self.formations[name].array
-        for i in range(0, self.drones.__len__()):
+        for i in range(0, maxNumber):
             droneList[i].setTarget(Vec3(formation[i,0], formation[i,1], formation[i,2]))
             
 

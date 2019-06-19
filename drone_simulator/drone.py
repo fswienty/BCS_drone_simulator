@@ -35,13 +35,14 @@ class Drone:
     NAVIGATIONFORCE = 1
     AVOIDANCEFORCE = 25
     FORCEFALLOFFDISTANCE = .5
-    LINEARDAMPING = 0.95
+    LINEARDAMPING = 0.97
 
     def __init__(self, manager, name: str, position: Vec3, uri="drone address", printDebugInfo=False):
 
         self.base = manager.base
         self.manager = manager
         self.name = name
+        self.priority = int(''.join(filter(str.isdigit, name)))
         
         self.canConnect = False # true if the virtual drone has a uri to connect to a real drone
         self.isConnected = False # true if the connection to a real drone is currently active
@@ -86,6 +87,7 @@ class Drone:
         # initialize line renderers
         self.targetLineNP = self.base.render.attachNewNode(LineSegs().create())
         self.velocityLineNP = self.base.render.attachNewNode(LineSegs().create())
+        self.forceLineNP = self.base.render.attachNewNode(LineSegs().create())
 
 
     # connect to a real drone with the uri
@@ -124,13 +126,14 @@ class Drone:
     def update(self):
         self._updateForce()
         self._updateGhost()
-        self._handleCollisions()
+        self._avoidNearbyDrones()
 
         if self.isConnected:
             self.sendPosition()
 
         self._drawTargetLine()
         self._drawVelocityLine()
+        self._drawForceLine()
 
         self._printDebugInfo()
 
@@ -145,24 +148,31 @@ class Drone:
             force = dist.normalized() * self.NAVIGATIONFORCE
         else:
             force = dist * self.NAVIGATIONFORCE / self.FORCEFALLOFFDISTANCE
-        velMult = self.getVel().length() + .1
+        velMult = self.getVel().length() + 0.1
         velMult = velMult
         self._addForce(force * 3)
 
 
-    def _handleCollisions(self):
+    def _avoidNearbyDrones(self):
         for node in self.ghost.getOverlappingNodes():
             if node.name.startswith("drone"):
                 other = self.manager.getDrone(node.name)
-                dist = other.getPos() - self.getPos()
-                if dist.length() < 0.2:
+                perp = Vec3(0, 0, 0)
+                perp = self.target.cross(other.target)
+                # if self.priority > other.priority:
+                #     perp = self.target.cross(other.target)
+                # else:
+                #     perp = other.target.cross(self.target)
+                
+                distVec = other.getPos() - self.getPos()
+                if distVec.length() < 0.2:
                     print("BONK")
-                distMult = max([0, 2 * self.GHOSTRADIUS - dist.length()])
+                distMult = max([0, 2 * self.GHOSTRADIUS - distVec.length()])
                 distMult = distMult
                 # velMult = other.getVel().length() + self.getVel().length() + 1
                 velMult = self.getVel().length()
                 velMult = velMult + .5
-                self._addForce(-dist.normalized() * distMult * velMult * self.AVOIDANCEFORCE)
+                self._addForce((perp.normalized() * 0.2 - distVec.normalized() * 1) * distMult * velMult * self.AVOIDANCEFORCE)
 
 
     def _printDebugInfo(self):
@@ -214,7 +224,17 @@ class Drone:
         ls.moveTo(self.getPos())
         ls.drawTo(self.getPos() + self.getVel())
         node = ls.create()
-        self.velocityLineNP = self.base.render.attachNewNode(node)        
+        self.velocityLineNP = self.base.render.attachNewNode(node)
+
+    def _drawForceLine(self):
+        self.forceLineNP.removeNode()
+        ls = LineSegs()
+        #ls.setThickness(1)
+        ls.setColor(0.0, 1.0, 0.0, 1.0)
+        ls.moveTo(self.getPos())
+        ls.drawTo(self.getPos() + self.rigidBody.getTotalForce())
+        node = ls.create()
+        self.forceLineNP = self.base.render.attachNewNode(node)    
 
 
     def wait_for_position_estimator(self):

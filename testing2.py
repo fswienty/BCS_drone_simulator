@@ -2,8 +2,5 @@ import os
 import time
 import random
  
-from multiprocessing import Process
- 
-bl = [['a','b'],['c', 'd']]
-
-print(bl[(0,1)])
+a = int(''.join(filter(str.isdigit, "gdgr565TGH")))
+print(a)
