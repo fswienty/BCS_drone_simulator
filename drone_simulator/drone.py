@@ -42,7 +42,7 @@ class Drone:
         self.base = manager.base
         self.manager = manager
         self.name = name
-        self.priority = int(''.join(filter(str.isdigit, name)))
+        self.id = int(''.join(filter(str.isdigit, name))) # a unique number to identify the drone, not used right now
         
         self.canConnect = False # true if the virtual drone has a uri to connect to a real drone
         self.isConnected = False # true if the connection to a real drone is currently active
@@ -126,7 +126,7 @@ class Drone:
     def update(self):
         self._updateTargetForce()
         self._updateGhost()
-        self._avoidNearbyDrones()
+        self._updateAvoidanceForce()
 
         if self.isConnected:
             self.sendPosition()
@@ -153,17 +153,15 @@ class Drone:
         self._addForce(force * 3)
 
 
-    def _avoidNearbyDrones(self):
+    def _updateAvoidanceForce(self):
         for node in self.ghost.getOverlappingNodes():
             if node.name.startswith("drone"):
                 other = self.manager.getDrone(node.name)
-                perp = Vec3(0, 0, 0)
                 perp = self.target.cross(other.target)
-                # if self.priority > other.priority:
+                # if self.id > other.id:
                 #     perp = self.target.cross(other.target)
                 # else:
                 #     perp = other.target.cross(self.target)
-                
                 distVec = other.getPos() - self.getPos()
                 if distVec.length() < 0.2:
                     print("BONK")
@@ -172,7 +170,7 @@ class Drone:
                 # velMult = other.getVel().length() + self.getVel().length() + 1
                 velMult = self.getVel().length()
                 velMult = velMult + .5
-                self._addForce((perp.normalized() * 0.2 - distVec.normalized() * 1) * distMult * velMult * self.AVOIDANCEFORCE)
+                self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
 
 
     def _printDebugInfo(self):
