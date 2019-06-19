@@ -158,10 +158,6 @@ class Drone:
             if node.name.startswith("drone"):
                 other = self.manager.getDrone(node.name)
                 perp = self.target.cross(other.target)
-                # if self.id > other.id:
-                #     perp = self.target.cross(other.target)
-                # else:
-                #     perp = other.target.cross(self.target)
                 distVec = other.getPos() - self.getPos()
                 if distVec.length() < 0.2:
                     print("BONK")
