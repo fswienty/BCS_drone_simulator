@@ -12,37 +12,25 @@ from formations.formation_loader import FormationLoader
 
 class DroneManager(DirectObject.DirectObject):
     
-    def __init__(self, base):
+    def __init__(self, base, droneList):
         self.base = base
         #self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in meters
         self.roomSize = Vec3(1.5, 2, 1.3) # confined dimensions because the room and drone coordinated dont match up yet
-        self.initDrones()
+        self.initDrones(droneList)
         self.initFormations()
         self.initUI()
 
 
-    def initDrones(self):
+    def initDrones(self, droneList):
         self.isStarted = False
         self.isConnected = False
         self.drones = {}
 
-        # the drone names must be droneX where x is some unique integer
-        self.loadDrone("drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
-        self.loadDrone("drone1", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
-        self.loadDrone("drone2", Vec3(1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E2")
-        #self.loadDrone("drone3", Vec3(-1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E3")
-        self.loadDrone("drone4", Vec3(-1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E4")
-
-
-        # if droneList == []:
-        #     self.loadDrone("drone0", Vec3(0, 0, .3), uri="radio://0/80/2M/E7E7E7E7E0")
-        #     #self.loadDrone("drone1", Vec3(1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E1")
-        #     #self.loadDrone("drone2", Vec3(1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E2")
-        #     #self.loadDrone("drone3", Vec3(-1, 1, .3), uri="radio://0/80/2M/E7E7E7E7E3")
-        #     #self.loadDrone("drone4", Vec3(-1, -1, .3), uri="radio://0/80/2M/E7E7E7E7E4")
-        # else:
-        #     for i in range(0, len(droneList)):
-        #         self.loadDrone("drone{}".format(i), droneList[i][0], droneList[i][1])
+        if droneList == []:
+            print("No drones to spawn")
+        else:
+            for i in range(0, len(droneList)):
+                self.loadDrone("drone{}".format(i), droneList[i][0], droneList[i][1])
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
@@ -156,9 +144,6 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def applyFormation(self, name: str):
-        # if self.formations[name].drones != self.drones.__len__():
-        #     print("Amount of drones in simulation is not equal to amount of drones required for formation")
-        #     return
         if self.isStarted == False:
             print("Can't apply formation, drones are not started")
             return

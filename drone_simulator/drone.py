@@ -124,7 +124,7 @@ class Drone:
 
 
     def update(self):
-        self._updateForce()
+        self._updateTargetForce()
         self._updateGhost()
         self._avoidNearbyDrones()
 
@@ -142,7 +142,7 @@ class Drone:
         self.ghostNP.setPos(self.getPos())
 
 
-    def _updateForce(self):
+    def _updateTargetForce(self):
         dist = (self.target - self.getPos())
         if(dist.length() > self.FORCEFALLOFFDISTANCE):
             force = dist.normalized() * self.NAVIGATIONFORCE

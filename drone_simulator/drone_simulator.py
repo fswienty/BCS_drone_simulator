@@ -22,7 +22,7 @@ from panda3d.bullet import BulletDebugNode
 
 class DroneSimulator(ShowBase):
 
-    def __init__(self):
+    def __init__(self, droneList):
         ShowBase.__init__(self)
 
         # set resolution
@@ -42,7 +42,7 @@ class DroneSimulator(ShowBase):
         self.initRoom()
         self.initLights()
 
-        self.droneManager = DroneManager(self)
+        self.droneManager = DroneManager(self, droneList)
         self.droneRecorder = DroneRecorder(self.droneManager)
 
 
@@ -96,14 +96,11 @@ class DroneSimulator(ShowBase):
 
 
 if __name__ == "__main__":
-    # addressList = []
-    # Append addresses of drones you want to connect to to the list.
-    # addressList.append('radio://0/80/2M/E7E7E7E7E0')
-    # addresses.append('radio://0/80/2M/E7E7E7E7E1')
-    # addressList.append('radio://0/80/2M/E7E7E7E7E2')
-    # addresses.append('radio://0/80/2M/E7E7E7E7E3')
-    # addressList.append('radio://0/80/2M/E7E7E7E7E4')
-    #print("Attempting to reset and locate the following drones: ", addressList)
-    #positionAndAddressList = drone_initilizer.resetAndLocate(addressList) # resets the estimators of all drones and returns their locations and addresses
-    app = DroneSimulator()
+    droneList = []
+    droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])
+    droneList.append([Vec3(1, 1, .3), 'radio://0/80/2M/E7E7E7E7E1'])
+    #droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
+    #droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
+    #droneList.append([Vec3(-1, -1, .3), 'radio://0/80/2M/E7E7E7E7E4'])
+    app = DroneSimulator(droneList)
     app.run()
