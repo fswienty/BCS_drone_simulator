@@ -2,7 +2,7 @@ import sys
 import os
 import time
 from direct.showbase.ShowBase import ShowBase
-import scanner
+import drone_initilizer
 from camera_controller import CameraController
 from drone_manager import DroneManager
 from recorder import DroneRecorder
@@ -22,7 +22,7 @@ from panda3d.bullet import BulletDebugNode
 
 class DroneSimulator(ShowBase):
 
-    def __init__(self, droneList):
+    def __init__(self):
         ShowBase.__init__(self)
 
         # set resolution
@@ -42,7 +42,7 @@ class DroneSimulator(ShowBase):
         self.initRoom()
         self.initLights()
 
-        self.droneManager = DroneManager(self, droneList)
+        self.droneManager = DroneManager(self)
         self.droneRecorder = DroneRecorder(self.droneManager)
 
 
@@ -96,6 +96,14 @@ class DroneSimulator(ShowBase):
 
 
 if __name__ == "__main__":
-    droneList = scanner.scanAndReset() # get initial positions of available drones and reset their estimators
-    app = DroneSimulator(droneList)
+    # addressList = []
+    # Append addresses of drones you want to connect to to the list.
+    # addressList.append('radio://0/80/2M/E7E7E7E7E0')
+    # addresses.append('radio://0/80/2M/E7E7E7E7E1')
+    # addressList.append('radio://0/80/2M/E7E7E7E7E2')
+    # addresses.append('radio://0/80/2M/E7E7E7E7E3')
+    # addressList.append('radio://0/80/2M/E7E7E7E7E4')
+    #print("Attempting to reset and locate the following drones: ", addressList)
+    #positionAndAddressList = drone_initilizer.resetAndLocate(addressList) # resets the estimators of all drones and returns their locations and addresses
+    app = DroneSimulator()
     app.run()
