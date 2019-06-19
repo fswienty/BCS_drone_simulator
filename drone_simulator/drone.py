@@ -43,7 +43,8 @@ class Drone:
         self.manager = manager
         self.name = name
         self.id = int(''.join(filter(str.isdigit, name))) # a unique number to identify the drone, not used right now
-        
+        self.actualDronePosition = Vec3(0, 0, 0)        
+
         self.canConnect = False # true if the virtual drone has a uri to connect to a real drone
         self.isConnected = False # true if the connection to a real drone is currently active
         self.uri = uri
@@ -88,6 +89,7 @@ class Drone:
         self.targetLineNP = self.base.render.attachNewNode(LineSegs().create())
         self.velocityLineNP = self.base.render.attachNewNode(LineSegs().create())
         self.forceLineNP = self.base.render.attachNewNode(LineSegs().create())
+        self.actualDroneLineNP = self.base.render.attachNewNode(LineSegs().create())
 
 
     # connect to a real drone with the uri
@@ -98,15 +100,15 @@ class Drone:
         self.isConnected = True
         self.scf = SyncCrazyflie(self.uri, cf=Crazyflie(rw_cache='./cache'))
         self.scf.open_link()
-        self.reset_estimator()
+        self._reset_estimator()
+        self.start_position_printing()
 
 
     def sendPosition(self):
-        #print("sending position")
         cf = self.scf.cf
         cf.param.set_value('flightmode.posSet', '1')
         pos = self.getPos()
-        # print('Setting position {} | {} | {}'.format(pos[0], pos[1], pos[2]))
+        # print('Sending position {} | {} | {}'.format(pos[0], pos[1], pos[2]))
         cf.commander.send_position_setpoint(pos[0], pos[1], pos[2], 0)
 
 
@@ -132,8 +134,9 @@ class Drone:
             self.sendPosition()
 
         self._drawTargetLine()
-        self._drawVelocityLine()
-        self._drawForceLine()
+        # self._drawVelocityLine()
+        # self._drawForceLine()
+        self._drawActualDroneLine()
 
         self._printDebugInfo()
 
@@ -187,16 +190,20 @@ class Drone:
         self.rigidBody.applyCentralForce(force)
 
 
-    def setPos(self, position: Vec3):
-        self.rigidBodyNP.setPos(Vec3)
-
-    
     def getPos(self) -> Vec3:
         return self.rigidBodyNP.getPos()
 
 
+    def setPos(self, position: Vec3):
+        self.rigidBodyNP.setPos(position)
+
+
     def getVel(self) -> Vec3:
         return self.rigidBody.getLinearVelocity()
+
+    
+    def setVel(self, velocity: Vec3):
+        return self.rigidBody.setLinearVelocity(velocity)
 
 
     def _drawTargetLine(self):
@@ -228,10 +235,20 @@ class Drone:
         ls.moveTo(self.getPos())
         ls.drawTo(self.getPos() + self.rigidBody.getTotalForce())
         node = ls.create()
-        self.forceLineNP = self.base.render.attachNewNode(node)    
+        self.forceLineNP = self.base.render.attachNewNode(node)   
+
+    def _drawActualDroneLine(self):
+        self.actualDroneLineNP.removeNode()
+        ls = LineSegs()
+        #ls.setThickness(1)
+        ls.setColor(0.0, 0.0, 0.0, 1.0)
+        ls.moveTo(self.getPos())
+        ls.drawTo(self.actualDronePosition)
+        node = ls.create()
+        self.actualDroneLineNP = self.base.render.attachNewNode(node)  
 
 
-    def wait_for_position_estimator(self):
+    def _wait_for_position_estimator(self):
         print('Waiting for estimator to find position...')
 
         log_config = LogConfig(name='Kalman Variance', period_in_ms=500)
@@ -272,10 +289,30 @@ class Drone:
                     break
 
 
-    def reset_estimator(self):
+    def _reset_estimator(self):
         cf = self.scf.cf
         cf.param.set_value('kalman.resetEstimation', '1')
         time.sleep(0.1)
         cf.param.set_value('kalman.resetEstimation', '0')
 
-        self.wait_for_position_estimator()
+        self._wait_for_position_estimator()
+
+
+    def position_callback(self, timestamp, data, logconf):
+        x = data['kalman.stateX']
+        y = data['kalman.stateY']
+        z = data['kalman.stateZ']
+        self.actualDronePosition = Vec3(x, y, z)
+        #print('pos: ({}, {}, {})'.format(x, y, z))
+        #print('pos: ({}, {})'.format(x, y))
+
+
+    def start_position_printing(self):
+        log_conf = LogConfig(name='Position', period_in_ms=20)
+        log_conf.add_variable('kalman.stateX', 'float')
+        log_conf.add_variable('kalman.stateY', 'float')
+        log_conf.add_variable('kalman.stateZ', 'float')
+
+        self.scf.cf.log.add_config(log_conf)
+        log_conf.data_received_cb.add_callback(self.position_callback)
+        log_conf.start()
