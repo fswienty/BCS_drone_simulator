@@ -134,9 +134,9 @@ class Drone:
             self.sendPosition()
 
         self._drawTargetLine()
-        # self._drawVelocityLine()
-        # self._drawForceLine()
-        self._drawActualDroneLine()
+        self._drawVelocityLine()
+        self._drawForceLine()
+        #self._drawActualDroneLine()
 
         self._printDebugInfo()
 
@@ -227,6 +227,7 @@ class Drone:
         node = ls.create()
         self.velocityLineNP = self.base.render.attachNewNode(node)
 
+
     def _drawForceLine(self):
         self.forceLineNP.removeNode()
         ls = LineSegs()
@@ -304,11 +305,10 @@ class Drone:
         z = data['kalman.stateZ']
         self.actualDronePosition = Vec3(x, y, z)
         #print('pos: ({}, {}, {})'.format(x, y, z))
-        #print('pos: ({}, {})'.format(x, y))
 
 
     def start_position_printing(self):
-        log_conf = LogConfig(name='Position', period_in_ms=20)
+        log_conf = LogConfig(name='Position', period_in_ms=50)
         log_conf.add_variable('kalman.stateX', 'float')
         log_conf.add_variable('kalman.stateY', 'float')
         log_conf.add_variable('kalman.stateZ', 'float')
