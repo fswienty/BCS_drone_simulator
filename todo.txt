@@ -1,4 +1,8 @@
-make more intelligent collision avoidance
+make own collision avoidance more intelligent
+    make ground and walls repel drones
+    better distance and velocity multipliers
+add orca
+add mike's stuff
 
 lighthouse->panda: find way to get positions from lighthouse and put them into panda3d in realtime
 

@@ -168,7 +168,7 @@ class Drone:
                 distVec = other.getPos() - self.getPos()
                 if distVec.length() < 0.2:
                     print("BONK")
-                distMult = max([0, 2 * self.GHOSTRADIUS - distVec.length()])
+                distMult = max([0, 2 * self.GHOSTRADIUS - distVec.length()]) # make this stuff better
                 distMult = distMult
                 # velMult = other.getVel().length() + self.getVel().length() + 1
                 velMult = self.getVel().length()
