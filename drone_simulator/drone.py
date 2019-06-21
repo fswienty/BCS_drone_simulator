@@ -107,7 +107,11 @@ class Drone:
     def sendPosition(self):
         cf = self.scf.cf
         cf.param.set_value('flightmode.posSet', '1')
-        pos = self.getPos()
+        maxVelLead = 0.2
+        velLead = self.getVel()
+        if (velLead.length() > maxVelLead):
+            velLead = velLead.normalized() * maxVelLead
+        pos = self.getPos() #+ velLead # send the drone a point slightly ahead of the virtual drone to get it to sync better
         # print('Sending position {} | {} | {}'.format(pos[0], pos[1], pos[2]))
         cf.commander.send_position_setpoint(pos[0], pos[1], pos[2], 0)
 
@@ -160,7 +164,7 @@ class Drone:
         for node in self.ghost.getOverlappingNodes():
             if node.name.startswith("drone"):
                 other = self.manager.getDrone(node.name)
-                perp = self.target.cross(other.target)
+                perp = self.target.cross(other.target) # the direction perpendicular to the target vectors of both drones
                 distVec = other.getPos() - self.getPos()
                 if distVec.length() < 0.2:
                     print("BONK")
@@ -223,7 +227,6 @@ class Drone:
         #ls.setThickness(1)
         ls.setColor(0.0, 0.0, 1.0, 1.0)
         ls.moveTo(self.getPos())
-        ls.drawTo(self.getPos() + self.getVel())
         node = ls.create()
         self.velocityLineNP = self.base.render.attachNewNode(node)
 

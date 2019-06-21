@@ -27,7 +27,8 @@ class DroneSimulator(ShowBase):
 
         # set resolution
         wp = WindowProperties()
-        wp.setSize(1600, 1200)
+        # wp.setSize(1600, 1200)
+        wp.setSize(1200, 900)
         self.win.requestProperties(wp)
 
         self.setFrameRateMeter(True)
