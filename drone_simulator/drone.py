@@ -179,6 +179,7 @@ class Drone:
                 # velMult = other.getVel().length() + self.getVel().length() + 1
                 velMult = self.getVel().length()
                 velMult = velMult + .5
+                # self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
                 self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
 
 

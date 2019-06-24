@@ -38,8 +38,8 @@ class DroneManager(DirectObject.DirectObject):
     def initFormations(self):
         self.formations = {}
     
-        self.loadFormation("square")
-        self.loadFormation("square_inv")
+        self.loadFormation("square2")
+        self.loadFormation("square_inv2")
         self.loadFormation("line")
         self.loadFormation("upright_square")
         self.loadFormation("upright_square_inv")
@@ -48,8 +48,8 @@ class DroneManager(DirectObject.DirectObject):
         self.loadFormation("three_dim_cross_full")
         self.loadFormation("three_dim_cross_full_inv")
 
-        self.accept('1', self.applyFormation, extraArgs=["square"])
-        self.accept('2', self.applyFormation, extraArgs=["square_inv"])
+        self.accept('1', self.applyFormation, extraArgs=["square2"])
+        self.accept('2', self.applyFormation, extraArgs=["square_inv2"])
         self.accept('3', self.applyFormation, extraArgs=["upright_square"])
         self.accept('4', self.applyFormation, extraArgs=["upright_square_inv"])
         self.accept('5', self.applyFormation, extraArgs=["three_dim_cross"])
