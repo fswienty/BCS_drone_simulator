@@ -170,7 +170,7 @@ class Drone:
             if node.name.startswith("drone"):
                 other = self.manager.getDrone(node.name)
                 # perp = self.target.cross(other.target) # the direction perpendicular to the target vectors of both drones
-                perp = self.crossProduct(self.target, other.target)
+                perp = self.getRelativeTargetVector().cross(other.getRelativeTargetVector())
                 distVec = other.getPos() - self.getPos()
                 if distVec.length() < 0.2:
                     print("BONK")
@@ -182,11 +182,8 @@ class Drone:
                 self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
 
 
-    def crossProduct(self, a: Vec3, b: Vec3) -> Vec3:
-        x = a.y * b.z - a.z * b.y
-        y = a.z * b.x - a.x * b.z
-        z = a.x * b.y - a.y * b.x
-        return Vec3(x, y, z)
+    def getRelativeTargetVector(self) -> Vec3:
+        return self.target - self.getPos()
 
 
     def _printDebugInfo(self):
