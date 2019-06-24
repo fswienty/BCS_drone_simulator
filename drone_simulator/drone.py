@@ -1,6 +1,8 @@
 import random
 import re
 import time
+import math
+import numpy as np
 
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
@@ -76,7 +78,8 @@ class Drone:
         model.setScale(0.2)
         model.reparentTo(self.rigidBodyNP)
 
-        self.target = position
+        self.target = position # the target that the virtual drones tries to reach
+        self.setpoint = position # the immediate target (setpoint) that the real drone tries to reach, usually updated each frame
         self.waitingPosition = Vec3(position[0], position[1], 0.7)
         
         self.printDebugInfo = printDebugInfo
@@ -90,6 +93,7 @@ class Drone:
         self.velocityLineNP = self.base.render.attachNewNode(LineSegs().create())
         self.forceLineNP = self.base.render.attachNewNode(LineSegs().create())
         self.actualDroneLineNP = self.base.render.attachNewNode(LineSegs().create())
+        self.setpointNP = self.base.render.attachNewNode(LineSegs().create())
 
 
     # connect to a real drone with the uri
@@ -107,13 +111,22 @@ class Drone:
     def sendPosition(self):
         cf = self.scf.cf
         cf.param.set_value('flightmode.posSet', '1')
-        maxVelLead = 0.2
-        velLead = self.getVel()
-        if (velLead.length() > maxVelLead):
-            velLead = velLead.normalized() * maxVelLead
-        pos = self.getPos() #+ velLead # send the drone a point slightly ahead of the virtual drone to get it to sync better
-        # print('Sending position {} | {} | {}'.format(pos[0], pos[1], pos[2]))
-        cf.commander.send_position_setpoint(pos[0], pos[1], pos[2], 0)
+
+        ##### send position + the negative of the distance to the real drone
+        # diff = self.getPos() - self.actualDronePosition
+        # self.setpoint = self.getPos() + diff
+
+        ##### send the position + some function of the velocity vector
+        vel = self.getVel().length()
+        multiplier = 0.5 * (math.tanh(4 * vel - 2.3) + 1)
+        #pos = self.getPos() + self.getVel() * multiplier
+        self.setpoint = self.getPos() + self.getVel() * multiplier
+
+        #### send position only
+        # self.setpoint = self.getPos()
+        
+        # print('Sending position {} | {} | {}'.format(self.setpoint[0], self.setpoint[1], self.setpoint[2]))
+        cf.commander.send_position_setpoint(self.setpoint[0], self.setpoint[1], self.setpoint[2], 0)
 
 
     def disconnect(self):
@@ -137,10 +150,11 @@ class Drone:
         if self.isConnected:
             self.sendPosition()
 
-        self._drawTargetLine()
-        self._drawVelocityLine()
-        self._drawForceLine()
-        #self._drawActualDroneLine()
+        # self._drawTargetLine()
+        # self._drawVelocityLine()
+        # self._drawForceLine()
+        self._drawActualDroneLine()
+        self._drawSetpoint()
 
         self._printDebugInfo()
 
@@ -227,6 +241,7 @@ class Drone:
         #ls.setThickness(1)
         ls.setColor(0.0, 0.0, 1.0, 1.0)
         ls.moveTo(self.getPos())
+        ls.drawTo(self.getPos() + self.getVel())
         node = ls.create()
         self.velocityLineNP = self.base.render.attachNewNode(node)
 
@@ -241,6 +256,7 @@ class Drone:
         node = ls.create()
         self.forceLineNP = self.base.render.attachNewNode(node)   
 
+
     def _drawActualDroneLine(self):
         self.actualDroneLineNP.removeNode()
         ls = LineSegs()
@@ -249,7 +265,18 @@ class Drone:
         ls.moveTo(self.getPos())
         ls.drawTo(self.actualDronePosition)
         node = ls.create()
-        self.actualDroneLineNP = self.base.render.attachNewNode(node)  
+        self.actualDroneLineNP = self.base.render.attachNewNode(node)
+
+    
+    def _drawSetpoint(self):
+        self.setpointNP.removeNode()
+        ls = LineSegs()
+        #ls.setThickness(1)
+        ls.setColor(1.0, 1.0, 1.0, 1.0)
+        ls.moveTo(self.getPos())
+        ls.drawTo(self.setpoint)
+        node = ls.create()
+        self.setpointNP = self.base.render.attachNewNode(node)  
 
 
     def _wait_for_position_estimator(self):

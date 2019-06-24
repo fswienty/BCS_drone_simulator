@@ -1,6 +1,11 @@
 import os
 import time
 import random
- 
-a = int(''.join(filter(str.isdigit, "gdgr565TGH")))
-print(a)
+import numpy as np
+import matplotlib.pyplot as plt
+
+xVals = np.arange(-1,2,.05)
+print(xVals)
+yVals = 0.5 * (np.tanh(4 * xVals - 2.3) + 1)
+plt.plot(xVals, yVals)
+plt.show()

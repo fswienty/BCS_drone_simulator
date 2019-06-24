@@ -27,8 +27,8 @@ class DroneSimulator(ShowBase):
 
         # set resolution
         wp = WindowProperties()
-        # wp.setSize(1600, 1200)
-        wp.setSize(1200, 900)
+        wp.setSize(1600, 1200)
+        #wp.setSize(1200, 900)
         self.win.requestProperties(wp)
 
         self.setFrameRateMeter(True)
@@ -99,13 +99,13 @@ class DroneSimulator(ShowBase):
 if __name__ == "__main__":
     droneList = []
     droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])
-    droneList.append([Vec3(1, 1, .3), 'radio://0/80/2M/E7E7E7E7E1'])
-    droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
-    droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
-    droneList.append([Vec3(-1, .5, .3), 'radio://0/80/2M/E7E7E7E7E4'])
-    droneList.append([Vec3(.5, -1, .3), 'radio://0/80/2M/E7E7E7E7E5'])
+    # droneList.append([Vec3(1, 1, .3), 'radio://0/80/2M/E7E7E7E7E1'])
+    # droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
+    # droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
+    # droneList.append([Vec3(-1, -1, .3), 'radio://0/80/2M/E7E7E7E7E4'])
+    # droneList.append([Vec3(.5, -1, .3), 'radio://0/80/2M/E7E7E7E7E5'])
 
-    # droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])
+    # droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E1'])
 
     app = DroneSimulator(droneList)
     app.run()
