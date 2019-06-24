@@ -99,9 +99,9 @@ class DroneSimulator(ShowBase):
 if __name__ == "__main__":
     droneList = []
     droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])
-    # droneList.append([Vec3(1, 1, .3), 'radio://0/80/2M/E7E7E7E7E1'])
-    # droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
-    # droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
+    droneList.append([Vec3(1, 1, .3), 'radio://0/80/2M/E7E7E7E7E1'])
+    droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
+    droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
     # droneList.append([Vec3(-1, -1, .3), 'radio://0/80/2M/E7E7E7E7E4'])
     # droneList.append([Vec3(.5, -1, .3), 'radio://0/80/2M/E7E7E7E7E5'])
 

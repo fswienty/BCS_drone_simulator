@@ -21,15 +21,6 @@ from panda3d.bullet import BulletGhostNode
 
 class Drone:
 
-    # RIGIDBODYMASS = 1
-    # RIGIDBODYRADIUS = 0.1
-    # GHOSTRADIUS = 0.5
-
-    # NAVIGATIONFORCE = .5
-    # AVOIDANCEFORCE = 5
-    # FORCEFALLOFFDISTANCE = .5
-    # LINEARDAMPING = .9
-
     RIGIDBODYMASS = 1
     RIGIDBODYRADIUS = 0.1
     GHOSTRADIUS = 0.3
@@ -118,9 +109,9 @@ class Drone:
 
         ##### send the position + some function of the velocity vector
         vel = self.getVel().length()
-        multiplier = 0.5 * (math.tanh(4 * vel - 2.3) + 1)
+        multiplier = 0.5 * (math.tanh(4 * vel - 3) + 1)
         #pos = self.getPos() + self.getVel() * multiplier
-        self.setpoint = self.getPos() + self.getVel() * multiplier
+        self.setpoint = self.getPos() + self.getVel() * 0.5 * multiplier
 
         #### send position only
         # self.setpoint = self.getPos()
@@ -143,18 +134,18 @@ class Drone:
 
 
     def update(self):
-        self._updateTargetForce()
         self._updateGhost()
+        self._updateTargetForce()
         self._updateAvoidanceForce()
 
         if self.isConnected:
             self.sendPosition()
 
-        # self._drawTargetLine()
+        self._drawTargetLine()
         # self._drawVelocityLine()
         # self._drawForceLine()
-        self._drawActualDroneLine()
-        self._drawSetpoint()
+        # self._drawActualDroneLine()
+        # self._drawSetpoint()
 
         self._printDebugInfo()
 
@@ -168,7 +159,7 @@ class Drone:
         if(dist.length() > self.FORCEFALLOFFDISTANCE):
             force = dist.normalized() * self.NAVIGATIONFORCE
         else:
-            force = dist * self.NAVIGATIONFORCE / self.FORCEFALLOFFDISTANCE
+            force = (dist / self.FORCEFALLOFFDISTANCE) * self.NAVIGATIONFORCE 
         velMult = self.getVel().length() + 0.1
         velMult = velMult
         self._addForce(force * 3)
@@ -178,7 +169,8 @@ class Drone:
         for node in self.ghost.getOverlappingNodes():
             if node.name.startswith("drone"):
                 other = self.manager.getDrone(node.name)
-                perp = self.target.cross(other.target) # the direction perpendicular to the target vectors of both drones
+                # perp = self.target.cross(other.target) # the direction perpendicular to the target vectors of both drones
+                perp = self.crossProduct(self.target, other.target)
                 distVec = other.getPos() - self.getPos()
                 if distVec.length() < 0.2:
                     print("BONK")
@@ -188,6 +180,13 @@ class Drone:
                 velMult = self.getVel().length()
                 velMult = velMult + .5
                 self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
+
+
+    def crossProduct(self, a: Vec3, b: Vec3) -> Vec3:
+        x = a.y * b.z - a.z * b.y
+        y = a.z * b.x - a.x * b.z
+        z = a.x * b.y - a.y * b.x
+        return Vec3(x, y, z)
 
 
     def _printDebugInfo(self):
