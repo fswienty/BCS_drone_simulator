@@ -215,6 +215,7 @@ class Drone:
 
         for other in others:
             perp = self.targetVector().cross(massVec-self.getPos())
+            perp2 = self.targetVector().cross(other.getPos() - self.getPos())
 
             distVec = other.getPos() - self.getPos()
             if distVec.length() < 0.2:
@@ -223,7 +224,9 @@ class Drone:
             distMult = distMult
             velMult = self.getVel().length()
             velMult = velMult + .5
-            avoidanceVector = perp.normalized() * 0.3 - distVec.normalized() * 0.7
+
+
+            avoidanceVector = perp2.normalized() * 0.0 + perp.normalized() * 0.1 - distVec.normalized() * 0.7
             avoidanceVector.normalize()
             self._addForce(avoidanceVector * distMult * velMult * self.AVOIDANCEFORCE)
 
@@ -252,6 +255,7 @@ class Drone:
 
 
     def root(self, vec: Vec3) -> Vec3:
+        """Takes the root of all elements of the supplied vector and returns it."""
         x = math.sqrt(vec.x)
         y = math.sqrt(vec.y)
         z = math.sqrt(vec.z)
@@ -270,10 +274,13 @@ class Drone:
 
 
     def setTarget(self, target: Vec3 = Vec3(0, 0, 0), random=False):
-        if random == False:
-            self.target = target
-        else:
-            self.target = self.manager.getRandomRoomCoordinate()
+        """Sets a new target for the drone."""
+        self.target = target
+
+    
+    def setRandomTarget(self):
+        """Sets a new random target for the drone."""
+        self.target = self.manager.getRandomRoomCoordinate()
     
 
     def _addForce(self, force: Vec3):
@@ -340,7 +347,7 @@ class Drone:
         self.actualDroneLineNP = self.base.render.attachNewNode(node)
 
     
-    def _drawSetpoint(self):
+    def _drawSetpointLine(self):
         self.setpointNP.removeNode()
         ls = LineSegs()
         #ls.setThickness(1)

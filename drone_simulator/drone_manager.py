@@ -14,17 +14,20 @@ class DroneManager(DirectObject.DirectObject):
     
     def __init__(self, base, droneList):
         self.base = base
-        #self.roomSize = Vec3(3.40, 4.56, 2.56) # the dimensions of the bcs drone lab in meters
-        self.roomSize = Vec3(1.5, 2, 1.3) # confined dimensions because the room and drone coordinated dont match up yet
+        # the actual dimensions of the bcs drone lab in meters
+        #self.roomSize = Vec3(3.40, 4.56, 2.56) 
+        # confined dimensions because the room and drone coordinates dont match up yet. Also, flying near the windows/close to walls/too high often makes the lps loose track
+        self.roomSize = Vec3(1.5, 2, 1.3)
         self.initDrones(droneList)
         self.initFormations()
         self.initUI()
 
 
     def initDrones(self, droneList):
+        """Initializes the drones defined in droneList."""
         self.isStarted = False
         self.isConnected = False
-        self.drones = {}
+        self.drones = {} # this is the dictionary all drones are held in with their name as key
 
         if droneList == []:
             print("No drones to spawn")
@@ -33,15 +36,13 @@ class DroneManager(DirectObject.DirectObject):
                 name = "drone{}".format(i)
                 position = droneList[i][0]
                 uri = droneList[i][1]
-                debug = False
-                # if i==0:
-                #     debug = True
-                self.drones[name] = Drone(self, name, position, uri=uri, printDebugInfo=debug)
+                self.drones[name] = Drone(self, name, position, uri=uri)
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
 
     def initFormations(self):
+        """Loads some formations from the formations folder and assigns them to hotkeys."""
         self.formations = {}
     
         self.loadFormation("square2")
@@ -126,6 +127,7 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def stopAll(self):
+        """Stops all drones and makes them hover where they are"""
         if self.isStarted == False:
             print("can't stop drones, drones are not started")
             return
@@ -135,6 +137,7 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def toggleConnections(self):
+        """Connects/Disconnects the virtual drones to/from the real drones."""
         #connect drones
         if self.isConnected == False:
             self.isConnected = True
@@ -159,6 +162,7 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def applyFormation(self, name: str):
+        """Applies a formation to the drones."""
         if self.isStarted == False:
             print("Can't apply formation, drones are not started")
             return
@@ -181,12 +185,14 @@ class DroneManager(DirectObject.DirectObject):
             
 
     def updateDronesTask(self, task):
+        """Run the update methods of all drones."""
         for drone in self.drones.values():
             drone.update()
         return task.cont
 
 
     def getRandomRoomCoordinate(self) -> Vec3:
+        """Returns random 3D coordinates withing the confines of the room."""
         newX = random.uniform(-self.roomSize.x/2, self.roomSize.x/2)
         newY = random.uniform(-self.roomSize.y/2, self.roomSize.y/2)
         newZ = random.uniform(0+0.3, self.roomSize.z)
@@ -194,10 +200,12 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def getDrone(self, name: str) -> Drone:
+        """Finds a drone by name, returns the drone object."""
         return self.drones.get(name)
 
 
     def getAllPositions(self):
+        """Returns a list of the positions of all drones. Usefull when recording their paths for later."""
         lst = []
         for drone in self.drones.values():
             pos = drone.getPos()
