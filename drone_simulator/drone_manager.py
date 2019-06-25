@@ -109,6 +109,7 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def returnToWaitingPosition(self):
+        """Makes all drones hover above their starting position. Usefull to make the drones land just where they started."""
         if self.isStarted == False:
             print("can't return to waiting position, drones are not started")
             return
@@ -118,6 +119,7 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def setRandomTargets(self):
+        """Set random targets for all drones."""
         if self.isStarted == False:
             print("can't set random targets, drones are not started")
             return
@@ -127,7 +129,7 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def stopAll(self):
-        """Stops all drones and makes them hover where they are"""
+        """Stops all drones and makes them hover where they are."""
         if self.isStarted == False:
             print("can't stop drones, drones are not started")
             return

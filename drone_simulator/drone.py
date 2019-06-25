@@ -30,7 +30,7 @@ class Drone:
     FORCEFALLOFFDISTANCE = .5
     LINEARDAMPING = 0.97
 
-    def __init__(self, manager, name: str, position: Vec3, uri="drone address", printDebugInfo=False):
+    def __init__(self, manager, name: str, position: Vec3, uri="-1", printDebugInfo=False):
 
         self.base = manager.base
         self.manager = manager
@@ -41,7 +41,7 @@ class Drone:
         self.canConnect = False # true if the virtual drone has a uri to connect to a real drone
         self.isConnected = False # true if the connection to a real drone is currently active
         self.uri = uri
-        if self.uri != "drone address":
+        if self.uri != "-1":
             self.canConnect = True
 
         # add the rigidbody to the drone, which has a mass and linear damping
@@ -90,6 +90,7 @@ class Drone:
 
     # connect to a real drone with the uri
     def connect(self):
+        """Connects the virtual drone to a real one with the uri supplied at initialization."""
         if self.canConnect == False:
             return
         print(self.name, "@", self.uri, "connecting")
@@ -101,6 +102,7 @@ class Drone:
 
 
     def sendPosition(self):
+        """Sends the position of the virtual drone to the real one."""
         cf = self.scf.cf
         cf.param.set_value('flightmode.posSet', '1')
 
@@ -122,6 +124,7 @@ class Drone:
 
 
     def disconnect(self):
+        """Disconnects the real drone."""
         print(self.name, "@", self.uri, "disconnecting")
         self.isConnected = False
         cf = self.scf.cf
@@ -131,6 +134,7 @@ class Drone:
 
 
     def update(self):
+        """Update the virtual drone."""
         self._updateGhost()
         # self._updateForce()
         self._updateTargetForce()
@@ -139,16 +143,18 @@ class Drone:
         if self.isConnected:
             self.sendPosition()
 
+        # draw various lines to get a better idea of whats happening
         self._drawTargetLine()
         # self._drawVelocityLine()
         # self._drawForceLine()
         # self._drawActualDroneLine()
-        # self._drawSetpoint()
+        # self._drawSetpointLine()
 
         self._printDebugInfo()
 
 
     def _updateGhost(self):
+        """Puts the ghost node (the sensor) to the location of the virtual drone."""
         self.ghostNP.setPos(self.getPos())
 
 
@@ -188,6 +194,7 @@ class Drone:
 
 
     def _updateTargetForce(self):
+        """Applies a force to the virtual drone which moves it closer to its target."""
         dist = (self.target - self.getPos())
         if(dist.length() > self.FORCEFALLOFFDISTANCE):
             force = dist.normalized()
@@ -199,6 +206,7 @@ class Drone:
 
 
     def _updateAvoidanceForce(self):
+        """Applies a force the the virtual drone which makes it avoid other drones."""
         others = []
         massVec = Vec3(0,0,0)
         for node in self.ghost.getOverlappingNodes():
@@ -263,6 +271,7 @@ class Drone:
 
 
     def targetVector(self) -> Vec3:
+        """Returns the vector from the drone to the target."""
         return self.target - self.getPos()
 
 
@@ -359,6 +368,7 @@ class Drone:
 
 
     def _wait_for_position_estimator(self):
+        """Waits until the position estimator reports a consistent location after resetting."""
         print('Waiting for estimator to find position...')
 
         log_config = LogConfig(name='Kalman Variance', period_in_ms=500)
@@ -397,6 +407,7 @@ class Drone:
 
 
     def _reset_estimator(self):
+        """Resets the position estimator, this should be run before flying the drones or they might report a wrong position."""
         cf = self.scf.cf
         cf.param.set_value('kalman.resetEstimation', '1')
         time.sleep(0.1)
@@ -406,6 +417,7 @@ class Drone:
 
 
     def position_callback(self, timestamp, data, logconf):
+        """Updates the variable holding the position of the actual drone. It is not called in the update method, but by the drone itself (I think)."""
         x = data['kalman.stateX']
         y = data['kalman.stateY']
         z = data['kalman.stateZ']
@@ -414,6 +426,7 @@ class Drone:
 
 
     def start_position_printing(self):
+        """Activate logging of the position of the real drone."""
         log_conf = LogConfig(name='Position', period_in_ms=50)
         log_conf.add_variable('kalman.stateX', 'float')
         log_conf.add_variable('kalman.stateY', 'float')
