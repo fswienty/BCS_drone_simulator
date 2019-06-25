@@ -30,7 +30,10 @@ class DroneManager(DirectObject.DirectObject):
             print("No drones to spawn")
         else:
             for i in range(0, len(droneList)):
-                self.loadDrone("drone{}".format(i), droneList[i][0], droneList[i][1])
+                name = "drone{}".format(i)
+                position = droneList[i][0]
+                uri = droneList[i][1]
+                self.drones[name] = Drone(self, name, position, uri=uri)
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
@@ -185,10 +188,6 @@ class DroneManager(DirectObject.DirectObject):
         newY = random.uniform(-self.roomSize.y/2, self.roomSize.y/2)
         newZ = random.uniform(0+0.3, self.roomSize.z)
         return Vec3(newX, newY, newZ)  
-
-
-    def loadDrone(self, name: str, position: Vec3, uri="drone address", printDebugInfo=False):
-        self.drones[name] = Drone(self, name, position, uri=uri, printDebugInfo=printDebugInfo)
 
 
     def getDrone(self, name: str) -> Drone:
