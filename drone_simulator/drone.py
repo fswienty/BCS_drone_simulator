@@ -76,6 +76,7 @@ class Drone:
         self.printDebugInfo = printDebugInfo
         if self.printDebugInfo == True: # put a second drone model on top of drone that outputs debug stuff
             model = self.base.loader.loadModel(self.base.modelDir + "/drones/drone1.egg")
+            model.setScale(0.4)
             model.setPos(0, 0, .2)
             model.reparentTo(self.rigidBodyNP)
 
@@ -127,10 +128,6 @@ class Drone:
         cf.commander.send_stop_setpoint()
         time.sleep(0.1)
         self.scf.close_link()
-
-
-    def returnToWaitingPosition(self):
-        self.setTarget(self.waitingPosition)
 
 
     def update(self):
@@ -202,21 +199,70 @@ class Drone:
 
 
     def _updateAvoidanceForce(self):
+        amountOfDrones = 0
+        others = []
+        mass = Vec3(0,0,0)
         for node in self.ghost.getOverlappingNodes():
             if node.name.startswith("drone"):
-                other = self.manager.getDrone(node.name)
-                # perp = self.target.cross(other.target) # the direction perpendicular to the target vectors of both drones
+                amountOfDrones += 1
+                others.append(self.manager.getDrone(node.name))
+        
+        temp = self.getPos() ** 2
+        for other in others:
+            temp += other.getPos() ** 2
+        temp / (others.__len__() + 1)
+        mass = self.root(temp)
+        print(mass)
+
+        for other in others:
+            # perp = self.target.cross(other.target) # the direction perpendicular to the target vectors of both drones
+            perp = Vec3(0,0,0)
+            perp2 = Vec3(0,0,0)
+            if(self.id > other.id):
                 perp = self.targetVector().cross(other.targetVector())
-                distVec = other.getPos() - self.getPos()
-                if distVec.length() < 0.2:
-                    print("BONK")
-                distMult = max([0, 2 * self.GHOSTRADIUS - distVec.length()]) # make this stuff better
-                distMult = distMult
-                # velMult = other.getVel().length() + self.getVel().length() + 1
-                velMult = self.getVel().length()
-                velMult = velMult + .5
-                # self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
-                self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
+
+            distVec = other.getPos() - self.getPos()
+            if distVec.length() < 0.2:
+                print("BONK")
+            distMult = max([0, 2 * self.GHOSTRADIUS - distVec.length()]) # make this stuff better
+            distMult = distMult
+            # velMult = other.getVel().length() + self.getVel().length() + 1
+            velMult = self.getVel().length()
+            velMult = velMult + .5
+            # self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
+            avoidanceVector = (perp2.normalized() * 0.3 + perp.normalized() * 0.3 - distVec.normalized() * 0.7)
+            avoidanceVector.normalize()
+            self._addForce(avoidanceVector * distMult * velMult * self.AVOIDANCEFORCE)
+
+
+        # for node in self.ghost.getOverlappingNodes():
+        #     if node.name.startswith("drone"):
+        #         other = self.manager.getDrone(node.name)
+        #         # perp = self.target.cross(other.target) # the direction perpendicular to the target vectors of both drones
+        #         perp = Vec3(0,0,0)
+        #         perp2 = Vec3(0,0,0)
+        #         if(self.id > other.id):
+        #             perp = self.targetVector().cross(other.targetVector())
+
+        #         distVec = other.getPos() - self.getPos()
+        #         if distVec.length() < 0.2:
+        #             print("BONK")
+        #         distMult = max([0, 2 * self.GHOSTRADIUS - distVec.length()]) # make this stuff better
+        #         distMult = distMult
+        #         # velMult = other.getVel().length() + self.getVel().length() + 1
+        #         velMult = self.getVel().length()
+        #         velMult = velMult + .5
+        #         # self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
+        #         avoidanceVector = (perp2.normalized() * 0.3 + perp.normalized() * 0.3 - distVec.normalized() * 0.7)
+        #         avoidanceVector.normalize()
+        #         self._addForce(avoidanceVector * distMult * velMult * self.AVOIDANCEFORCE)
+
+
+    def root(self, vec: Vec3) -> Vec3:
+        x = math.sqrt(vec.x)
+        y = math.sqrt(vec.y)
+        z = math.sqrt(vec.z)
+        return Vec3(x, y, z)
 
 
     def targetVector(self) -> Vec3:
@@ -343,9 +389,6 @@ class Drone:
                 max_y = max(var_y_history)
                 min_z = min(var_z_history)
                 max_z = max(var_z_history)
-
-                # print("{} {} {}".
-                #       format(max_x - min_x, max_y - min_y, max_z - min_z))
 
                 if (max_x - min_x) < threshold and (
                         max_y - min_y) < threshold and (

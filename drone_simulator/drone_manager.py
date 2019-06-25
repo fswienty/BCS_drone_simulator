@@ -33,7 +33,10 @@ class DroneManager(DirectObject.DirectObject):
                 name = "drone{}".format(i)
                 position = droneList[i][0]
                 uri = droneList[i][1]
-                self.drones[name] = Drone(self, name, position, uri=uri)
+                debug = False
+                # if i==0:
+                #     debug = True
+                self.drones[name] = Drone(self, name, position, uri=uri, printDebugInfo=debug)
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
