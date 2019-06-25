@@ -199,38 +199,31 @@ class Drone:
 
 
     def _updateAvoidanceForce(self):
-        amountOfDrones = 0
         others = []
-        mass = Vec3(0,0,0)
+        massVec = Vec3(0,0,0)
         for node in self.ghost.getOverlappingNodes():
             if node.name.startswith("drone"):
-                amountOfDrones += 1
                 others.append(self.manager.getDrone(node.name))
         
-        temp = self.getPos() ** 2
+
+        # get the root mean square position of all drones involved
+        massVec = self.getPos() ** 2
         for other in others:
-            temp += other.getPos() ** 2
-        temp / (others.__len__() + 1)
-        mass = self.root(temp)
-        print(mass)
+            massVec += other.getPos() ** 2
+        massVec /= (others.__len__() + 1)
+        massVec = self.root(massVec)
 
         for other in others:
-            # perp = self.target.cross(other.target) # the direction perpendicular to the target vectors of both drones
-            perp = Vec3(0,0,0)
-            perp2 = Vec3(0,0,0)
-            if(self.id > other.id):
-                perp = self.targetVector().cross(other.targetVector())
+            perp = self.targetVector().cross(massVec-self.getPos())
 
             distVec = other.getPos() - self.getPos()
             if distVec.length() < 0.2:
                 print("BONK")
-            distMult = max([0, 2 * self.GHOSTRADIUS - distVec.length()]) # make this stuff better
+            distMult = max([0, 2 * self.GHOSTRADIUS - distVec.length()]) 
             distMult = distMult
-            # velMult = other.getVel().length() + self.getVel().length() + 1
             velMult = self.getVel().length()
             velMult = velMult + .5
-            # self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
-            avoidanceVector = (perp2.normalized() * 0.3 + perp.normalized() * 0.3 - distVec.normalized() * 0.7)
+            avoidanceVector = perp.normalized() * 0.3 - distVec.normalized() * 0.7
             avoidanceVector.normalize()
             self._addForce(avoidanceVector * distMult * velMult * self.AVOIDANCEFORCE)
 
@@ -253,7 +246,7 @@ class Drone:
         #         velMult = self.getVel().length()
         #         velMult = velMult + .5
         #         # self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
-        #         avoidanceVector = (perp2.normalized() * 0.3 + perp.normalized() * 0.3 - distVec.normalized() * 0.7)
+        #         avoidanceVector = (perp2.normalized() * 0.0 + perp.normalized() * 0.3 - distVec.normalized() * 0.7)
         #         avoidanceVector.normalize()
         #         self._addForce(avoidanceVector * distMult * velMult * self.AVOIDANCEFORCE)
 
