@@ -36,7 +36,7 @@ class Drone:
         self.manager = manager
         self.name = name
         self.id = int(''.join(filter(str.isdigit, name))) # a unique number to identify the drone, not used right now
-        self.actualDronePosition = Vec3(0, 0, 0)        
+        self.actualDronePosition = Vec3(0, 0, 0) # the position of the real drone this virtual drone is connected to. If a connection is active, this value is updated each frame.
 
         self.canConnect = False # true if the virtual drone has a uri to connect to a real drone
         self.isConnected = False # true if the connection to a real drone is currently active

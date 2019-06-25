@@ -110,7 +110,7 @@ class DroneManager(DirectObject.DirectObject):
             return
         print("returning to waiting positions")
         for drone in self.drones.values():
-            drone.returnToWaitingPosition()
+            drone.setTarget(drone.waitingPosition)
 
 
     def setRandomTargets(self):
