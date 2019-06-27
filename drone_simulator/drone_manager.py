@@ -1,7 +1,7 @@
 import random
 import time
 from drone import Drone
-from formations.ui_element import FormationUiElement
+from formations.formation_ui_element import FormationUiElement
 #from formations.formation_loader import FormationLoader
 import cflib.crtp
 # pylint: disable=no-name-in-module
