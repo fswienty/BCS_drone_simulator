@@ -1,6 +1,7 @@
 import random
 import time
 from drone import Drone
+from formations.ui_element import FormationUiElement
 from formations.formation_loader import FormationLoader
 import cflib.crtp
 # pylint: disable=no-name-in-module
@@ -168,6 +169,9 @@ class DroneManager(DirectObject.DirectObject):
             print("Can't apply formation, drones are not started")
             return
         
+        #load formation here
+        formation = self.loadFormation("square2")
+
         requiredDrones = self.formations[name].drones
         availableDrones = self.drones.__len__()
         maxNumber = availableDrones
@@ -183,6 +187,32 @@ class DroneManager(DirectObject.DirectObject):
         formation = self.formations[name].array
         for i in range(0, maxNumber):
             droneList[i].setTarget(Vec3(formation[i,0], formation[i,1], formation[i,2]))
+
+
+    # def applyFormation(self, name: str):
+    #     """Applies a formation to the drones."""
+    #     if self.isStarted == False:
+    #         print("Can't apply formation, drones are not started")
+    #         return
+        
+    #     #load formation here
+    #     self.loadFormation("square2")
+
+    #     requiredDrones = self.formations[name].drones
+    #     availableDrones = self.drones.__len__()
+    #     maxNumber = availableDrones
+    #     if requiredDrones > availableDrones:
+    #         print("The formation contains more points than there are drones available")
+            
+    #     if requiredDrones < availableDrones:
+    #         print("The formation contains less points than there are drones available, some drones will remain stationary")
+    #         maxNumber = requiredDrones
+
+    #     print("applying {} formation".format(name))
+    #     droneList = list(self.drones.values())
+    #     formation = self.formations[name].array
+    #     for i in range(0, maxNumber):
+    #         droneList[i].setTarget(Vec3(formation[i,0], formation[i,1], formation[i,2]))
             
 
     def updateDronesTask(self, task):
