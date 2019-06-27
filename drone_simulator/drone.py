@@ -207,6 +207,8 @@ class Drone:
 
     def _updateAvoidanceForce(self):
         """Applies a force the the virtual drone which makes it avoid other drones."""
+
+        # get all drones within the sensors reach and put them in a list
         others = []
         massVec = Vec3(0,0,0)
         for node in self.ghost.getOverlappingNodes():
@@ -282,7 +284,7 @@ class Drone:
                 print(node)
 
 
-    def setTarget(self, target: Vec3 = Vec3(0, 0, 0), random=False):
+    def setTarget(self, target: Vec3):
         """Sets a new target for the drone."""
         self.target = target
 

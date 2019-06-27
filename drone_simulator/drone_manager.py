@@ -1,14 +1,13 @@
 import random
 import time
-from multiprocessing import Process
 from drone import Drone
+from formations.formation_loader import FormationLoader
 import cflib.crtp
 # pylint: disable=no-name-in-module
 from panda3d.core import Vec3
 from direct.showbase import DirectObject
 from direct.gui.DirectGui import DirectButton
 from direct.gui.DirectGui import DirectFrame
-from formations.formation_loader import FormationLoader
 
 class DroneManager(DirectObject.DirectObject):
     
@@ -125,7 +124,7 @@ class DroneManager(DirectObject.DirectObject):
             return
         print("setting random targets")
         for drone in self.drones.values():
-            drone.setTarget(random=True)
+            drone.setRandomTarget()
 
 
     def stopAll(self):
