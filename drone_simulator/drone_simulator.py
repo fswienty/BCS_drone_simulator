@@ -2,7 +2,6 @@ import sys
 import os
 import time
 from direct.showbase.ShowBase import ShowBase
-import drone_initilizer
 from camera_controller import CameraController
 from drone_manager import DroneManager
 from recorder import DroneRecorder
@@ -28,8 +27,8 @@ class DroneSimulator(ShowBase):
         # set resolution
         wp = WindowProperties()
         # wp.setSize(2000, 1500)
-        # wp.setSize(1200, 900)
-        wp.setSize(1000, 750)
+        wp.setSize(1200, 900)
+        # wp.setSize(1000, 750)
         self.win.requestProperties(wp)
 
         self.setFrameRateMeter(True)
@@ -41,8 +40,7 @@ class DroneSimulator(ShowBase):
         self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models" # Convert that to panda's unix-style notation.
 
         self.initBullet()
-        self.initRoom()
-        self.initLights()
+        self.initScene()
 
         self.droneManager = DroneManager(self, droneList)
         self.droneRecorder = DroneRecorder(self.droneManager)
@@ -73,14 +71,11 @@ class DroneSimulator(ShowBase):
         self.taskMgr.add(self.updatePhysicsTask, "UpdatePhysics")
         
 
-    def initRoom(self):
-        # room size: x=3.40m y=4.56m z=2.56m 
+    def initScene(self):
+        """Adds the room 3d model and some lights to the scene"""
         roomModel = self.loader.loadModel(self.modelDir + "/room_test/room_test.egg")
         roomModel.reparentTo(self.render)
 
-
-    def initLights(self):
-        """Adds some lights to the scene so everything isn't just black"""
         for i in range(0,3):
             dlight = DirectionalLight("light")
             dlnp = self.render.attachNewNode(dlight) # directional light node path
