@@ -39,11 +39,30 @@ class DroneSimulator(ShowBase):
         self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
         self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models" # Convert that to panda's unix-style notation.
 
-        self.initBullet()
         self.initScene()
+        self.initBullet()
 
         self.droneManager = DroneManager(self, droneList)
         self.droneRecorder = DroneRecorder(self.droneManager)
+
+
+    def initScene(self):
+        """Adds the room 3d model and some lights to the scene"""
+        # add room
+        roomModel = self.loader.loadModel(self.modelDir + "/room_test/room_test.egg")
+        roomModel.reparentTo(self.render)
+
+        # add lights
+        for i in range(0,3):
+            dlight = DirectionalLight("light")
+            dlnp = self.render.attachNewNode(dlight) # directional light node path
+            dlnp.setHpr((120 * i) + 1, -30, 0)
+            self.render.setLight(dlnp)
+        dlight = DirectionalLight("light")
+        dlight.setColor(Vec4(0.2, 0.2, 0.2, 0.2))
+        dlnp = self.render.attachNewNode(dlight) # directional light node path
+        dlnp.setHpr(1, 30, 0)
+        self.render.setLight(dlnp)
 
 
     def initBullet(self):
@@ -69,23 +88,6 @@ class DroneSimulator(ShowBase):
         self.world.setDebugNode(debugNP.node())
 
         self.taskMgr.add(self.updatePhysicsTask, "UpdatePhysics")
-        
-
-    def initScene(self):
-        """Adds the room 3d model and some lights to the scene"""
-        roomModel = self.loader.loadModel(self.modelDir + "/room_test/room_test.egg")
-        roomModel.reparentTo(self.render)
-
-        for i in range(0,3):
-            dlight = DirectionalLight("light")
-            dlnp = self.render.attachNewNode(dlight) # directional light node path
-            dlnp.setHpr((120 * i) + 1, -30, 0)
-            self.render.setLight(dlnp)
-        dlight = DirectionalLight("light")
-        dlight.setColor(Vec4(0.2, 0.2, 0.2, 0.2))
-        dlnp = self.render.attachNewNode(dlight) # directional light node path
-        dlnp.setHpr(1, 30, 0)
-        self.render.setLight(dlnp)
 
 
     def updatePhysicsTask(self, task):
@@ -105,7 +107,7 @@ if __name__ == "__main__":
     droneList.append([Vec3(-1, -1, .3), 'radio://0/80/2M/E7E7E7E7E4'])
     droneList.append([Vec3(.5, -1, .3), 'radio://0/80/2M/E7E7E7E7E5'])
 
-    # droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E1'])
+    # droneList.append([Vec3(0, 0, .3), '-1'])
 
     app = DroneSimulator(droneList)
     app.run()

@@ -11,8 +11,9 @@ class FormationUiElement:
 
     def __init__(self, manager):
         self.manager = manager
-        self.formations = [] # a list of formations, which are lists consisting of the name, the amount of drones, and the positions as a numpy array
 
+        self.formations = [] # a list of formations, which are lists consisting of the name, the amount of drones, and the positions as a numpy array
+        # load all .txt files in the formations folder
         directory = os.path.dirname(os.path.abspath(__file__))
         for file in os.listdir(directory):
             if file.endswith(".txt"):
@@ -21,15 +22,14 @@ class FormationUiElement:
 
         buttonSize = (-8, 8, -.2, .8)
         buttonDistance = 0.15
-
         scrolledFrame = DirectScrolledFrame(frameColor=(.2, .2, .2, 1), canvasSize = (-.7,.7,-buttonDistance * len(self.formations),0), frameSize = (-.9,.9,-.5,.5), pos=(.8, 0, -.7), scale=.5) 
-        #scrolledFrame.setPos(.5, .5, 0)
         canvas = scrolledFrame.getCanvas()
 
+        # add a button for each formation
         for i in range(0, len(self.formations)):
-            buttonRandomTargets = DirectButton(text = self.formations[i][0], scale=.1, frameSize=buttonSize, command=manager.applyFormation, extraArgs=[self.formations[i]])
-            buttonRandomTargets.reparentTo(canvas)
-            buttonRandomTargets.setPos(Vec3(0.15, 0, -(i + 0.75) * buttonDistance))
+            button = DirectButton(text = self.formations[i][0], scale=.1, frameSize=buttonSize, command=manager.applyFormation, extraArgs=[self.formations[i]])
+            button.reparentTo(canvas)
+            button.setPos(Vec3(0.15, 0, -(i + 0.75) * buttonDistance))
 
         print("{} formations found and loaded.".format(len(self.formations)))
 
@@ -37,8 +37,8 @@ class FormationUiElement:
         name = ntpath.basename(path)
         name = os.path.splitext(name)[0]
         drones = self._getRowCount(path)
-        #arr = np.loadtxt(path, delimiter=",")
-        arr = np.loadtxt(path)
+        arr = np.loadtxt(path, delimiter=",")
+        #arr = np.loadtxt(path)
         arr = arr.reshape((drones, 3))
         print(name)
         return [name, arr]
