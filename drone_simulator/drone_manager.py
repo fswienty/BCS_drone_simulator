@@ -1,7 +1,7 @@
 import random
 import time
 from drone import Drone
-from formations.formation_ui_element import FormationUiElement
+from formations.formation_ui_element import loadFormationSelectionFrame
 #from formations.formation_loader import FormationLoader
 import cflib.crtp
 # pylint: disable=no-name-in-module
@@ -68,8 +68,9 @@ class DroneManager(DirectObject.DirectObject):
         button.reparentTo(frame)
         button.setPos(Vec3(0,0,-4*buttonDistance))
 
-        # initialize scrollable list with all available formations
-        FormationUiElement(self)
+        # initialize an UI element with all available formations
+        loadFormationSelectionFrame(self)
+
 
 
     def startLandAll(self, button):
