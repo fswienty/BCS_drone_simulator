@@ -1,8 +1,8 @@
 # BCS_Masterthesis
 
 required packages:
-    numpy
-    matplotlib
+    numpy  
+    matplotlib 
     cma
     panda3d
     openvr
