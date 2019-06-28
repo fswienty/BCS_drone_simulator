@@ -20,6 +20,7 @@ from panda3d.bullet import BulletRigidBodyNode
 from panda3d.bullet import BulletDebugNode
 
 class DroneSimulator(ShowBase):
+    """The main class of this project. Execute this to start the drone simulation."""
 
     def __init__(self, droneList):
         ShowBase.__init__(self)
@@ -97,7 +98,7 @@ class DroneSimulator(ShowBase):
 
 
 if __name__ == "__main__":
-    # add drones you want to spawn to the droneList, with a position and the uri to the real drone if applicable
+    # add drones you want to spawn to the droneList, with an initial position and the uri to the real drone if applicable
     # if the drone should not be able to connect, put -1 as uri
     droneList = []
     droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])
