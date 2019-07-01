@@ -8,15 +8,18 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-#cma
+# cma
 outcmaes/
 
-#vscode
+# vscode
 .vscode/
 .VSCodeCounter/
 masterthesis.code-workspace
 pc_home.code-workspace
+
+# my stuff
 cache/
+*.npy
 
 # C extensions
 *.so
@@ -142,4 +145,3 @@ dmypy.json
 
 # End of https://www.gitignore.io/api/python
 
-*.npy

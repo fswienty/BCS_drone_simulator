@@ -101,14 +101,14 @@ if __name__ == "__main__":
     # add drones you want to spawn to the droneList, with an initial position and the uri to the real drone if applicable
     # if the drone should not be able to connect, put -1 as uri
     droneList = []
-    droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])
-    droneList.append([Vec3(1, 1, .3), 'radio://0/80/2M/E7E7E7E7E1'])
-    droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
-    droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
-    droneList.append([Vec3(-1, -1, .3), 'radio://0/80/2M/E7E7E7E7E4'])
-    droneList.append([Vec3(.5, -1, .3), 'radio://0/80/2M/E7E7E7E7E5'])
+    # droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])
+    # droneList.append([Vec3(1, 1, .3), 'radio://0/80/2M/E7E7E7E7E1'])
+    # droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
+    # droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
+    # droneList.append([Vec3(-1, -1, .3), 'radio://0/80/2M/E7E7E7E7E4'])
+    # droneList.append([Vec3(.5, -1, .3), 'radio://0/80/2M/E7E7E7E7E5'])
 
-    # droneList.append([Vec3(0, 0, .3), '-1'])
+    droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])
 
     app = DroneSimulator(droneList)
     app.run()
