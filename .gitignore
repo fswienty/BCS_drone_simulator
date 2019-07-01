@@ -13,8 +13,10 @@ outcmaes/
 
 #vscode
 .vscode/
+.VSCodeCounter/
 masterthesis.code-workspace
 pc_home.code-workspace
+cache/
 
 # C extensions
 *.so
