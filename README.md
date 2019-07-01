@@ -1,13 +1,6 @@
-# BCS_Masterthesis
+# BCS Drone Simulator
 
 use python 3.7
-
-required packages:  
-    numpy  
-    matplotlib  
-    panda3d  
-    openvr  
-    cflib (download from github (https://github.com/bitcraze/crazyflie-lib-python) and pip install -e *path to folder*)
 
 To start the drone simulator, execute drone_simulator.py in the drone_simulator folder
   
