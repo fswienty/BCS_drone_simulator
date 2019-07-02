@@ -1,22 +1,24 @@
 import random
-import time
+
 from drone import Drone
 from formations.formation_ui_element import loadFormationSelectionFrame
-#from formations.formation_loader import FormationLoader
+
 import cflib.crtp
-# pylint: disable=no-name-in-module
+
 from panda3d.core import Vec3
 from direct.showbase import DirectObject
 from direct.gui.DirectGui import DirectButton
 from direct.gui.DirectGui import DirectFrame
 
+
 class DroneManager(DirectObject.DirectObject):
-    
+
     def __init__(self, base, droneList):
         self.base = base
         # the actual dimensions of the bcs drone lab in meters
-        #self.roomSize = Vec3(3.40, 4.56, 2.56) 
-        # confined dimensions because the room and drone coordinates dont match up yet. Also, flying near the windows/close to walls/too high often makes the lps loose track
+        #self.roomSize = Vec3(3.40, 4.56, 2.56)
+        # confined dimensions because the room and drone coordinates dont match up yet.
+        # Also, flying near the windows/close to walls/too high often makes the lps loose track
         self.roomSize = Vec3(1.5, 2, 1.3)
         self.initDrones(droneList)
         self.initUI()
@@ -26,7 +28,7 @@ class DroneManager(DirectObject.DirectObject):
         """Initializes the drones defined in droneList."""
         self.isStarted = False
         self.isConnected = False
-        self.drones = {} # this is the dictionary all drones are held in with their name as key
+        self.drones = {}  # this is the dictionary all drones are held in with their name as key
 
         if droneList == []:
             print("No drones to spawn")
@@ -47,26 +49,26 @@ class DroneManager(DirectObject.DirectObject):
 
         frame = DirectFrame(frameColor=(.2, .2, .2, 1), frameSize=(-.5, .5, -.7, .1), pos=(-.9, 0, -.6), scale=.5)
 
-        button = DirectButton(text = "Start", scale=.1, frameSize=buttonSize, command=self.startLandAll)
+        button = DirectButton(text="Start", scale=.1, frameSize=buttonSize, command=self.startLandAll)
         button["extraArgs"] = [button]
         button.reparentTo(frame)
 
-        button = DirectButton(text = "Random Target", scale=.1, frameSize=buttonSize, command=self.setRandomTargets)
+        button = DirectButton(text="Random Target", scale=.1, frameSize=buttonSize, command=self.setRandomTargets)
         button.reparentTo(frame)
-        button.setPos(Vec3(0,0,-1*buttonDistance))
+        button.setPos(Vec3(0, 0, -1 * buttonDistance))
 
-        button = DirectButton(text = "Stop", scale=.1, frameSize=buttonSize, command=self.stopAll)
+        button = DirectButton(text="Stop", scale=.1, frameSize=buttonSize, command=self.stopAll)
         button.reparentTo(frame)
-        button.setPos(Vec3(0,0,-2*buttonDistance))
+        button.setPos(Vec3(0, 0, -2 * buttonDistance))
 
-        button = DirectButton(text = "Return", scale=.1, frameSize=buttonSize, command=self.returnToWaitingPosition)
+        button = DirectButton(text="Return", scale=.1, frameSize=buttonSize, command=self.returnToWaitingPosition)
         button.reparentTo(frame)
-        button.setPos(Vec3(0,0,-3*buttonDistance))
+        button.setPos(Vec3(0, 0, -3 * buttonDistance))
 
-        button = DirectButton(text = "Connect", scale=.1, frameSize=buttonSize, command=self.toggleConnections)
+        button = DirectButton(text="Connect", scale=.1, frameSize=buttonSize, command=self.toggleConnections)
         button["extraArgs"] = [button]
         button.reparentTo(frame)
-        button.setPos(Vec3(0,0,-4*buttonDistance))
+        button.setPos(Vec3(0, 0, -4 * buttonDistance))
 
         # initialize an UI element with all available formations
         loadFormationSelectionFrame(self)
@@ -74,7 +76,7 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def startLandAll(self, button):
-        if self.isStarted == False:
+        if not self.isStarted:
             self.isStarted = True
             button["text"] = "Land"
             print("starting all")
@@ -92,7 +94,7 @@ class DroneManager(DirectObject.DirectObject):
 
     def returnToWaitingPosition(self):
         """Makes all drones hover above their starting position. Usefull to make the drones land just where they started."""
-        if self.isStarted == False:
+        if not self.isStarted:
             print("can't return to waiting position, drones are not started")
             return
         print("returning to waiting positions")
@@ -102,7 +104,7 @@ class DroneManager(DirectObject.DirectObject):
 
     def setRandomTargets(self):
         """Set random targets for all drones."""
-        if self.isStarted == False:
+        if not self.isStarted:
             print("can't set random targets, drones are not started")
             return
         print("setting random targets")
@@ -112,7 +114,7 @@ class DroneManager(DirectObject.DirectObject):
 
     def stopAll(self):
         """Stops all drones and makes them hover where they are."""
-        if self.isStarted == False:
+        if not self.isStarted:
             print("can't stop drones, drones are not started")
             return
         print("stopping drones")
@@ -123,7 +125,7 @@ class DroneManager(DirectObject.DirectObject):
     def toggleConnections(self, button):
         """Connects/Disconnects the virtual drones to/from the real drones."""
         #connect drones
-        if self.isConnected == False:
+        if not self.isConnected:
             self.isConnected = True
             button["text"] = "Disconnect"
             print("initializing drivers")
@@ -138,24 +140,24 @@ class DroneManager(DirectObject.DirectObject):
             print("disconnecting drones")
             for drone in self.drones.values():
                 if drone.isConnected:
-                    drone.disconnect()           
+                    drone.disconnect()
 
 
     def applyFormation(self, formation):
         """Applies the supplied formation to the drones."""
-        if self.isStarted == False:
+        if not self.isStarted:
             print("Can't apply formation, drones are not started")
             return
 
         name = formation[0]
         dronePositions = formation[1]
         requiredDrones = len(dronePositions)
-        
+
         availableDrones = self.drones.__len__()
         maxNumber = availableDrones
         if requiredDrones > availableDrones:
             print("The formation contains more points than there are drones available")
-            
+
         if requiredDrones < availableDrones:
             print("The formation contains less points than there are drones available, some drones will remain stationary")
             maxNumber = requiredDrones
@@ -163,8 +165,8 @@ class DroneManager(DirectObject.DirectObject):
         print("applying {} formation".format(name))
         droneList = list(self.drones.values())
         for i in range(0, maxNumber):
-            droneList[i].setTarget(Vec3(dronePositions[i,0], dronePositions[i,1], dronePositions[i,2]))
-            
+            droneList[i].setTarget(Vec3(dronePositions[i, 0], dronePositions[i, 1], dronePositions[i, 2]))
+
 
     def updateDronesTask(self, task):
         """Run the update methods of all drones."""
@@ -175,10 +177,10 @@ class DroneManager(DirectObject.DirectObject):
 
     def getRandomRoomCoordinate(self) -> Vec3:
         """Returns random 3D coordinates withing the confines of the room."""
-        newX = random.uniform(-self.roomSize.x/2, self.roomSize.x/2)
-        newY = random.uniform(-self.roomSize.y/2, self.roomSize.y/2)
-        newZ = random.uniform(0+0.3, self.roomSize.z)
-        return Vec3(newX, newY, newZ)  
+        newX = random.uniform(-self.roomSize.x / 2, self.roomSize.x / 2)
+        newY = random.uniform(-self.roomSize.y / 2, self.roomSize.y / 2)
+        newZ = random.uniform(0 + 0.3, self.roomSize.z)
+        return Vec3(newX, newY, newZ)
 
 
     def getDrone(self, name: str) -> Drone:

@@ -1,10 +1,11 @@
 import sys
 import os
-from direct.showbase.ShowBase import ShowBase
+
 from camera_controller import CameraController
 from drone_manager import DroneManager
 from recorder import DroneRecorder
-# pylint: disable=no-name-in-module
+
+from direct.showbase.ShowBase import ShowBase
 from panda3d.core import Filename
 from panda3d.core import DirectionalLight
 from panda3d.core import AntialiasAttrib
@@ -96,7 +97,7 @@ class DroneSimulator(ShowBase):
 
 
 if __name__ == "__main__":
-    # add drones you want to spawn to the droneList, with an initial position and the uri to the real drone if applicable
+    # add drones you want to spawn to the droneList, with an initial position and a uri of real drone if applicable
     # if the drone should not be able to connect, put -1 as uri
     droneList = []
     # droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])

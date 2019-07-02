@@ -1,8 +1,8 @@
 import os
 import sys
 import numpy as np
+
 from direct.showbase import DirectObject
-# pylint: disable=no-name-in-module
 
 
 class DroneRecorder(DirectObject.DirectObject):
@@ -27,9 +27,11 @@ class DroneRecorder(DirectObject.DirectObject):
         print("recording")
         return task.again
 
+
     def save(self):
         np.save(os.path.join(sys.path[0], "trajectories/traj.npy"), np.asarray(self.recordingLst))
         print("recording saved")
+
 
     def toggleRecording(self):
         if not self.isRecording:
