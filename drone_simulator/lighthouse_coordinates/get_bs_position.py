@@ -72,15 +72,15 @@ for pose in bs_poses:
     print("{.origin = {", end='')
     for i in position:
         print("{:0.6f}, ".format(i), end='')
-    
+
     print("}, .mat = {", end='')
-    
+
     for i in rotation:
         print("{", end='')
         for j in i:
             print("{:0.6f}, ".format(j), end='')
         print("}, ", end='')
-    
+
     print("}},")
 
 openvr.shutdown()

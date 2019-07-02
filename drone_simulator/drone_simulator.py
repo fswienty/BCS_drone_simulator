@@ -1,6 +1,5 @@
 import sys
 import os
-import time
 from direct.showbase.ShowBase import ShowBase
 from camera_controller import CameraController
 from drone_manager import DroneManager
@@ -14,10 +13,9 @@ from panda3d.core import Vec4
 from panda3d.core import WindowProperties
 from panda3d.bullet import BulletWorld
 from panda3d.bullet import BulletPlaneShape
-from panda3d.bullet import BulletBoxShape
-from panda3d.bullet import BulletSphereShape
 from panda3d.bullet import BulletRigidBodyNode
 from panda3d.bullet import BulletDebugNode
+
 
 class DroneSimulator(ShowBase):
     """The main class of this project. Execute this to start the drone simulation."""
@@ -35,10 +33,10 @@ class DroneSimulator(ShowBase):
         self.setFrameRateMeter(True)
         self.render.setAntialias(AntialiasAttrib.MAuto)
         self.cameraController = CameraController(self)
-        
+
         # setup model directory
-        self.modelDir = os.path.abspath(sys.path[0]) # Get the location of the 'py' file I'm running:
-        self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models" # Convert that to panda's unix-style notation.
+        self.modelDir = os.path.abspath(sys.path[0])  # Get the location of the 'py' file I'm running:
+        self.modelDir = Filename.from_os_specific(self.modelDir).getFullpath() + "/models"  # Convert that to panda's unix-style notation.
 
         self.initScene()
         self.initBullet()
@@ -54,14 +52,14 @@ class DroneSimulator(ShowBase):
         roomModel.reparentTo(self.render)
 
         # add lights
-        for i in range(0,3):
+        for i in range(0, 3):
             dlight = DirectionalLight("light")
-            dlnp = self.render.attachNewNode(dlight) # directional light node path
+            dlnp = self.render.attachNewNode(dlight)  # directional light node path
             dlnp.setHpr((120 * i) + 1, -30, 0)
             self.render.setLight(dlnp)
         dlight = DirectionalLight("light")
         dlight.setColor(Vec4(0.2, 0.2, 0.2, 0.2))
-        dlnp = self.render.attachNewNode(dlight) # directional light node path
+        dlnp = self.render.attachNewNode(dlight)  # directional light node path
         dlnp.setHpr(1, 30, 0)
         self.render.setLight(dlnp)
 
@@ -72,12 +70,12 @@ class DroneSimulator(ShowBase):
         self.world.setGravity(Vec3(0, 0, 0))
 
         # add ground
-        node = BulletRigidBodyNode("Ground") # derived from PandaNode
+        node = BulletRigidBodyNode("Ground")  # derived from PandaNode
         node.addShape(BulletPlaneShape(Vec3(0, 0, 1), 0))
         np = self.render.attachNewNode(node)
         np.setPos(0, 0, 0)
         self.world.attachRigidBody(node)
-        
+
         # add debug node
         debugNode = BulletDebugNode("Debug")
         debugNode.showWireframe(False)

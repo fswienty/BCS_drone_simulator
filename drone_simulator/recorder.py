@@ -1,19 +1,18 @@
 import os
 import sys
 import numpy as np
-from drone import Drone
 from direct.showbase import DirectObject
 # pylint: disable=no-name-in-module
-from panda3d.core import Vec3
+
 
 class DroneRecorder(DirectObject.DirectObject):
-    
+
     # timestep, drone, axis
     def __init__(self, droneManager):
         self.droneManager = droneManager
         # timestep, drone, axis
         self.recordingLst = []
-        self.isRecording = False  
+        self.isRecording = False
         self.accept('m', self.save)
         self.accept('space', self.toggleRecording)
 
@@ -33,7 +32,7 @@ class DroneRecorder(DirectObject.DirectObject):
         print("recording saved")
 
     def toggleRecording(self):
-        if self.isRecording == False:
+        if not self.isRecording:
             self.isRecording = True
             self.droneManager.base.taskMgr.doMethodLater(0, self.recordDronesTask, "RecordDrones")
         else:

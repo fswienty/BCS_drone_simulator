@@ -39,6 +39,7 @@ from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 
 logging.basicConfig(level=logging.ERROR)
 
+
 class WriteMem:
     def __init__(self, uri, bs1, bs2):
         self.data_written = False

@@ -1,10 +1,8 @@
-# pylint: disable=no-name-in-module
 from direct.showbase import DirectObject
-#from direct.task import Task
-from panda3d.core import MouseButton
 from panda3d.core import KeyboardButton
 from panda3d.core import WindowProperties
 from panda3d.core import Vec3
+
 
 class CameraController(DirectObject.DirectObject):
 
