@@ -1,7 +1,7 @@
 import os
-import numpy as np
 import ntpath
-# pylint: disable=no-name-in-module
+import numpy as np
+
 from direct.gui.DirectGui import DirectScrolledFrame
 from direct.gui.DirectGui import DirectButton
 

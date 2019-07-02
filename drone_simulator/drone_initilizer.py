@@ -1,16 +1,16 @@
-import sys
 import time
+
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.crazyflie.syncLogger import SyncLogger
-# pylint: disable=no-name-in-module
+
 from panda3d.core import Vec3
 
 
 class SimpleDrone():
-    
+
     def __init__(self, address):
         self.pos = Vec3(0, 0, 0)
         self.address = address
