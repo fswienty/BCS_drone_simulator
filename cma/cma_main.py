@@ -1,24 +1,26 @@
+import os
+import sys
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from error_calculator import ErrorCalculator
 import cma
 
 # AGENT TRAJ DIM
 
-# START_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
-# START_POS = np.array([[4,0,0],[0,4,0],[0,0,4]])
-# GOAL_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
-# GOAL_POS = np.array([[-4,0,0],[0,-4,0],[0,0,-4]])
+START_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+START_POS = np.array([[4, 0, 0], [0, 4, 0], [0, 0, 4]])
+GOAL_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+GOAL_POS = np.array([[-4, 0, 0], [0, -4, 0], [0, 0, -4]])
 
-# START_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
-# START_POS = np.array([[4,-2,0],[4,2,0],[-4,0,0]])
-# GOAL_VEL = np.array([[0,0,0],[0,0,0],[0,0,0]])
-# GOAL_POS = np.array([[-4,-2,0],[-4,2,0],[4,0,0]])
+# START_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# START_POS = np.array([[4, -2, 0], [4, 2, 0], [-4, 0, 0]])
+# GOAL_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# GOAL_POS = np.array([[-4, -2, 0], [-4, 2, 0], [4, 0, 0]])
 
-START_VEL = np.array([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]])
-START_POS = np.array([[4,0,0],[-4,0,0],[0,0,0],[0,0,4],[-3,-3,0]])
-GOAL_VEL = np.array([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]])
-GOAL_POS = np.array([[-4,0,0],[4,0,0],[0,0,0],[0,0,-4],[3,3,0]])
+# START_VEL = np.array([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]])
+# START_POS = np.array([[4,0,0],[-4,0,0],[0,0,0],[0,0,4],[-3,-3,0]])
+# GOAL_VEL = np.array([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]])
+# GOAL_POS = np.array([[-4,0,0],[4,0,0],[0,0,0],[0,0,-4],[3,3,0]])
 
 TIMESTEP = 1
 MAX_JERK = 1
@@ -27,12 +29,12 @@ TRAJ_LEN = 10
 MIN_DIST = 2
 DIM = GOAL_VEL.shape[1]
 
-num_opt_vars = AGENTS * TRAJ_LEN * DIM # the amount of variables to be optimized via cma
+num_opt_vars = AGENTS * TRAJ_LEN * DIM  # the amount of variables to be optimized via cma
 error_calc = ErrorCalculator(TIMESTEP, TRAJ_LEN, MIN_DIST, START_VEL, START_POS, GOAL_VEL, GOAL_POS)
 
 
 options = cma.CMAOptions()
-options.set('ftarget', 5e-1)
+options.set('ftarget', 1e-1)
 options.set('bounds', [-MAX_JERK, MAX_JERK])
 # es = cma.CMAEvolutionStrategy(num_opt_vars * [0], 0.5, options)
 # es.opts.set('opt', value) # use this for chaning options while running
@@ -51,8 +53,9 @@ print(error_calc.vel_traj)
 print("\n### FINAL POS TRAJECTORY #############################################")
 print(error_calc.pos_traj)
 
-np.save("trajectories/jerk_traj.npy", error_calc.jerk_traj)
-np.save("trajectories/acc_traj.npy", error_calc.acc_traj)
-np.save("trajectories/vel_traj.npy", error_calc.vel_traj)
-np.save("trajectories/pos_traj.npy", error_calc.pos_traj)
 
+path = os.path.join(sys.path[0], "trajectories")
+np.save(path + "/jerk_traj.npy", error_calc.jerk_traj)
+np.save(path + "/acc_traj.npy", error_calc.acc_traj)
+np.save(path + "/vel_traj.npy", error_calc.vel_traj)
+np.save(path + "/pos_traj.npy", error_calc.pos_traj)

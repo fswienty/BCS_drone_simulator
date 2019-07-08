@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-#TRAJ_LOCATION = Path("C:/Users/Florian_Swienty/Misc/dev/csharptest/csharptest/bin/Debug/netcoreapp2.1/traj.txt")
+# TRAJ_LOCATION = Path("C:/Users/Florian_Swienty/Misc/dev/csharptest/csharptest/bin/Debug/netcoreapp2.1/traj.txt")
 TRAJ_LOCATION = Path("D:/User Data/Misc/dev/masterthesis_genetic/csharptest/bin/Debug/netcoreapp2.1/traj.txt")
 
 traj_xyz = np.loadtxt(TRAJ_LOCATION, delimiter=",")
