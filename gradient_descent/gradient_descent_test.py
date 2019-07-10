@@ -5,7 +5,7 @@ from autograd import grad
 def costFun(x):
     sum = 0
     for i in range(0, len(x)):
-        sum = sum + x[i]**2
+        sum += x[i]**2
     return sum
 
 

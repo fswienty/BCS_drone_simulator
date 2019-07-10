@@ -26,7 +26,7 @@ def position(jerks, p0, v0, t):
     summation = 0
     for i in range(0, k):
         summation += ((k - i)**2 + (k - i) + 0.33333) * jerks[i]
-    p = p0 + (k + 1) * v0 + 0.5 * t**3 * summation
+    p = p0 + (k + 1) * t * v0 + 0.5 * t**3 * summation
     return p
 
 
