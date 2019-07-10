@@ -17,24 +17,7 @@ class CameraController(DirectObject.DirectObject):
         self.camera.lookAt(0, 0, 1)
         base.camLens.setFov(90)
         base.camLens.setNear(.1)
-
         self.setup = True
-
-
-    # def toggleCameraControl(self):
-    #     props = WindowProperties()
-    #     if self.cameraControlActive:
-    #         self.cameraControlActive = False
-    #         props.setCursorHidden(False)
-    #         self.base.win.requestProperties(props)
-    #         self.base.taskMgr.remove("CameraControlTask")
-    #     else:
-    #         self.cameraControlActive = True
-    #         props.setCursorHidden(True)
-    #         self.base.win.requestProperties(props)
-    #         windowSizeX = self.base.win.getProperties().getXSize()
-    #         windowSizeY = self.base.win.getProperties().getYSize()
-    #         self.base.taskMgr.add(self.cameraControlTask, "CameraControlTask", extraArgs=[windowSizeX, windowSizeY], appendTask=True)
 
 
     def activateCameraControl(self):
@@ -51,7 +34,6 @@ class CameraController(DirectObject.DirectObject):
     def deactivateCameraControl(self):
         props = WindowProperties()
         self.cameraControlActive = False
-        
         # props.setCursorHidden(False)
         self.base.win.requestProperties(props)
         self.base.taskMgr.remove("CameraControlTask")
@@ -70,7 +52,6 @@ class CameraController(DirectObject.DirectObject):
         moveSpeed = .05
         rotSpeed = 20
 
-
         # get initial mouse position
         if self.setup:
             print("setup")
@@ -79,18 +60,12 @@ class CameraController(DirectObject.DirectObject):
             self.setup = False
             #return task.cont
 
-
-
         # update rotation
         if mw.hasMouse():
-            # deltaX = rotSpeed * (mw.getMouseX() + 2 * int(windowSizeX / 2) / windowSizeX - 1)  # don't ask
-            # deltaY = rotSpeed * (mw.getMouseY() + 2 * int(windowSizeY / 2) / windowSizeY - 1)
-            #self.base.win.movePointer(0, int(windowSizeX / 2), int(windowSizeY / 2))
-
-            deltaX = rotSpeed * ((mw.getMouseX() - self.anchorX) + 2 * int(windowSizeX / 2) / windowSizeX - 1)  # don't ask
-            deltaY = rotSpeed * ((mw.getMouseY() - self.anchorY) + 2 * int(windowSizeY / 2) / windowSizeY - 1)
-            # print(int((0.5 * self.anchorX + 0.5) * windowSizeX), int((-0.5 * self.anchorY + 0.5) * windowSizeY))
+            deltaX = rotSpeed * ((mw.getMouseX() - self.anchorX))
+            deltaY = rotSpeed * ((mw.getMouseY() - self.anchorY))
             self.base.win.movePointer(0, int((0.5 * self.anchorX + 0.5) * windowSizeX), int((-0.5 * self.anchorY + 0.5) * windowSizeY))
+
             threshold = 0.05
             if abs(deltaX) < threshold:
                 deltaX = 0
