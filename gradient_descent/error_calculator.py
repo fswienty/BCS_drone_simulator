@@ -1,4 +1,5 @@
 import numpy as np
+from jax import grad
 # import matplotlib.pyplot as plt
 
 
@@ -63,8 +64,6 @@ class ErrorCalculator():
     def getError(self, jerk_traj):
         self.jerk_traj = np.asarray(jerk_traj).reshape(self.agents, self.traj_len, self.dim)
         self._integrate()
-        # end_vel = self.vel_traj[:, -1, :]
-        # end_pos = self.pos_traj[:, -1, :]
         error = 0
         vel_error = np.linalg.norm(self.goal_vel - self.vel_traj[:, -1, :])
         pos_error = np.linalg.norm(self.goal_pos - self.pos_traj[:, -1, :])
@@ -72,3 +71,28 @@ class ErrorCalculator():
         error += pos_error
         error += self._checkCollisions()
         return error
+
+
+START_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+START_POS = np.array([[4, 0, 0], [-4, 0, 0], [0, 0, 0], [0, 0, 4], [-3, -3, 0]])
+GOAL_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+GOAL_POS = np.array([[-4, 0, 0], [4, 0, 0], [0, 0, 0], [0, 0, -4], [3, 3, 0]])
+
+TIMESTEP = 1
+MAX_JERK = 1
+AGENTS = GOAL_VEL.shape[0]
+TRAJ_LEN = 10
+MIN_DIST = 2
+DIM = GOAL_VEL.shape[1]
+
+calc = ErrorCalculator(TIMESTEP, TRAJ_LEN, MIN_DIST, START_VEL, START_POS, GOAL_VEL, GOAL_POS)
+
+jerks = np.zeros([AGENTS, TRAJ_LEN, DIM])
+
+error = calc.getError(jerks)
+
+errorAutogradFun = grad(calc.getError)
+errorGrad = errorAutogradFun(jerks)
+
+print(error)
+print(errorGrad)

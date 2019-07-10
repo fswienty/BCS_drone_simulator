@@ -65,10 +65,9 @@ MIN_DIST = 2
 
 jerk = np.array([2, 1, -6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-comp = comp(TIMESTEP, TRAJ_LEN, MIN_DIST, START_VEL, START_POS)
-comp.cma(jerk)
-cmaResult = comp.pos_traj
+# comp = comp(TIMESTEP, TRAJ_LEN, MIN_DIST, START_VEL, START_POS)
+# comp.cma(jerk)
+# cmaResult = comp.pos_traj
 gradResult = gradDesc(jerk, START_POS, START_VEL, TIMESTEP)
 
-print(cmaResult)
 print(gradResult)

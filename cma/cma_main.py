@@ -40,10 +40,10 @@ options.set('bounds', [-MAX_JERK, MAX_JERK])
 # es.opts.set('opt', value) # use this for chaning options while running
 # es.optimize(error_calc.get_error)
 # xbest = es.result[0]
-xbest = cma.fmin2(error_calc.get_error, num_opt_vars * [0], 0.5, options)[0]
+xbest = cma.fmin2(error_calc.getError, num_opt_vars * [0], 0.5, options)[0]
 
 print("\n### FINAL ERROR #############################################")
-print(error_calc.get_error(xbest))
+print(error_calc.getError(xbest))
 print("\n### FINAL JERK TRAJECTORY #############################################")
 print(error_calc.jerk_traj)
 print("\n### FINAL ACC TRAJECTORY #############################################")
