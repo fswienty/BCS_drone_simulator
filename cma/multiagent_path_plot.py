@@ -10,6 +10,8 @@ tt = np.load(path + "/pos_traj.npy")
 agents = tt.shape[0]
 traj_len = tt.shape[1]
 
+print(tt.shape[0], tt.shape[1], tt.shape[2])
+
 fig = plt.figure()
 ax = fig.add_subplot(111, aspect='equal', projection='3d')
 plt.subplots_adjust(bottom=0.25)  # make room for the slider
