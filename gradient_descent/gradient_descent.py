@@ -2,6 +2,7 @@
 # import math
 # from autograd import grad
 import numpy as np
+import sys
 
 
 class Functions():
@@ -23,14 +24,17 @@ class Functions():
 
 
     def calculatePositions(self, jerks, startVel, startPos, t):
-        trajLen = len(jerks)
+        agents = jerks.shape[0]
+        trajLen = jerks.shape[1]
+        dim = jerks.shape[2]
         summation = 0
-        p = np.zeros([trajLen])
+        p = np.zeros([agents, trajLen, dim])
+        p[:, 0, :] = startPos
         for k in range(0, trajLen - 1):
             summation = 0
             for i in range(0, k + 1):
-                summation += ((k - i)**2 + (k - i) + .3333) * jerks[i]
-            p[k + 1] = (startPos + (k + 1) * t * startVel + 0.5 * t**3 * summation)
+                summation += ((k - i)**2 + (k - i) + .3333) * jerks[:, i, :]
+            p[:, k + 1, :] = startPos + (k + 1) * t * startVel + 0.5 * t**3 * summation
         self.positions = p
 
 
@@ -60,20 +64,28 @@ class Functions():
     #     return costGrad
 
 
-TIMESTEP = 0.5
+TIMESTEP = 1
 INPUT_LENGTH = 10
 STEPS = 2000
 STEPSIZE = 0.0001
 
+# AGENT DIM
 START_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 START_POS = np.array([[4, 0, 0], [-4, 0, 0], [0, 0, 0], [0, 0, 4], [-3, -3, 0]])
 TARGET_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 TARGET_POS = np.array([[-4, 0, 0], [4, 0, 0], [0, 0, 0], [0, 0, -4], [3, 3, 0]])
 
-jerks = []
-# jerks = np.array([4.0, -7.0, -4.0, 9.0, 1.0, -1.0, 5.0, 3.0, 5.0, 2.0, 0.0, 4.0, 4.0, -9.0, 0.0, 8.0, 5.0, -3.0, 2.0, -3.0, 6.0, -5.0, 3.0])
-jerks = np.array([4.0, -7.0, -4.0])
+jerks = np.array([[[1, 0, 0]], [[2, 1, 0]], [[0, 0, 0]], [[0, 0, 0]], [[5, 0, -7]]])
 
 fun = Functions()
-fun.calculatePositions(jerks, START_VEL, START_POS, TIMESTEP)
+# fun.calculatePositions(jerks, START_VEL, START_POS, TIMESTEP)
+# print(fun.positions)
+
+tt = np.load(sys.path[0] + "/jerk_traj.npy")
+print(tt.shape)
+fun.calculatePositions(tt, START_VEL, START_POS, TIMESTEP)
 print(fun.positions)
+
+# print(jerks.shape)
+# print(START_VEL[:, 0, :])
+# print(START_POS[:,:])
