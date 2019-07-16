@@ -43,18 +43,17 @@ class Functions():
         self.velocities = v
         self.positions = p
 
-    # TODO
+
     def velocityGrad(self, jerks, k, t):
         agents = jerks.shape[0]
         trajLen = jerks.shape[1]
         dim = jerks.shape[2]
-        posGrad = np.zeros([agents, trajLen, dim])
+        velGrad = np.zeros([agents, trajLen, dim])
         for i in range(0, k):
-            # posGrad.append(0.5 * t**3 * ((k - i)**2 + (k - i) + 0.3333))
-            posGrad[:, i, :] = 0.5 * t**3 * ((k - i)**2 + (k - i) + 0.3333)
+            velGrad[:, i, :] = t**2 * ((k - i) + 0.5)
         for i in range(k, trajLen):
-            posGrad[:, i, :] = 0
-        return posGrad
+            velGrad[:, i, :] = 0
+        return velGrad
 
 
     def positionGrad(self, jerks, k, t):
@@ -88,7 +87,7 @@ class Functions():
         endPosGrad = self.positionGrad(jerks, trajLen, t)
         costGrad = np.zeros([agents, trajLen, dim])
         for i in range(0, trajLen):
-            costGrad[:, i, :] += 2 * (targetVel - self.velocities[:, -1, :]) * endVelGrad[:, i, :]
+            costGrad[:, i, :] += 20 * 2 * (targetVel - self.velocities[:, -1, :]) * endVelGrad[:, i, :]
             costGrad[:, i, :] += 2 * (targetPos - self.positions[:, -1, :]) * endPosGrad[:, i, :]
         return costGrad
 
@@ -106,15 +105,21 @@ def randomJerk(agents, trajLen, maxJerk):
 
 
 TIMESTEP = 1
-INPUT_LENGTH = 10
-STEPS = 200
-STEPSIZE = 0.001
+TRAJLEN = 30
+STEPS = 300
+STEPSIZE = 0.0000005
 
 # AGENT DIM
-START_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-START_POS = np.array([[4, 0, 0], [-4, 0, 0], [0, 0, 0], [0, 0, 4], [-3, -3, 0]])
-TARGET_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-TARGET_POS = np.array([[-4, 0, 0], [4, 0, 0], [0, 0, 0], [0, 0, -4], [3, 3, 0]])
+# START_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# START_POS = np.array([[4, 0, 0], [-4, 0, 0], [0, 0, 0], [0, 0, 4], [-3, -3, 0]])
+# TARGET_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# TARGET_POS = np.array([[-4, 0, 0], [4, 0, 0], [0, 0, 0], [0, 0, -4], [3, 3, 0]])
+START_VEL = np.array([[0, 0, 0], [0, 0, 0]])
+START_POS = np.array([[4, 0, 0], [-4, 0, 0]])
+TARGET_VEL = np.array([[0, 0, 0], [0, 0, 0]])
+TARGET_POS = np.array([[-4, 0, 0], [4, 0, 0]])
+AGENTS = START_VEL.shape[0]
+DIM = START_VEL.shape[1]
 
 # AGENT TRAJLEN DIM
 # jerks = np.array([[[1, 0, 0]], [[2, 1, 0]], [[0, 0, 0]], [[0, 0, 0]], [[5, 0, -7]]])
@@ -122,7 +127,8 @@ TARGET_POS = np.array([[-4, 0, 0], [4, 0, 0], [0, 0, 0], [0, 0, -4], [3, 3, 0]])
 fun = Functions()
 # randJerk = randomJerk(5, 10, 1)
 # np.save(sys.path[0] + "/trajectories/jerk_traj2.npy", randJerk)
-jerks = np.load(sys.path[0] + "/trajectories/jerk_traj.npy")
+# jerks = np.load(sys.path[0] + "/trajectories/jerk_traj.npy")
+jerks = np.zeros([AGENTS, TRAJLEN, DIM])
 
 for i in range(0, STEPS):
     # agents = jerks.shape[0]
@@ -130,13 +136,14 @@ for i in range(0, STEPS):
     # dim = jerks.shape[2]
     cost = fun.cost(jerks, START_VEL, START_POS, TARGET_VEL, TARGET_POS, TIMESTEP)
     gradient = fun.costGrad(jerks, START_VEL, START_POS, TARGET_VEL, TARGET_POS, TIMESTEP)
-    print("current cost = {} current grad = {}".format(cost, gradient))
-    jerks -= STEPSIZE * gradient
+    # print("current cost = {} current grad = {}".format(cost, gradient))
+    print("ITERATION {} COST\n{}".format(i, cost))
+    jerks += STEPSIZE * gradient
 
-
-
-fun.calculateTrajectory(jerks, START_VEL, START_POS, TIMESTEP)
-print(fun.positions)
+print("### FINAL VELOCITIES ###")
+print(fun.velocities[:, -1, :])
+print("### FINAL POSITIONS ###")
+print(fun.positions[:, -1, :])
 
 # np.save(sys.path[0] + "/trajectories/vel_traj.npy", fun.velocities)
-# np.save(sys.path[0] + "/trajectories/pos_traj.npy", fun.positions)
+np.save(sys.path[0] + "/trajectories/pos_traj.npy", fun.positions)

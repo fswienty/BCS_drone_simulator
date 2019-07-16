@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider  # , Button, RadioButtons
 from mpl_toolkits.mplot3d import Axes3D
 
-tt = np.load(sys.path[0] + "/trajectories/vel_traj.npy")
+tt = np.load(sys.path[0] + "/trajectories/pos_traj.npy")
 agents = tt.shape[0]
 traj_len = tt.shape[1]
 
