@@ -11,16 +11,16 @@ class Functions():
     positions = 0
     velocities = 0
 
-    # def __init__(self, timestep, trajLen, min_dist, start_vel, start_pos, goal_vel, goal_pos):
-    #     self.timestep = timestep
-    #     self.agents = goal_vel.shape[0]
-    #     self.trajLen = trajLen
-    #     self.min_dist = min_dist
-    #     self.dim = goal_vel.shape[1]
-    #     self.start_vel = start_vel
-    #     self.start_pos = start_pos
-    #     self.goal_vel = goal_vel
-    #     self.goal_pos = goal_pos
+    wVel = 0
+    wPos = 0
+    wCol = 0
+    collDist = 0
+
+    def __init__(self, wVel, wPos, wCol, collDist):
+        self.wVel = wVel
+        self.wPos = wPos
+        self.wCol = wCol
+        self.collDist = collDist
 
 
     def calculateTrajectory(self, jerks, startVel, startPos, t):
@@ -71,12 +71,21 @@ class Functions():
 
     def cost(self, jerks, startVel, startPos, targetVel, targetPos, t):
         self.calculateTrajectory(jerks, startVel, startPos, t)
-        # agents = self.positions.shape[0]
-        # trajLen = self.positions.shape[1]
+        agents = self.positions.shape[0]
+        trajLen = self.positions.shape[1]
         # dim = self.positions.shape[2]
         cost = 0
-        cost = (targetVel - self.velocities[:, -1, :])**2 + (targetPos - self.positions[:, -1, :])**2
-        cost = np.sum(cost)
+        cost += np.sum(self.wVel * (targetVel - self.velocities[:, -1, :])**2)  # add target velocity error
+        cost += np.sum(self.wPos * (targetPos - self.positions[:, -1, :])**2)  # add target position error
+        for ag1 in range(0, agents):
+            for ag2 in range(ag1 + 1, agents):
+                posDiff = self.positions[ag1, :, :] - self.positions[ag2, :, :]
+                # print("### {} vs {} ###".format(ag1, ag2))
+                # print(posDiff)
+                for step in range(0, trajLen):
+                    dist = np.linalg.norm(posDiff[step])
+                    if dist < self.collDist:
+                        cost += self.wCol * (1 - dist / self.collDist)**2
         return cost
 
 
@@ -88,8 +97,9 @@ class Functions():
         endPosGrad = self.positionGrad(jerks, trajLen, t)
         costGrad = np.zeros([agents, trajLen, dim])
         for i in range(0, trajLen):
-            costGrad[:, i, :] += 5 * 2 * (targetVel - self.velocities[:, -1, :]) * endVelGrad[:, i, :]
-            costGrad[:, i, :] += 2 * (targetPos - self.positions[:, -1, :]) * endPosGrad[:, i, :]
+            costGrad[:, i, :] += self.wVel * 2 * (targetVel - self.velocities[:, -1, :]) * endVelGrad[:, i, :]
+            costGrad[:, i, :] += self.wPos * 2 * (targetPos - self.positions[:, -1, :]) * endPosGrad[:, i, :]
+        # add code for collision gradient
         return costGrad
 
 
@@ -117,13 +127,13 @@ TRAJLEN = 10
 DIM = START_VEL.shape[1]
 
 TIMESTEP = 1
-STEPS = 500
+STEPS = 400
 STEPSIZE = 0.00005
 
 # AGENT TRAJLEN DIM
 # jerks = np.array([[[1, 0, 0]], [[2, 1, 0]], [[0, 0, 0]], [[0, 0, 0]], [[5, 0, -7]]])
 
-fun = Functions()
+fun = Functions(5, 1, 10, 2)
 # randJerk = randomJerk(5, 10, 1)
 # np.save(sys.path[0] + "/trajectories/jerk_traj2.npy", randJerk)
 # jerks = np.load(sys.path[0] + "/trajectories/jerk_traj.npy")

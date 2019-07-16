@@ -56,7 +56,9 @@ class ErrorCalculator():
                 for step in range(0, self.traj_len):
                     dist = np.linalg.norm(pos_diff[step])
                     if dist < self.min_dist:
-                        cols += 1 - (1 / self.min_dist) * dist
+                        cols += 1 - (1 / self.min_dist) * dist  # evals: 66000 time: 2:30
+                        # cols += (1 - 1 / self.min_dist)  # evals: >200000 time: >7:00
+                        # cols += 5 * (1 - (dist / self.min_dist))**2  # evals: 3 time: 3
         return cols
 
 
