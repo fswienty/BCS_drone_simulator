@@ -2,6 +2,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider  # , Button, RadioButtons
+
 from mpl_toolkits.mplot3d import Axes3D
 
 tt = np.load(sys.path[0] + "/trajectories/pos_traj.npy")
@@ -15,7 +16,7 @@ ax = fig.add_subplot(111, aspect='equal', projection='3d')
 plt.subplots_adjust(bottom=0.25)  # make room for the slider
 
 ax_step = plt.axes([0.25, 0.1, 0.65, 0.03])
-s_step = Slider(ax_step, 'timestep', 1, traj_len, valinit=1, valstep=1)
+s_step = Slider(ax_step, 'timestep', 0, traj_len - 1, valinit=0, valstep=1)
 
 plotRange = 4
 
@@ -28,8 +29,9 @@ def update(val):
     ax.set_zlim3d(-plotRange, plotRange)
     # ax.set_aspect('equal')
     for i in range(0, agents):
-        ax.plot3D(tt[i, 0:step, 0], tt[i, 0:step, 1], tt[i, 0:step, 2])
-        ax.scatter(tt[i, 0:step, 0], tt[i, 0:step, 1], tt[i, 0:step, 2])
+        ax.plot3D(tt[i, 0:step + 1, 0], tt[i, 0:step + 1, 1], tt[i, 0:step + 1, 2])
+        # ax.scatter(tt[i, 0:step, 0], tt[i, 0:step, 1], tt[i, 0:step, 2])
+        ax.scatter(tt[i, step, 0], tt[i, step, 1], tt[i, step, 2])
     fig.canvas.draw_idle()
 
 

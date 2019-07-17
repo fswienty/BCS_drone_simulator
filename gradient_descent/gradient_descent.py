@@ -90,13 +90,16 @@ class Functions():
         agents = jerks.shape[0]
         trajLen = jerks.shape[1]
         dim = jerks.shape[2]
+        costGrad = np.zeros([agents, trajLen, dim])
+
+        # gradient due to difference between target and actual end velcity/position
         endVelGrad = self.velocityGrad(jerks, trajLen, t)
         endPosGrad = self.positionGrad(jerks, trajLen, t)
-        costGrad = np.zeros([agents, trajLen, dim])
         for i in range(0, trajLen):
             costGrad[:, i, :] += self.wVel * 2 * (self.velocities[:, -1, :] - targetVel) * endVelGrad[:, i, :]
             costGrad[:, i, :] += self.wPos * 2 * (self.positions[:, -1, :] - targetPos) * endPosGrad[:, i, :]
-        # add code for collision gradient
+
+        # gradient due to drone-drone collisions
         for ag1 in range(0, agents):
             for ag2 in range(ag1 + 1, agents):
                 posDiff = self.positions[ag1, :, :] - self.positions[ag2, :, :]
@@ -104,10 +107,10 @@ class Functions():
                     dist = np.linalg.norm(posDiff[step, :])
                     if dist < self.collDist:
                         positionGrad = self.positionGrad(jerks, step, t)
-                        grad = self.wCol * 2 * (1 - posDiff[step, :] / self.collDist) * (positionGrad[ag1, :, :]) / self.collDist
+                        grad = self.wCol * 2 * (1 - posDiff[step, :] / self.collDist) * (positionGrad[ag2, :, :]) / self.collDist
                         costGrad[ag1, :, :] += grad
                         costGrad[ag2, :, :] -= grad
-                        # print(positionGrad[ag1, :, :])
+
         return costGrad
 
 
@@ -136,13 +139,13 @@ DIM = STARTVEL.shape[1]
 
 TIMESTEP = 0.5
 MAXJERK = 2
-STEPS = 1000
+STEPS = 3000
 STEPSIZE = 0.0001
 
 # AGENT TRAJLEN DIM
 # jerks = np.array([[[1, 0, 0]], [[2, 1, 0]], [[0, 0, 0]], [[0, 0, 0]], [[5, 0, -7]]])
 
-fun = Functions(5, 1, 5, 1)
+fun = Functions(5, 1, 5, 2)
 # randJerk = randomJerk(5, 10, 1)
 # np.save(sys.path[0] + "/trajectories/jerk_traj2.npy", randJerk)
 # jerks = np.load(sys.path[0] + "/trajectories/jerk_traj.npy")
@@ -165,4 +168,5 @@ print("### FINAL POSITIONS DIFFERENCE ###")
 print(TARGETPOS - fun.positions[:, -1, :])
 
 # np.save(sys.path[0] + "/trajectories/vel_traj.npy", fun.velocities)
+np.save(sys.path[0] + "/trajectories/pos_traj.npy", fun.positions)
 np.save(sys.path[0] + "/trajectories/pos_traj.npy", fun.positions)
