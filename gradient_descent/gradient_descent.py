@@ -113,6 +113,21 @@ class Functions():
 
         return costGrad
 
+    def costGradBlind(self, jerks, startVel, startPos, targetVel, targetPos, t):
+        agents = jerks.shape[0]
+        trajLen = jerks.shape[1]
+        dim = jerks.shape[2]
+        costGrad = np.zeros([agents, trajLen, dim])
+
+        # gradient due to difference between target and actual end velcity/position
+        endVelGrad = self.velocityGrad(jerks, trajLen, t)
+        endPosGrad = self.positionGrad(jerks, trajLen, t)
+        for i in range(0, trajLen):
+            costGrad[:, i, :] += self.wVel * 2 * (self.velocities[:, -1, :] - targetVel) * endVelGrad[:, i, :]
+            costGrad[:, i, :] += self.wPos * 2 * (self.positions[:, -1, :] - targetPos) * endPosGrad[:, i, :]
+
+        return costGrad
+
 
 def randomJerk(agents, trajLen, maxJerk):
     jerks = np.zeros([agents, trajLen, 3])
@@ -139,28 +154,32 @@ DIM = STARTVEL.shape[1]
 
 TIMESTEP = 0.5
 MAXJERK = 2
-STEPS = 3000
-STEPSIZE = 0.0001
+STEPS = 1500
+STEPSIZE = 0.00005
 
 # AGENT TRAJLEN DIM
-# jerks = np.array([[[1, 0, 0]], [[2, 1, 0]], [[0, 0, 0]], [[0, 0, 0]], [[5, 0, -7]]])
-
-fun = Functions(5, 1, 5, 2)
-# randJerk = randomJerk(5, 10, 1)
-# np.save(sys.path[0] + "/trajectories/jerk_traj2.npy", randJerk)
-# jerks = np.load(sys.path[0] + "/trajectories/jerk_traj.npy")
+# jerks = randomJerk(AGENTS, TRAJLEN, 1)
 jerks = np.zeros([AGENTS, TRAJLEN, DIM])
 
+fun = Functions(5, 1, 5, 2)
+# for i in range(0, STEPS):
+#     cost = fun.cost(jerks, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
+#     gradient = fun.costGrad(jerks, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
+#     print("Pre iteration {} cost = {}".format(i, cost))
+#     jerks -= STEPSIZE * gradient
+#     jerks = np.clip(jerks, -MAXJERK, MAXJERK)
+
+lastGradient = np.zeros([AGENTS, TRAJLEN, DIM])
 for i in range(0, STEPS):
-    # agents = jerks.shape[0]
-    # trajLen = jerks.shape[1]
-    # dim = jerks.shape[2]
     cost = fun.cost(jerks, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
     gradient = fun.costGrad(jerks, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
-    # print("current cost = {} current grad = {}".format(cost, gradient))
     print("Iteration {} cost = {}".format(i, cost))
+
+    gradient += 0.9 * lastGradient
+    lastGradient = gradient
     jerks -= STEPSIZE * gradient
     jerks = np.clip(jerks, -MAXJERK, MAXJERK)
+
 
 print("### FINAL VELOCITY DIFFERENCE ###")
 print(TARGETVEL - fun.velocities[:, -1, :])
@@ -168,5 +187,4 @@ print("### FINAL POSITIONS DIFFERENCE ###")
 print(TARGETPOS - fun.positions[:, -1, :])
 
 # np.save(sys.path[0] + "/trajectories/vel_traj.npy", fun.velocities)
-np.save(sys.path[0] + "/trajectories/pos_traj.npy", fun.positions)
 np.save(sys.path[0] + "/trajectories/pos_traj.npy", fun.positions)
