@@ -140,21 +140,21 @@ def randomJerk(agents, trajLen, maxJerk):
 
 
 # AGENT DIM
-STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 0, 0], [0, 0, 4], [-3, -3, 0]])
-TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-TARGETPOS = np.array([[-4, 0, 0], [4, 0, 0], [0, 0, 0], [0, 0, -4], [3, 3, 0]])
-# START_VEL = np.array([[0, 0, 0], [0, 0, 0]])
-# START_POS = np.array([[4, 0, 0], [-4, 0, 0]])
-# TARGET_VEL = np.array([[0, 0, 0], [0, 0, 0]])
-# TARGET_POS = np.array([[-4, 0, 0], [4, 0, 0]])
+# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 0, 0], [0, 0, 4], [-3, -3, 0]])
+# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# TARGETPOS = np.array([[-4, 0, 0], [4, 0, 0], [0, 0, 0], [0, 0, -4], [3, 3, 0]])
+STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 4, 0], [0, -4, 0], [0, 0, 4], [0, 0, -4]])
+TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+TARGETPOS = np.array([[-4, 0, 0], [4, 0, 0], [0, -4, 0], [0, 4, 0], [0, 0, -4], [0, 0, 4]])
 AGENTS = STARTVEL.shape[0]
 TRAJLEN = 20
 DIM = STARTVEL.shape[1]
 
 TIMESTEP = 0.5
 MAXJERK = 2
-STEPS = 1500
+STEPS = 1000
 STEPSIZE = 0.00005
 
 # AGENT TRAJLEN DIM
@@ -162,19 +162,24 @@ STEPSIZE = 0.00005
 jerks = np.zeros([AGENTS, TRAJLEN, DIM])
 
 fun = Functions(5, 1, 5, 2)
-# for i in range(0, STEPS):
-#     cost = fun.cost(jerks, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
-#     gradient = fun.costGrad(jerks, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
-#     print("Pre iteration {} cost = {}".format(i, cost))
-#     jerks -= STEPSIZE * gradient
-#     jerks = np.clip(jerks, -MAXJERK, MAXJERK)
 
+# find initial solutions that don't consider collisions
+lastGradient = np.zeros([AGENTS, TRAJLEN, DIM])
+for i in range(0, int(STEPS / 5)):
+    cost = fun.cost(jerks, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
+    gradient = fun.costGradBlind(jerks, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
+    print("Pre iteration {} cost = {}".format(i, cost))
+    gradient += 0.9 * lastGradient
+    lastGradient = gradient
+    jerks -= STEPSIZE * gradient
+    jerks = np.clip(jerks, -MAXJERK, MAXJERK)
+
+# refinde solutions with collisions
 lastGradient = np.zeros([AGENTS, TRAJLEN, DIM])
 for i in range(0, STEPS):
     cost = fun.cost(jerks, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
     gradient = fun.costGrad(jerks, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
     print("Iteration {} cost = {}".format(i, cost))
-
     gradient += 0.9 * lastGradient
     lastGradient = gradient
     jerks -= STEPSIZE * gradient
