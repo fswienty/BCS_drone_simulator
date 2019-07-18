@@ -84,7 +84,7 @@ class CostFunctions():
         return cost
 
 
-    def costGrad(self, jerks):
+    def gradient(self, jerks):
         costGrad = np.zeros([self.agents, self.trajLen, self.dim])
 
         # gradient due to difference between target and actual end velcity/position
@@ -109,7 +109,7 @@ class CostFunctions():
         return costGrad
 
 
-    def costGradBlind(self, jerks):
+    def gradientBlind(self, jerks):
         costGrad = np.zeros([self.agents, self.trajLen, self.dim])
 
         # gradient due to difference between target and actual end velcity/position
@@ -122,21 +122,18 @@ class CostFunctions():
         return costGrad
 
 
-# def momentumGradientDescent(costFunction, gradientFunction, problemDefinition: ProblemDefinition, initialJerks=0):
-#     pd = problemDefinition
-#     parameters = 0
-#     if initialJerks != 0:
-#         parameters = initialJerks
-#     lastGradient = np.zeros([pd.agents, pd.trajLen, pd.dim])
-#     for i in range(0, pd.steps):
-#         cost = costFun.cost(parameters, pd.startVel, pd.startPos, pd.targetVel, pd.targetPos, pd.timestep)
-#         gradient = costFun.costGrad(parameters, pd.startVel, pd.startPos, pd.targetVel, pd.targetPos, pd.timestep)
-#         print("Iteration {} Cost = {}".format(i, cost))
-#         gradient += 0.9 * lastGradient
-#         lastGradient = gradient
-#         parameters -= STEPSIZE * gradient
-#         parameters = np.clip(parameters, -MAXJERK, MAXJERK)
-#     return parameters
+def momentumGradientDescent(steps, stepsize, costFunction, gradientFunction, initialParameters, parameterLimit):
+    parameters = initialParameters
+    lastGradient = np.zeros(initialParameters.shape)
+    for i in range(0, steps):
+        cost = costFunction(parameters)
+        gradient = gradientFunction(parameters)
+        print("Iteration {} Cost = {}".format(i, cost))
+        gradient += 0.9 * lastGradient
+        lastGradient = gradient
+        parameters -= stepsize * gradient
+        parameters = np.clip(parameters, -parameterLimit, parameterLimit)
+    return parameters
 
 
 # AGENT DIM
@@ -163,34 +160,15 @@ PRESTEPS = 200  # amount of steps for the initial gradient descend without colli
 STEPS = 700  # amount of steps for the final gradient descent with collisions
 STEPSIZE = 0.00005
 
+costFun = CostFunctions(5, 1, 5, COLLDIST, AGENTS, TRAJLEN, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
+
 # AGENT TRAJLEN DIM
 # jerks = randomJerk(AGENTS, TRAJLEN, 1)
 jerks = np.zeros([AGENTS, TRAJLEN, DIM])
-
-costFun = CostFunctions(5, 1, 5, COLLDIST, AGENTS, TRAJLEN, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
-
 # find initial solutions that don't consider collisions
-lastGradient = np.zeros([AGENTS, TRAJLEN, DIM])
-for i in range(0, PRESTEPS):
-    cost = costFun.cost(jerks)
-    gradient = costFun.costGradBlind(jerks,)
-    print("Pre iteration {} cost = {}".format(i, cost))
-    gradient += 0.9 * lastGradient
-    lastGradient = gradient
-    jerks -= STEPSIZE * gradient
-    jerks = np.clip(jerks, -MAXJERK, MAXJERK)
-
+initialJerks = momentumGradientDescent(PRESTEPS, STEPSIZE, costFun.cost, costFun.gradientBlind, jerks, MAXJERK)
 # refinde solutions with collisions
-lastGradient = np.zeros([AGENTS, TRAJLEN, DIM])
-for i in range(0, STEPS):
-    cost = costFun.cost(jerks)
-    gradient = costFun.costGrad(jerks)
-    print("Iteration {} cost = {}".format(i, cost))
-    gradient += 0.9 * lastGradient
-    lastGradient = gradient
-    jerks -= STEPSIZE * gradient
-    jerks = np.clip(jerks, -MAXJERK, MAXJERK)
-
+momentumGradientDescent(STEPS, STEPSIZE, costFun.cost, costFun.gradient, initialJerks, MAXJERK)
 
 print("### FINAL VELOCITY DIFFERENCE ###")
 print(TARGETVEL - costFun.velocities[:, -1, :])
@@ -199,7 +177,6 @@ print(TARGETPOS - costFun.positions[:, -1, :])
 
 # np.save(sys.path[0] + "/trajectories/vel_traj.npy", fun.velocities)
 np.save(sys.path[0] + "/trajectories/pos_traj.npy", costFun.positions)
-
 
 # def randomJerk(agents, trajLen, maxJerk):
 #     jerks = np.zeros([agents, trajLen, 3])
