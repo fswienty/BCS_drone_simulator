@@ -10,11 +10,6 @@ class CostFunctions():
     positions = 0
     velocities = 0
 
-    wVel = 0
-    wPos = 0
-    wCol = 0
-    collDist = 0
-
     def __init__(self, wVel, wPos, wCol, collDist, agents, trajLen, dim, startVel, startPos, targetVel, targetPos, timestep):
         self.wVel = wVel
         self.wPos = wPos
@@ -28,23 +23,23 @@ class CostFunctions():
         self.startPos = startPos
         self.targetVel = targetVel
         self.targetPos = targetPos
-        self.t = timestep
+        self.timestep = timestep
 
 
     def _calculateTrajectories(self, jerks):
-        positionSummation = 0
+        positionSum = 0
         v = np.zeros([self.agents, self.trajLen, self.dim])
         p = np.zeros([self.agents, self.trajLen, self.dim])
         v[:, 0, :] = self.startVel
         p[:, 0, :] = self.startPos
         for k in range(0, self.trajLen - 1):
-            velocitySummation = 0
-            positionSummation = 0
+            velocitySum = 0
+            positionSum = 0
             for i in range(0, k + 1):
-                velocitySummation += ((k - i) + 0.5) * jerks[:, i, :]
-                positionSummation += ((k - i)**2 + (k - i) + 0.3333) * jerks[:, i, :]
-            v[:, k + 1, :] = self.startVel + self.t**2 * velocitySummation
-            p[:, k + 1, :] = self.startPos + (k + 1) * self.t * self.startVel + 0.5 * self.t**3 * positionSummation
+                velocitySum += ((k - i) + 0.5) * jerks[:, i, :]
+                positionSum += ((k - i)**2 + (k - i) + 0.3333) * jerks[:, i, :]
+            v[:, k + 1, :] = self.startVel + self.timestep**2 * velocitySum
+            p[:, k + 1, :] = self.startPos + (k + 1) * self.timestep * self.startVel + 0.5 * self.timestep**3 * positionSum
         self.velocities = v
         self.positions = p
 
@@ -52,7 +47,7 @@ class CostFunctions():
     def _velocityGrad(self, jerks, k):
         velGrad = np.zeros([self.agents, self.trajLen, self.dim])
         for i in range(0, k):
-            velGrad[:, i, :] = self.t**2 * ((k - i) + 0.5)
+            velGrad[:, i, :] = self.timestep**2 * ((k - i) + 0.5)
         for i in range(k, self.trajLen):
             velGrad[:, i, :] = 0
         return velGrad
@@ -61,7 +56,7 @@ class CostFunctions():
     def _positionGrad(self, jerks, k):
         posGrad = np.zeros([self.agents, self.trajLen, self.dim])
         for i in range(0, k):
-            posGrad[:, i, :] = 0.5 * self.t**3 * ((k - i)**2 + (k - i) + 0.3333)
+            posGrad[:, i, :] = 0.5 * self.timestep**3 * ((k - i)**2 + (k - i) + 0.3333)
         for i in range(k, self.trajLen):
             posGrad[:, i, :] = 0
         return posGrad
@@ -81,7 +76,7 @@ class CostFunctions():
                     dist = np.linalg.norm(posDiff[step, :])
                     if dist < self.collDist:
                         cost += self.wCol * (1 - dist / self.collDist)**2
-                        
+
         return cost
 
 
@@ -123,7 +118,7 @@ class CostFunctions():
         return costGrad
 
 
-def momentumGradientDescent(steps, stepsize, momentum, costFunction, gradientFunction, initialParameters, parameterLimit):
+def momentumGradientDescent(steps, stepsize, momentum, costFunction, gradientFunction, initialParameters, parameterLimit, costTarget):
     parameters = initialParameters
     v = np.zeros(initialParameters.shape)
     for i in range(0, steps):
@@ -131,14 +126,19 @@ def momentumGradientDescent(steps, stepsize, momentum, costFunction, gradientFun
         gradient = gradientFunction(parameters)
         print("Iteration {} Cost = {}".format(i, cost))
 
+        if(cost < costTarget):
+            print("stopping due to reaching cost target")
+            return parameters
+
         v = momentum * v + stepsize * gradient
         parameters -= v
-
         parameters = np.clip(parameters, -parameterLimit, parameterLimit)
+
+    print("stopping due to reaching step limit")
     return parameters
 
 
-def adamGradientDescent(steps, stepsize, beta1, beta2, eps, costFunction, gradientFunction, initialParameters, parameterLimit):
+def adamGradientDescent(steps, stepsize, beta1, beta2, eps, costFunction, gradientFunction, initialParameters, parameterLimit, costTarget):
     parameters = initialParameters
     m = np.zeros(initialParameters.shape)
     v = np.zeros(initialParameters.shape)
@@ -147,14 +147,18 @@ def adamGradientDescent(steps, stepsize, beta1, beta2, eps, costFunction, gradie
         gradient = gradientFunction(parameters)
         print("Iteration {} Cost = {}".format(i, cost))
 
+        if(cost < costTarget):
+            print("stopping due to reaching cost target")
+            return parameters
+
         m = beta1 * m + (1 - beta1) * gradient
         v = beta2 * v + (1 - beta2) * gradient**2
         mHat = m / (1 - beta1)
         vHat = v / (1 - beta2)
         parameters -= stepsize / (np.sqrt(vHat) + eps) * mHat
-
         parameters = np.clip(parameters, -parameterLimit, parameterLimit)
 
+    print("stopping due to reaching step limit")
     return parameters
 
 
@@ -163,49 +167,68 @@ def adamGradientDescent(steps, stepsize, beta1, beta2, eps, costFunction, gradie
 # STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 0, 0], [0, 0, 4], [-3, -3, 0]])
 # TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 # TARGETPOS = np.array([[-4, 0, 0], [4, 0, 0], [0, 0, 0], [0, 0, -4], [3, 3, 0]])
-# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 4, 0], [0, -4, 0], [0, 0, 4], [0, 0, -4]])
-# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# TARGETPOS = np.array([[-4, 0, 0], [4, 0, 0], [0, -4, 0], [0, 4, 0], [0, 0, -4], [0, 0, 4]])
+
+# 3 axis position swap
 STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 4, 0], [0, -4, 0], [0, 0, 4], [0, 0, -4]])
 TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 TARGETPOS = np.array([[-4, 0, 0], [4, 0, 0], [0, -4, 0], [0, 4, 0], [0, 0, -4], [0, 0, 4]])
+
+# pentagram
+# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# STARTPOS = np.array([[-2, -2, 0], [3, 1, 0], [-3, 1, 0], [2, -2, 0], [0, 4, 0]])
+# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# TARGETPOS = np.array([[3, 1, 0], [-3, 1, 0], [2, -2, 0], [0, 4, 0], [-2, -2, 0]])
+
 AGENTS = STARTVEL.shape[0]
 TRAJLEN = 20
 DIM = STARTVEL.shape[1]
 
 TIMESTEP = 0.5
-MAXJERK = .1
-COLLDIST = 2
+MAXJERK = 1
 
-costFun = CostFunctions(5, 1, 5, COLLDIST, AGENTS, TRAJLEN, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
+WVEL = 5
+WPOS = 1
+WCOL = 0.3
+MINDIST = 2
+costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TRAJLEN, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
 
 # AGENT TRAJLEN DIM
-# jerks = randomJerk(AGENTS, TRAJLEN, 1)
 jerks = np.zeros([AGENTS, TRAJLEN, DIM])
+# randomize jerks
+# maxRandom = 1
+# for i in range(0, AGENTS):
+#     tmp = np.zeros([TRAJLEN, 3])
+#     for j in range(0, TRAJLEN):
+#         tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
+#     jerks[i] = tmp
 
-# STEPS STEPSIZE MOMENTUM
-# initialJerks = momentumGradientDescent(200, 0.00005, 0.9, costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK)
-# momentumGradientDescent(700, 0.00005, 0.9, costFun.cost, costFun.gradient, initialJerks, MAXJERK)
+# STEPS STEPSIZE MOMENTUM ... COSTTARGET
+initialJerks = momentumGradientDescent(50, 0.0005, 0.9, costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK, -1)
+momentumGradientDescent(700, 0.0005, 0.9, costFun.cost, costFun.gradient, initialJerks, MAXJERK, 0.05)
 
-# STEPS STEPSIZE BETA1 BETA2 EPSILON
-initialJerks = adamGradientDescent(50, 0.01, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK)
-adamGradientDescent(300, 0.01, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradient, initialJerks, MAXJERK)
+# STEPS STEPSIZE BETA1 BETA2 EPSILON ... COSTTARGET
+# initialResult = adamGradientDescent(50, 0.01, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK, -1)
+# result = adamGradientDescent(1000, 0.005, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradient, initialResult, MAXJERK, 0.05)
 
-print("### FINAL VELOCITY DIFFERENCE ###")
-print(TARGETVEL - costFun.velocities[:, -1, :])
-print("### FINAL POSITIONS DIFFERENCE ###")
-print(TARGETPOS - costFun.positions[:, -1, :])
+print("\n ##### RESULTS #####")
+print("Highest final velocity difference:", np.max(np.linalg.norm(TARGETVEL - costFun.velocities[:, -1, :], axis=1)))
+print("Highest final position difference:", np.max(np.linalg.norm(TARGETPOS - costFun.positions[:, -1, :], axis=1)))
+smallestDistance = 10000
+smallestDistanceTimestep = -1
+smallestDistanceAgent1 = -1
+smallestDistanceAgent2 = -1
+for ag1 in range(0, costFun.agents):
+    for ag2 in range(ag1 + 1, costFun.agents):
+        posDiff = costFun.positions[ag1, :, :] - costFun.positions[ag2, :, :]
+        for step in range(0, costFun.trajLen):
+            dist = np.linalg.norm(posDiff[step, :])
+            if dist < smallestDistance:
+                smallestDistance = dist
+                smallestDistanceTimestep = step
+                smallestDistanceAgent1 = ag1
+                smallestDistanceAgent2 = ag2
+print("Smallest distance: {0} at timestep {1} between agent {2} and {3}".format(smallestDistance, smallestDistanceTimestep, smallestDistanceAgent1, smallestDistanceAgent2), "\n")
 
 # np.save(sys.path[0] + "/trajectories/vel_traj.npy", fun.velocities)
 np.save(sys.path[0] + "/trajectories/pos_traj.npy", costFun.positions)
-
-# def randomJerk(agents, trajLen, maxJerk):
-#     jerks = np.zeros([agents, trajLen, 3])
-#     for i in range(0, agents):
-#         tmp = np.zeros([trajLen, 3])
-#         for j in range(0, trajLen):
-#             tmp[j] = [random.uniform(-maxJerk, maxJerk), random.uniform(-maxJerk, maxJerk), random.uniform(-maxJerk, maxJerk)]
-#         jerks[i] = tmp
-#     return jerks
