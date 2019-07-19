@@ -118,10 +118,10 @@ class CostFunctions():
         return costGrad
 
 
-def momentumGradientDescent(steps, stepsize, momentum, costFunction, gradientFunction, initialParameters, parameterLimit, costTarget):
+def momentumGradientDescent(maxSteps, stepsize, momentum, costFunction, gradientFunction, initialParameters, parameterLimit, costTarget):
     parameters = initialParameters
     v = np.zeros(initialParameters.shape)
-    for i in range(0, steps):
+    for i in range(0, maxSteps):
         cost = costFunction(parameters)
         gradient = gradientFunction(parameters)
         print("Iteration {} Cost = {}".format(i, cost))
@@ -138,11 +138,11 @@ def momentumGradientDescent(steps, stepsize, momentum, costFunction, gradientFun
     return parameters
 
 
-def adamGradientDescent(steps, stepsize, beta1, beta2, eps, costFunction, gradientFunction, initialParameters, parameterLimit, costTarget):
+def adamGradientDescent(maxSteps, stepsize, beta1, beta2, eps, costFunction, gradientFunction, initialParameters, parameterLimit, costTarget):
     parameters = initialParameters
     m = np.zeros(initialParameters.shape)
     v = np.zeros(initialParameters.shape)
-    for i in range(0, steps):
+    for i in range(0, maxSteps):
         cost = costFunction(parameters)
         gradient = gradientFunction(parameters)
         print("Iteration {} Cost = {}".format(i, cost))
@@ -163,22 +163,35 @@ def adamGradientDescent(steps, stepsize, beta1, beta2, eps, costFunction, gradie
 
 
 # AGENT DIM
+# random
 # STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 # STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 0, 0], [0, 0, 4], [-3, -3, 0]])
 # TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 # TARGETPOS = np.array([[-4, 0, 0], [4, 0, 0], [0, 0, 0], [0, 0, -4], [3, 3, 0]])
 
 # 3 axis position swap
-STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 4, 0], [0, -4, 0], [0, 0, 4], [0, 0, -4]])
-TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-TARGETPOS = np.array([[-4, 0, 0], [4, 0, 0], [0, -4, 0], [0, 4, 0], [0, 0, -4], [0, 0, 4]])
+# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 4, 0], [0, -4, 0], [0, 0, 4], [0, 0, -4], [0, 0, 0]])
+# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# TARGETPOS = np.array([[-4, 0, 0], [4, 0, 0], [0, -4, 0], [0, 4, 0], [0, 0, -4], [0, 0, 4], [0, 0, 0]])
 
 # pentagram
 # STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 # STARTPOS = np.array([[-2, -2, 0], [3, 1, 0], [-3, 1, 0], [2, -2, 0], [0, 4, 0]])
 # TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 # TARGETPOS = np.array([[3, 1, 0], [-3, 1, 0], [2, -2, 0], [0, 4, 0], [-2, -2, 0]])
+
+# line swap
+# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# STARTPOS = np.array([[3, -4, 0], [3, -2, 0], [3, 0, 0], [3, 2, 0], [3, 4, 0], [-3, -4, 0], [-3, -2, 0], [-3, 0, 0], [-3, 2, 0], [-3, 4, 0]])
+# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# TARGETPOS = np.array([[-3, -4, 0], [-3, -2, 0], [-3, 0, 0], [-3, 2, 0], [-3, 4, 0], [3, -4, 0], [3, -2, 0], [3, 0, 0], [3, 2, 0], [3, 4, 0]])
+
+# drone obstacle
+STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+STARTPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, -3, 0]])
+TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
 
 AGENTS = STARTVEL.shape[0]
 TRAJLEN = 20
@@ -189,27 +202,27 @@ MAXJERK = 1
 
 WVEL = 5
 WPOS = 1
-WCOL = 0.3
-MINDIST = 2
+WCOL = .3
+MINDIST = 1.5
 costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TRAJLEN, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
 
 # AGENT TRAJLEN DIM
 jerks = np.zeros([AGENTS, TRAJLEN, DIM])
 # randomize jerks
-# maxRandom = 1
-# for i in range(0, AGENTS):
-#     tmp = np.zeros([TRAJLEN, 3])
-#     for j in range(0, TRAJLEN):
-#         tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
-#     jerks[i] = tmp
+maxRandom = 0.5
+for i in range(0, AGENTS):
+    tmp = np.zeros([TRAJLEN, 3])
+    for j in range(0, TRAJLEN):
+        tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
+    jerks[i] = tmp
 
-# STEPS STEPSIZE MOMENTUM ... COSTTARGET
-initialJerks = momentumGradientDescent(50, 0.0005, 0.9, costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK, -1)
-momentumGradientDescent(700, 0.0005, 0.9, costFun.cost, costFun.gradient, initialJerks, MAXJERK, 0.05)
+# MAXSTEPS STEPSIZE MOMENTUM ... COSTTARGET
+# initialJerks = momentumGradientDescent(50, 0.0005, 0.9, costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK, -1)
+# momentumGradientDescent(700, 0.0005, 0.9, costFun.cost, costFun.gradient, initialJerks, MAXJERK, 0.05)
 
 # STEPS STEPSIZE BETA1 BETA2 EPSILON ... COSTTARGET
-# initialResult = adamGradientDescent(50, 0.01, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK, -1)
-# result = adamGradientDescent(1000, 0.005, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradient, initialResult, MAXJERK, 0.05)
+initialResult = adamGradientDescent(50, 0.01, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK, -1)
+result = adamGradientDescent(1000, 0.005, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradient, initialResult, MAXJERK, 0.05)
 
 print("\n ##### RESULTS #####")
 print("Highest final velocity difference:", np.max(np.linalg.norm(TARGETVEL - costFun.velocities[:, -1, :], axis=1)))
