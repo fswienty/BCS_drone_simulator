@@ -81,13 +81,14 @@ class CostFunctions():
                     dist = np.linalg.norm(posDiff[step, :])
                     if dist < self.collDist:
                         cost += self.wCol * (1 - dist / self.collDist)**2
+                        
         return cost
 
 
     def gradient(self, jerks):
         costGrad = np.zeros([self.agents, self.trajLen, self.dim])
 
-        # gradient due to difference between target and actual end velcity/position
+        # gradient due to difference between target and actual end velocity/position
         endVelGrad = self._velocityGrad(jerks, self.trajLen)
         endPosGrad = self._positionGrad(jerks, self.trajLen)
         for i in range(0, self.trajLen):
@@ -109,7 +110,7 @@ class CostFunctions():
         return costGrad
 
 
-    def gradientBlind(self, jerks):
+    def gradientNoCollision(self, jerks):
         costGrad = np.zeros([self.agents, self.trajLen, self.dim])
 
         # gradient due to difference between target and actual end velcity/position
@@ -122,17 +123,38 @@ class CostFunctions():
         return costGrad
 
 
-def momentumGradientDescent(steps, stepsize, costFunction, gradientFunction, initialParameters, parameterLimit):
+def momentumGradientDescent(steps, stepsize, momentum, costFunction, gradientFunction, initialParameters, parameterLimit):
     parameters = initialParameters
-    lastGradient = np.zeros(initialParameters.shape)
+    v = np.zeros(initialParameters.shape)
     for i in range(0, steps):
         cost = costFunction(parameters)
         gradient = gradientFunction(parameters)
         print("Iteration {} Cost = {}".format(i, cost))
-        gradient += 0.9 * lastGradient
-        lastGradient = gradient
-        parameters -= stepsize * gradient
+
+        v = momentum * v + stepsize * gradient
+        parameters -= v
+
         parameters = np.clip(parameters, -parameterLimit, parameterLimit)
+    return parameters
+
+
+def adamGradientDescent(steps, stepsize, beta1, beta2, eps, costFunction, gradientFunction, initialParameters, parameterLimit):
+    parameters = initialParameters
+    m = np.zeros(initialParameters.shape)
+    v = np.zeros(initialParameters.shape)
+    for i in range(0, steps):
+        cost = costFunction(parameters)
+        gradient = gradientFunction(parameters)
+        print("Iteration {} Cost = {}".format(i, cost))
+
+        m = beta1 * m + (1 - beta1) * gradient
+        v = beta2 * v + (1 - beta2) * gradient**2
+        mHat = m / (1 - beta1)
+        vHat = v / (1 - beta2)
+        parameters -= stepsize / (np.sqrt(vHat) + eps) * mHat
+
+        parameters = np.clip(parameters, -parameterLimit, parameterLimit)
+
     return parameters
 
 
@@ -154,21 +176,22 @@ TRAJLEN = 20
 DIM = STARTVEL.shape[1]
 
 TIMESTEP = 0.5
-MAXJERK = 2
+MAXJERK = .1
 COLLDIST = 2
-PRESTEPS = 200  # amount of steps for the initial gradient descend without collisions
-STEPS = 700  # amount of steps for the final gradient descent with collisions
-STEPSIZE = 0.00005
 
 costFun = CostFunctions(5, 1, 5, COLLDIST, AGENTS, TRAJLEN, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
 
 # AGENT TRAJLEN DIM
 # jerks = randomJerk(AGENTS, TRAJLEN, 1)
 jerks = np.zeros([AGENTS, TRAJLEN, DIM])
-# find initial solutions that don't consider collisions
-initialJerks = momentumGradientDescent(PRESTEPS, STEPSIZE, costFun.cost, costFun.gradientBlind, jerks, MAXJERK)
-# refinde solutions with collisions
-momentumGradientDescent(STEPS, STEPSIZE, costFun.cost, costFun.gradient, initialJerks, MAXJERK)
+
+# STEPS STEPSIZE MOMENTUM
+# initialJerks = momentumGradientDescent(200, 0.00005, 0.9, costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK)
+# momentumGradientDescent(700, 0.00005, 0.9, costFun.cost, costFun.gradient, initialJerks, MAXJERK)
+
+# STEPS STEPSIZE BETA1 BETA2 EPSILON
+initialJerks = adamGradientDescent(50, 0.01, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK)
+adamGradientDescent(300, 0.01, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradient, initialJerks, MAXJERK)
 
 print("### FINAL VELOCITY DIFFERENCE ###")
 print(TARGETVEL - costFun.velocities[:, -1, :])
