@@ -1,7 +1,7 @@
 import sys
 import random
 import numpy as np
-# import math
+import math
 # from autograd import grad
 
 
@@ -10,11 +10,11 @@ class CostFunctions():
     positions = 0
     velocities = 0
 
-    def __init__(self, wVel, wPos, wCol, collDist, agents, trajLen, dim, startVel, startPos, targetVel, targetPos, timestep):
+    def __init__(self, wVel, wPos, wCol, minDist, agents, trajLen, dim, startVel, startPos, targetVel, targetPos, timestep):
         self.wVel = wVel
         self.wPos = wPos
         self.wCol = wCol
-        self.collDist = collDist
+        self.minDist = minDist
 
         self.agents = agents
         self.trajLen = trajLen
@@ -74,8 +74,8 @@ class CostFunctions():
                 posDiff = self.positions[ag1, :, :] - self.positions[ag2, :, :]
                 for step in range(0, self.trajLen):
                     dist = np.linalg.norm(posDiff[step, :])
-                    if dist < self.collDist:
-                        cost += self.wCol * (1 - dist / self.collDist)**2
+                    if dist < self.minDist:
+                        cost += self.wCol * (1 - dist / self.minDist)**2
 
         return cost
 
@@ -96,9 +96,9 @@ class CostFunctions():
                 posDiff = self.positions[ag1, :, :] - self.positions[ag2, :, :]
                 for step in range(0, self.trajLen):
                     dist = np.linalg.norm(posDiff[step, :])
-                    if dist < self.collDist:
+                    if dist < self.minDist:
                         positionGrad = self._positionGrad(jerks, step)
-                        grad = self.wCol * 2 * (1 - posDiff[step, :] / self.collDist) * (positionGrad[ag2, :, :]) / self.collDist
+                        grad = self.wCol * 2 * (1 - posDiff[step, :] / self.minDist) * (positionGrad[ag2, :, :]) / self.minDist
                         costGrad[ag1, :, :] += grad
                         costGrad[ag2, :, :] -= grad
 
@@ -162,8 +162,17 @@ def adamGradientDescent(maxSteps, stepsize, beta1, beta2, eps, costFunction, gra
     return parameters
 
 
+def circleCoordinates(amount, radius, angleOffset):
+    coordinateArray = np.zeros([amount, 3])
+    angleStep = 360 / amount
+    for i in range(0, amount):
+        currRad = math.radians(i * angleStep + angleOffset)
+        coordinateArray[i] = np.array([radius * math.cos(currRad), radius * math.sin(currRad), 0])
+    return coordinateArray
+
+
 # AGENT DIM
-# random
+# "random"
 # STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 # STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 0, 0], [0, 0, 4], [-3, -3, 0]])
 # TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
@@ -187,11 +196,19 @@ def adamGradientDescent(maxSteps, stepsize, beta1, beta2, eps, costFunction, gra
 # TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 # TARGETPOS = np.array([[-3, -4, 0], [-3, -2, 0], [-3, 0, 0], [-3, 2, 0], [-3, 4, 0], [3, -4, 0], [3, -2, 0], [3, 0, 0], [3, 2, 0], [3, 4, 0]])
 
-# drone obstacle
-STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-STARTPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, -3, 0]])
-TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
+# drone wall
+# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# STARTPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, -3, 0]])
+# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
+
+# circle swap
+AGENTS = 15
+STARTVEL = np.zeros([AGENTS, 3])
+STARTPOS = circleCoordinates(AGENTS, 4, 0)
+TARGETVEL = np.zeros([AGENTS, 3])
+TARGETPOS = circleCoordinates(AGENTS, 4, 180)
+print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
 
 AGENTS = STARTVEL.shape[0]
 TRAJLEN = 20
@@ -203,18 +220,18 @@ MAXJERK = 1
 WVEL = 5
 WPOS = 1
 WCOL = .3
-MINDIST = 1.5
+MINDIST = 1
 costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TRAJLEN, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
 
 # AGENT TRAJLEN DIM
 jerks = np.zeros([AGENTS, TRAJLEN, DIM])
 # randomize jerks
-maxRandom = 0.5
-for i in range(0, AGENTS):
-    tmp = np.zeros([TRAJLEN, 3])
-    for j in range(0, TRAJLEN):
-        tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
-    jerks[i] = tmp
+# maxRandom = 0.5
+# for i in range(0, AGENTS):
+#     tmp = np.zeros([TRAJLEN, 3])
+#     for j in range(0, TRAJLEN):
+#         tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
+#     jerks[i] = tmp
 
 # MAXSTEPS STEPSIZE MOMENTUM ... COSTTARGET
 # initialJerks = momentumGradientDescent(50, 0.0005, 0.9, costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK, -1)
@@ -227,7 +244,7 @@ result = adamGradientDescent(1000, 0.005, 0.95, 0.99, 10**(-8), costFun.cost, co
 print("\n ##### RESULTS #####")
 print("Highest final velocity difference:", np.max(np.linalg.norm(TARGETVEL - costFun.velocities[:, -1, :], axis=1)))
 print("Highest final position difference:", np.max(np.linalg.norm(TARGETPOS - costFun.positions[:, -1, :], axis=1)))
-smallestDistance = 10000
+smallestDistance = sys.float_info.max
 smallestDistanceTimestep = -1
 smallestDistanceAgent1 = -1
 smallestDistanceAgent2 = -1
