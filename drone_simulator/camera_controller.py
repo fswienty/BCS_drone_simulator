@@ -58,7 +58,6 @@ class CameraController(DirectObject.DirectObject):
 
         # get initial mouse position, this runs only once on the first frame after the task is added to the taskmanager
         if self.setAnchor:
-            print("setup")
             self.anchorX = mw.getMouseX()
             self.anchorY = mw.getMouseY()
             self.setAnchor = False
