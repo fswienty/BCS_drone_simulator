@@ -13,12 +13,11 @@ class DroneRecorder(DirectObject.DirectObject):
         # timestep, drone, axis
         self.recordingLst = []
         self.isRecording = False
-        self.accept('m', self.save)
         self.accept('space', self.toggleRecording)
 
 
     def recordDronesTask(self, task):
-        task.delayTime = 0.3
+        task.delayTime = 0.2
         #tt = np.load("trajectories/pos_traj.npy")
         #np.save("trajectories/jerk_traj.npy", error_calc.jerk_traj)
         self.recordingLst.append(self.droneManager.getAllPositions())
@@ -29,6 +28,7 @@ class DroneRecorder(DirectObject.DirectObject):
 
 
     def save(self):
+        # TODO switch axis around so that it matches with the gradient descent stuff (AGENTS TIMESTEP DIM)
         np.save(os.path.join(sys.path[0], "trajectories/traj.npy"), np.asarray(self.recordingLst))
         print("recording saved")
 
@@ -40,3 +40,4 @@ class DroneRecorder(DirectObject.DirectObject):
         else:
             self.isRecording = False
             self.droneManager.base.taskMgr.remove("RecordDrones")
+            self.save()

@@ -1,10 +1,12 @@
 make own collision avoidance more intelligent
     make ground and walls repel drones
     better distance and velocity multipliers
-add orca
-add mike's stuff
+let drones fly the gradient descent trajectories 
 
-lighthouse->panda: find way to get positions from lighthouse and put them into panda3d in realtime
 
 nice to have:
     reset position estimators in parallel
+
+
+thesis
+    grobe gliederung aufschreiben
