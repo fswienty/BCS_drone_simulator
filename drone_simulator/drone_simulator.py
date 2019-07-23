@@ -33,7 +33,7 @@ class DroneSimulator(ShowBase):
 
         self.setFrameRateMeter(True)
         self.render.setAntialias(AntialiasAttrib.MAuto)
-        self.cameraController = CameraController(self)
+        CameraController(self)
 
         # setup model directory
         self.modelDir = os.path.abspath(sys.path[0])  # Get the location of the 'py' file I'm running:
@@ -43,7 +43,7 @@ class DroneSimulator(ShowBase):
         self.initBullet()
 
         self.droneManager = DroneManager(self, droneList)
-        self.droneRecorder = DroneRecorder(self.droneManager)
+        DroneRecorder(self.droneManager)
 
 
     def initScene(self):

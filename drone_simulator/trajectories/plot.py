@@ -1,13 +1,12 @@
-import numpy as np
-import os
 import sys
+import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, Button, RadioButtons
+from matplotlib.widgets import Slider  # , Button, RadioButtons
 from mpl_toolkits.mplot3d import Axes3D
 
-traj = np.load(sys.path[0] + "/traj.npy")
-agents = traj.shape[1]
-traj_len = traj.shape[0]
+traj = np.load(sys.path[0] + "/pos_traj.npy")
+agents = traj.shape[0]
+timestep = traj.shape[1]
 
 print("Showing {2}D trajectories of {0} agents with {1} timesteps".format(traj.shape[0], traj.shape[1], traj.shape[2]))
 
@@ -16,7 +15,7 @@ ax = fig.add_subplot(111, aspect='equal', projection='3d')
 plt.subplots_adjust(bottom=0.25)  # make room for the slider
 
 ax_step = plt.axes([0.25, 0.1, 0.65, 0.03])
-s_step = Slider(ax_step, 'timestep', 1, traj_len, valinit=1, valstep=1)
+s_step = Slider(ax_step, 'timestep', 0, timestep - 1, valinit=0, valstep=1)
 
 plotRange = 1
 
@@ -28,9 +27,9 @@ def update(val):
     ax.set_ylim3d(-plotRange, plotRange)
     ax.set_zlim3d(0, 2 * plotRange)
     for i in range(0, agents):
-        trail = max(0, step - 5000)
-        ax.plot3D(traj[trail:step, i, 0], traj[trail:step, i, 1], traj[trail:step, i, 2])
-        ax.scatter(traj[step - 1, i, 0], traj[step - 1, i, 1], traj[step - 1, i, 2])
+        trail = max(0, step - 999999)
+        ax.plot3D(traj[i, trail:step + 1, 0], traj[i, trail:step + 1, 1], traj[i, trail:step + 1, 2])
+        ax.scatter(traj[i, step, 0], traj[i, step, 1], traj[i, step, 2])
     fig.canvas.draw_idle()
 
 

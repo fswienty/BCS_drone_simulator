@@ -8,7 +8,7 @@ from direct.gui.DirectGui import DirectButton
 
 def loadFormationSelectionFrame(manager):
     """Loads all formations files in the same directory as this .py file and builds a UI element with buttons for each formation.
-        Formations are .csv files where the nth line is the position of the nth drone."""
+        Formations are .csv files where the nth line is the x, y, z coordinate of the nth drone."""
     manager = manager
 
     formations = []  # a list of formations, which are lists consisting of the name and the positions as a numpy array
@@ -51,6 +51,7 @@ def _loadFormation(path: str) -> (np.array, int):
 
 
 def _getRowCount(path):
+    """Counts the line of a plain text file. No idea how it works, I copied it from stackoverflow."""
     with open(path) as f:
         for i, _ in enumerate(f):
             pass

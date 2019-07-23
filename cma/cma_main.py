@@ -5,7 +5,7 @@ import numpy as np
 from error_calculator import ErrorCalculator
 import cma
 
-# AGENT TRAJLEN DIM
+# AGENT TIMESTEP DIM
 
 # START_VEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
 # START_POS = np.array([[4, 0, 0], [0, 4, 0], [0, 0, 4]])
