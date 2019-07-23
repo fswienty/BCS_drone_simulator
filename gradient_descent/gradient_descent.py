@@ -203,7 +203,7 @@ def circleCoordinates(amount, radius, angleOffset):
 # TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
 
 # circle swap
-AGENTS = 15
+AGENTS = 8
 STARTVEL = np.zeros([AGENTS, 3])
 STARTPOS = circleCoordinates(AGENTS, 4, 0)
 TARGETVEL = np.zeros([AGENTS, 3])
@@ -219,8 +219,8 @@ MAXJERK = 1
 
 WVEL = 5
 WPOS = 1
-WCOL = .3
-MINDIST = 1
+WCOL = .5
+MINDIST = 1.5
 costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TRAJLEN, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
 
 # AGENT TRAJLEN DIM
