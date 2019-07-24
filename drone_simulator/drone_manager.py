@@ -16,7 +16,7 @@ class DroneManager(DirectObject.DirectObject):
     def __init__(self, base, droneList):
         self.base = base
         # the actual dimensions of the bcs drone lab in meters
-        #self.roomSize = Vec3(3.40, 4.56, 2.56)
+        # self.roomSize = Vec3(3.40, 4.56, 2.56)
         # confined dimensions because the room and drone coordinates dont match up yet.
         # Also, flying near the windows/close to walls/too high often makes the lps loose track
         self.roomSize = Vec3(1.5, 2, 1.3)
@@ -43,7 +43,7 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def initUI(self):
-        #initialize drone control panel
+        # initialize drone control panel
         buttonSize = (-4, 4, -.2, .8)
         buttonDistance = 0.15
 
@@ -124,7 +124,7 @@ class DroneManager(DirectObject.DirectObject):
 
     def toggleConnections(self, button):
         """Connects/Disconnects the virtual drones to/from the real drones."""
-        #connect drones
+        # connect drones
         if not self.isConnected:
             self.isConnected = True
             button["text"] = "Disconnect"
@@ -133,7 +133,7 @@ class DroneManager(DirectObject.DirectObject):
             print("connecting drones")
             for drone in self.drones.values():
                 drone.connect()
-        #disconnect drones
+        # disconnect drones
         else:
             self.isConnected = False
             button["text"] = "Connect"

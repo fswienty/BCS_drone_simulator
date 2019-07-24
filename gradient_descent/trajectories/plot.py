@@ -11,7 +11,8 @@ timesteps = traj.shape[1]
 print("Showing {2}D trajectories of {0} agents with {1} timesteps".format(traj.shape[0], traj.shape[1], traj.shape[2]))
 
 fig = plt.figure()
-ax = fig.add_subplot(111, aspect='equal', projection='3d')
+# ax = fig.add_subplot(111, aspect='equal', projection='3d')
+ax = fig.add_subplot(111, projection='3d')
 plt.subplots_adjust(bottom=0.25)  # make room for the slider
 
 ax_step = plt.axes([0.25, 0.1, 0.65, 0.03])

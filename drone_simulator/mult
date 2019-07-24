@@ -1,0 +1,5 @@
+velocity    distance    force
+low         low         low
+low         high        none
+high        low         high
+high        high        medium-high        
