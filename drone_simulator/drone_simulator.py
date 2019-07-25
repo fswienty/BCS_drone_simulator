@@ -28,7 +28,7 @@ class DroneSimulator(ShowBase):
         wp = WindowProperties()
         # wp.setSize(2000, 1500)
         # wp.setSize(1200, 900)
-        wp.setSize(1000, 750)
+        wp.setSize(800, 600)
         self.win.requestProperties(wp)
 
         self.setFrameRateMeter(True)
@@ -97,7 +97,7 @@ class DroneSimulator(ShowBase):
 
 
 if __name__ == "__main__":
-    # add drones you want to spawn to the droneList, with an initial position and a uri of real drone if applicable
+    # add drones you want to spawn to the droneList, with an initial position and a uri of a real drone if applicable
     # if the drone should not be able to connect, put -1 as uri
     droneList = []
     droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])

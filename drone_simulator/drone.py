@@ -18,19 +18,16 @@ class Drone:
 
     RIGIDBODYMASS = 1
     RIGIDBODYRADIUS = 0.1
-    GHOSTRADIUS = 0.3
-
+    LINEARDAMPING = 0.97
+    SENSORRANGE = 0.6
     TARGETFORCE = 3
     AVOIDANCEFORCE = 25
     FORCEFALLOFFDISTANCE = .5
-    LINEARDAMPING = 0.97
 
-    def __init__(self, manager, name: str, position: Vec3, uri="-1", printDebugInfo=False):
+    def __init__(self, manager, position: Vec3, uri="-1", printDebugInfo=False):
 
         self.base = manager.base
         self.manager = manager
-        self.name = name
-        self.id = int(''.join(filter(str.isdigit, name)))  # a unique number to identify the drone, not used right now
         # The position of the real drone this virtual drone is connected to.
         # If a connection is active, this value is updated each frame.
         self.realDronePosition = Vec3(0, 0, 0)
@@ -50,18 +47,10 @@ class Drone:
         self.rigidBody.setLinearDamping(self.LINEARDAMPING)
         self.rigidBodyNP = self.base.render.attachNewNode(self.rigidBody)
         self.rigidBodyNP.setPos(position)
-        self.rigidBodyNP.setCollideMask(BitMask32.bit(1))
-
-        # add the ghost to the drone which acts as a sensor for nearby drones
-        self.ghost = BulletGhostNode(self.name)  # give drone the same identifier that the drone has in the dict
-        self.ghost.addShape(BulletSphereShape(self.GHOSTRADIUS))
-        self.ghostNP = self.base.render.attachNewNode(self.ghost)
-        self.ghostNP.setPos(position)
-        self.ghostNP.setCollideMask(BitMask32.bit(2))
+        # self.rigidBodyNP.setCollideMask(BitMask32.bit(1))
+        self.base.world.attach(self.rigidBody)
 
         # add a 3d model to the drone to be able to see it in the 3d scene
-        self.base.world.attach(self.rigidBody)
-        self.base.world.attach(self.ghost)
         model = self.base.loader.loadModel(self.base.modelDir + "/drones/drone1.egg")
         model.setScale(0.2)
         model.reparentTo(self.rigidBodyNP)
@@ -89,7 +78,7 @@ class Drone:
         """Connects the virtual drone to a real one with the uri supplied at initialization."""
         if not self.canConnect:
             return
-        print(self.name, "@", self.uri, "connecting")
+        print(self.uri, "connecting")
         self.isConnected = True
         self.scf = SyncCrazyflie(self.uri, cf=Crazyflie(rw_cache='./cache'))
         self.scf.open_link()
@@ -120,7 +109,7 @@ class Drone:
 
     def disconnect(self):
         """Disconnects the real drone."""
-        print(self.name, "@", self.uri, "disconnecting")
+        print(self.uri, "disconnecting")
         self.isConnected = False
         cf = self.scf.cf
         cf.commander.send_stop_setpoint()
@@ -130,8 +119,6 @@ class Drone:
 
     def update(self):
         """Update the virtual drone."""
-        self._updateGhost()
-        # self._updateForce()
         self._updateTargetForce()
         self._updateAvoidanceForce()
 
@@ -153,41 +140,6 @@ class Drone:
         self.ghostNP.setPos(self.getPos())
 
 
-    def _updateForce(self):
-        # NAVIGATION
-        dist = (self.target - self.getPos())
-        if(dist.length() > self.FORCEFALLOFFDISTANCE):
-            force = dist.normalized()
-        else:
-            force = (dist / self.FORCEFALLOFFDISTANCE)
-        velMult = self.getVel().length() + 0.1
-        velMult = velMult ** 2
-        # self._addForce(force * self.TARGETFORCE)
-        navForce = force * self.TARGETFORCE
-
-        # AVOIDANCE
-        distMult = 0
-        avoidForce = Vec3(0, 0, 0)
-        for node in self.ghost.getOverlappingNodes():
-            if node.name.startswith("drone"):
-                other = self.manager.getDrone(node.name)
-                # perp = self.target.cross(other.target) # the direction perpendicular to the target vectors of both drones
-                perp = self.targetVector().cross(other.targetVector())
-                distVec = other.getPos() - self.getPos()
-                if distVec.length() < 0.2:
-                    print("BONK")
-                distMult = max([0, 2 * self.GHOSTRADIUS - distVec.length()])  # make this stuff better
-                distMult = distMult
-                # velMult = other.getVel().length() + self.getVel().length() + 1
-                velMult = self.getVel().length()
-                velMult = velMult + .5
-                # self._addForce((perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE)
-                avoidForce = (perp.normalized() * 0.3 - distVec.normalized() * 0.7) * distMult * velMult * self.AVOIDANCEFORCE
-        distMult *= 10
-        print(distMult)
-        self._addForce(navForce * (1 - distMult) + avoidForce * distMult)
-
-
     def _updateTargetForce(self):
         """Applies a force to the virtual drone which moves it closer to its target."""
         dist = (self.target - self.getPos())
@@ -205,9 +157,12 @@ class Drone:
         # get all drones within the sensors reach and put them in a list
         others = []
         massVec = Vec3(0, 0, 0)
-        for node in self.ghost.getOverlappingNodes():
-            if node.name.startswith("drone"):
-                others.append(self.manager.getDrone(node.name))
+        for drone in self.manager.drones:
+            dist = (drone.getPos() - self.getPos()).length()
+            if dist == 0:  # don't let the drone detect itself
+                continue
+            if dist < self.SENSORRANGE:
+                others.append(drone)
 
         # get the root mean square position of all drones involved
         massVec = self.getPos() ** 2
@@ -216,23 +171,6 @@ class Drone:
         massVec /= (others.__len__() + 1)
         massVec = self.root(massVec)
 
-        for other in others:
-            perp = self.targetVector().cross(massVec - self.getPos())
-            perp2 = self.targetVector().cross(other.getPos() - self.getPos())
-
-            distVec = other.getPos() - self.getPos()
-            if distVec.length() < 0.2:
-                print("BONK")
-            distance = distVec.length()
-            velocityDiff = (self.getVel() - other.getVel()).length()
-            mult = 0.5 + 1
-            # TODO
-
-            avoidanceVector = perp2.normalized() * 0.0 + perp.normalized() * 0.1 - distVec.normalized() * 0.7
-            avoidanceVector.normalize()
-            self._addForce(avoidanceVector * distMult * velMult * self.AVOIDANCEFORCE)
-
-            
         # for other in others:
         #     perp = self.targetVector().cross(massVec - self.getPos())
         #     perp2 = self.targetVector().cross(other.getPos() - self.getPos())
@@ -240,14 +178,31 @@ class Drone:
         #     distVec = other.getPos() - self.getPos()
         #     if distVec.length() < 0.2:
         #         print("BONK")
-        #     distMult = max([0, 2 * self.GHOSTRADIUS - distVec.length()])
-        #     distMult = distMult
-        #     velMult = self.getVel().length()
-        #     velMult = velMult + .5
+        #     closeness = 1 - (distVec.length() / (self.SENSORRANGE))
+        #     velocityDiff = (self.getVel() - other.getVel()).length()
+        #     mult = velocityDiff + closeness
+        #     print("velocityDiff: {} closeness: {} SENSORRANGE: {} distVec.length: {}".format(velocityDiff, closeness, self.SENSORRANGE, distVec.length()))
 
         #     avoidanceVector = perp2.normalized() * 0.0 + perp.normalized() * 0.1 - distVec.normalized() * 0.7
         #     avoidanceVector.normalize()
-        #     self._addForce(avoidanceVector * distMult * velMult * self.AVOIDANCEFORCE)
+        #     # self._addForce(avoidanceVector * mult * self.AVOIDANCEFORCE)
+
+
+        for other in others:
+            perp = self.targetVector().cross(massVec - self.getPos())
+            perp2 = self.targetVector().cross(other.getPos() - self.getPos())
+
+            distVec = other.getPos() - self.getPos()
+            if distVec.length() < 0.2:
+                print("BONK")
+            distMult = max([0, self.SENSORRANGE - distVec.length()])
+            distMult = distMult
+            velMult = self.getVel().length()
+            velMult = velMult + .5
+
+            avoidanceVector = perp2.normalized() * 0.0 + perp.normalized() * 0.1 - distVec.normalized() * 0.7
+            avoidanceVector.normalize()
+            self._addForce(avoidanceVector * distMult * velMult * self.AVOIDANCEFORCE)
 
 
     def root(self, vec: Vec3) -> Vec3:
@@ -265,9 +220,7 @@ class Drone:
 
     def _printDebugInfo(self):
         if self.printDebugInfo:
-            print("Drone", self.name, " Amount of overlapping nodes: ", self.ghost.getNumOverlappingNodes())
-            for node in self.ghost.getOverlappingNodes():
-                print(node)
+            pass
 
 
     def setTarget(self, target: Vec3):

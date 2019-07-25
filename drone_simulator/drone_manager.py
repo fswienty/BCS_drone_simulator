@@ -28,16 +28,15 @@ class DroneManager(DirectObject.DirectObject):
         """Initializes the drones defined in droneList."""
         self.isStarted = False
         self.isConnected = False
-        self.drones = {}  # this is the dictionary all drones are held in with their name as key
+        self.drones = []  # this is the list of all drones
 
         if droneList == []:
             print("No drones to spawn")
         else:
             for i in range(0, len(droneList)):
-                name = "drone{}".format(i)
                 position = droneList[i][0]
                 uri = droneList[i][1]
-                self.drones[name] = Drone(self, name, position, uri=uri)
+                self.drones.append(Drone(self, position, uri=uri))
 
         self.base.taskMgr.add(self.updateDronesTask, "UpdateDrones")
 
@@ -80,14 +79,14 @@ class DroneManager(DirectObject.DirectObject):
             self.isStarted = True
             button["text"] = "Land"
             print("starting all")
-            for drone in self.drones.values():
+            for drone in self.drones:
                 pos = drone.getPos()
                 drone.setTarget(target=Vec3(pos[0], pos[1], .7))
         else:
             self.isStarted = False
             button["text"] = "Start"
             print("landing all")
-            for drone in self.drones.values():
+            for drone in self.drones:
                 pos = drone.getPos()
                 drone.setTarget(target=Vec3(pos[0], pos[1], .2))
 
@@ -98,7 +97,7 @@ class DroneManager(DirectObject.DirectObject):
             print("can't return to waiting position, drones are not started")
             return
         print("returning to waiting positions")
-        for drone in self.drones.values():
+        for drone in self.drones:
             drone.setTarget(drone.waitingPosition)
 
 
@@ -108,7 +107,7 @@ class DroneManager(DirectObject.DirectObject):
             print("can't set random targets, drones are not started")
             return
         print("setting random targets")
-        for drone in self.drones.values():
+        for drone in self.drones:
             drone.setRandomTarget()
 
 
@@ -118,7 +117,7 @@ class DroneManager(DirectObject.DirectObject):
             print("can't stop drones, drones are not started")
             return
         print("stopping drones")
-        for drone in self.drones.values():
+        for drone in self.drones:
             drone.setTarget(target=drone.getPos())
 
 
@@ -131,14 +130,14 @@ class DroneManager(DirectObject.DirectObject):
             print("initializing drivers")
             cflib.crtp.init_drivers(enable_debug_driver=False)
             print("connecting drones")
-            for drone in self.drones.values():
+            for drone in self.drones:
                 drone.connect()
         # disconnect drones
         else:
             self.isConnected = False
             button["text"] = "Connect"
             print("disconnecting drones")
-            for drone in self.drones.values():
+            for drone in self.drones:
                 if drone.isConnected:
                     drone.disconnect()
 
@@ -163,14 +162,14 @@ class DroneManager(DirectObject.DirectObject):
             maxNumber = requiredDrones
 
         print("applying {} formation".format(name))
-        droneList = list(self.drones.values())
+        # droneList = list(self.drones.values())
         for i in range(0, maxNumber):
-            droneList[i].setTarget(Vec3(dronePositions[i, 0], dronePositions[i, 1], dronePositions[i, 2]))
+            self.drones[i].setTarget(Vec3(dronePositions[i, 0], dronePositions[i, 1], dronePositions[i, 2]))
 
 
     def updateDronesTask(self, task):
         """Run the update methods of all drones."""
-        for drone in self.drones.values():
+        for drone in self.drones:
             drone.update()
         return task.cont
 
@@ -183,15 +182,10 @@ class DroneManager(DirectObject.DirectObject):
         return Vec3(newX, newY, newZ)
 
 
-    def getDrone(self, name: str) -> Drone:
-        """Finds a drone by name, returns the drone object."""
-        return self.drones.get(name)
-
-
     def getAllPositions(self):
         """Returns a list of the positions of all drones. Usefull when recording their paths for later."""
         lst = []
-        for drone in self.drones.values():
+        for drone in self.drones:
             pos = drone.getPos()
             lst.append([pos.x, pos.y, pos.z])
         return lst
