@@ -135,11 +135,6 @@ class Drone:
         self._printDebugInfo()
 
 
-    def _updateGhost(self):
-        """Puts the ghost node (the sensor) to the location of the virtual drone."""
-        self.ghostNP.setPos(self.getPos())
-
-
     def _updateTargetForce(self):
         """Applies a force to the virtual drone which moves it closer to its target."""
         dist = (self.target - self.getPos())
@@ -149,7 +144,7 @@ class Drone:
             force = (dist / self.FORCEFALLOFFDISTANCE)
         # velMult = self.getVel().length() + 0.1
         # velMult = velMult ** 2
-        self._addForce(force * self.TARGETFORCE)
+        self.addForce(force * self.TARGETFORCE)
 
 
     def _updateAvoidanceForce(self):
@@ -173,20 +168,18 @@ class Drone:
 
         # for other in others:
         #     perp = self.targetVector().cross(massVec - self.getPos())
-        #     perp2 = self.targetVector().cross(other.getPos() - self.getPos())
 
         #     distVec = other.getPos() - self.getPos()
         #     if distVec.length() < 0.2:
         #         print("BONK")
-        #     closeness = 1 - (distVec.length() / (self.SENSORRANGE))
+        #     closeness = self.SENSORRANGE - distVec.length()
         #     velocityDiff = (self.getVel() - other.getVel()).length()
         #     mult = velocityDiff + closeness
-        #     print("velocityDiff: {} closeness: {} SENSORRANGE: {} distVec.length: {}".format(velocityDiff, closeness, self.SENSORRANGE, distVec.length()))
+        #     mult *= .1
 
-        #     avoidanceVector = perp2.normalized() * 0.0 + perp.normalized() * 0.1 - distVec.normalized() * 0.7
+        #     avoidanceVector = perp.normalized() * 0.2 - distVec.normalized() * 0.7
         #     avoidanceVector.normalize()
-        #     # self._addForce(avoidanceVector * mult * self.AVOIDANCEFORCE)
-
+        #     self.addForce(avoidanceVector * mult * self.AVOIDANCEFORCE)
 
         for other in others:
             perp = self.targetVector().cross(massVec - self.getPos())
@@ -202,7 +195,7 @@ class Drone:
 
             avoidanceVector = perp2.normalized() * 0.0 + perp.normalized() * 0.1 - distVec.normalized() * 0.7
             avoidanceVector.normalize()
-            self._addForce(avoidanceVector * distMult * velMult * self.AVOIDANCEFORCE)
+            self.addForce(avoidanceVector * distMult * velMult * self.AVOIDANCEFORCE)
 
 
     def root(self, vec: Vec3) -> Vec3:
@@ -233,7 +226,7 @@ class Drone:
         self.target = self.manager.getRandomRoomCoordinate()
 
 
-    def _addForce(self, force: Vec3):
+    def addForce(self, force: Vec3):
         self.rigidBody.applyCentralForce(force)
 
 
