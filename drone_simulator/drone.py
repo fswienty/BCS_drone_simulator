@@ -85,24 +85,26 @@ class Drone:
         self._reset_estimator()
         self.start_position_printing()
 
+        # MOVE THIS BACK TO SENDPOSITIONS() IF STUFF BREAKS
+        self.scf.cf.param.set_value('flightmode.posSet', '1')
+
 
     def sendPosition(self):
         """Sends the position of the virtual drone to the real one."""
         cf = self.scf.cf
-        cf.param.set_value('flightmode.posSet', '1')
 
         # send position + the negative of the distance to the real drone
         # diff = self.getPos() - self.actualDronePosition
         # self.setpoint = self.getPos() + diff
 
         #  send the position + some function of the velocity vector
-        vel = self.getVel().length()
-        multiplier = 0.5 * (math.tanh(4 * vel - 3) + 1)
-        # pos = self.getPos() + self.getVel() * multiplier
-        self.setpoint = self.getPos() + self.getVel() * 0.5 * multiplier
+        # vel = self.getVel().length()
+        # multiplier = 0.5 * (math.tanh(4 * vel - 3) + 1)
+        # # pos = self.getPos() + self.getVel() * multiplier
+        # self.setpoint = self.getPos() + self.getVel() * 0.5 * multiplier
 
         # send position only
-        # self.setpoint = self.getPos()
+        self.setpoint = self.getPos()
         # print('Sending position {} | {} | {}'.format(self.setpoint[0], self.setpoint[1], self.setpoint[2]))
         cf.commander.send_position_setpoint(self.setpoint[0], self.setpoint[1], self.setpoint[2], 0)
 

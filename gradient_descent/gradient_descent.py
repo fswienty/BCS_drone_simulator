@@ -203,12 +203,19 @@ def circleCoordinates(amount, radius, angleOffset):
 # TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
 
 # circle swap
-AGENTS = 8
-STARTVEL = np.zeros([AGENTS, 3])
-STARTPOS = circleCoordinates(AGENTS, 4, 0)
-TARGETVEL = np.zeros([AGENTS, 3])
-TARGETPOS = circleCoordinates(AGENTS, 4, 180)
-print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
+# AGENTS = 8
+# STARTVEL = np.zeros([AGENTS, 3])
+# STARTPOS = circleCoordinates(AGENTS, 4, 0)
+# TARGETVEL = np.zeros([AGENTS, 3])
+# TARGETPOS = circleCoordinates(AGENTS, 4, 180)
+# print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
+
+# simple test
+STARTVEL = np.array([[0, 0, 0], [0, 0, 0]])
+STARTPOS = np.array([[0, -1, 1], [0, 1, 1]])
+TARGETVEL = np.array([[0, 0, 0], [0, 0, 0]])
+TARGETPOS = np.array([[0, 1, 1], [0, -1, 1]])
+
 
 AGENTS = STARTVEL.shape[0]
 TIMESTEPS = 20
@@ -218,9 +225,9 @@ TIMESTEP = 0.5
 MAXJERK = 1
 
 WVEL = 5
-WPOS = 1
+WPOS = 5
 WCOL = .5
-MINDIST = 1.5
+MINDIST = 1
 costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TIMESTEPS, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
 
 # AGENT TIMESTEP DIM
@@ -258,7 +265,7 @@ for ag1 in range(0, costFun.agents):
                 smallestDistanceTimestep = step
                 smallestDistanceAgent1 = ag1
                 smallestDistanceAgent2 = ag2
-print("Smallest distance: {0} at timestep {1} between agent {2} and {3}".format(smallestDistance, smallestDistanceTimestep, smallestDistanceAgent1, smallestDistanceAgent2), "\n")
+print("Smallest distance: {0} at timestep {1} between agents {2} and {3}".format(smallestDistance, smallestDistanceTimestep, smallestDistanceAgent1, smallestDistanceAgent2), "\n")
 
 # np.save(sys.path[0] + "/trajectories/vel_traj.npy", fun.velocities)
 np.save(sys.path[0] + "/trajectories/pos_traj.npy", costFun.positions)

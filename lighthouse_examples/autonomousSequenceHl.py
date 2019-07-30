@@ -188,8 +188,8 @@ def room_border():
                                 pc.go_to(-1.3,1.8,height)
                                 pc.go_to(-1.3,-1.8,height)
 
-                                
-  
+
+
 def test():
         with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
                 with PositionHlCommander(
