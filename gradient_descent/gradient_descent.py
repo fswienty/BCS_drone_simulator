@@ -232,13 +232,13 @@ costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TIMESTEPS, DIM, START
 
 # AGENT TIMESTEP DIM
 jerks = np.zeros([AGENTS, TIMESTEPS, DIM])
-#randomize jerks
-maxRandom = 0.5
-for i in range(0, AGENTS):
-    tmp = np.zeros([TIMESTEPS, 3])
-    for j in range(0, TIMESTEPS):
-        tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
-    jerks[i] = tmp
+# randomize jerks
+# maxRandom = 0.5
+# for i in range(0, AGENTS):
+#     tmp = np.zeros([TIMESTEPS, 3])
+#     for j in range(0, TIMESTEPS):
+#         tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
+#     jerks[i] = tmp
 
 # COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS MOMENTUM
 # initialJerks = momentumGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.0005, 50, 0.9)

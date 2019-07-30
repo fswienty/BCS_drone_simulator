@@ -5,6 +5,7 @@ from cflib.crazyflie.log import LogConfig
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.crazyflie.syncLogger import SyncLogger
 
+
 def wait_for_position_estimator(scf):
     print('Waiting for estimator to find position...')
 
