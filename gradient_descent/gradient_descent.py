@@ -118,7 +118,7 @@ class CostFunctions():
         return costGrad
 
 
-def momentumGradientDescent(maxSteps, stepsize, momentum, costFunction, gradientFunction, initialParameters, parameterLimit, costTarget):
+def momentumGradientDescent(costFunction, costTarget, gradientFunction, initialParameters, parameterLimit, stepsize, maxSteps, momentum):
     parameters = initialParameters
     v = np.zeros(initialParameters.shape)
     for i in range(0, maxSteps):
@@ -138,7 +138,7 @@ def momentumGradientDescent(maxSteps, stepsize, momentum, costFunction, gradient
     return parameters
 
 
-def adamGradientDescent(maxSteps, stepsize, beta1, beta2, eps, costFunction, gradientFunction, initialParameters, parameterLimit, costTarget):
+def adamGradientDescent(costFunction, costTarget, gradientFunction, initialParameters, parameterLimit, stepsize, maxSteps, beta1, beta2, eps):
     parameters = initialParameters
     m = np.zeros(initialParameters.shape)
     v = np.zeros(initialParameters.shape)
@@ -233,13 +233,13 @@ for i in range(0, AGENTS):
         tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
     jerks[i] = tmp
 
-# MAXSTEPS STEPSIZE MOMENTUM ... COSTTARGET
-# initialJerks = momentumGradientDescent(50, 0.0005, 0.9, costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK, -1)
-# momentumGradientDescent(700, 0.0005, 0.9, costFun.cost, costFun.gradient, initialJerks, MAXJERK, 0.05)
+# COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS MOMENTUM
+# initialJerks = momentumGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.0005, 50, 0.9)
+# momentumGradientDescent(costFun.cost, 0.05, costFun.gradient, initialJerks, MAXJERK, 0.0005, 700, 0.9)
 
-# STEPS STEPSIZE BETA1 BETA2 EPSILON ... COSTTARGET
-initialResult = adamGradientDescent(50, 0.01, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradientNoCollision, jerks, MAXJERK, -1)
-result = adamGradientDescent(1000, 0.005, 0.95, 0.99, 10**(-8), costFun.cost, costFun.gradient, initialResult, MAXJERK, 0.05)
+# COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS BETA1 BETA2 EPSILON
+initialResult = adamGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.01, 50, 0.95, 0.99, 10**(-8))
+result = adamGradientDescent(costFun.cost, 0.05, costFun.gradient, initialResult, MAXJERK, 0.005, 1000, 0.95, 0.99, 10**(-8))
 
 print("\n ##### RESULTS #####")
 print("Highest final velocity difference:", np.max(np.linalg.norm(TARGETVEL - costFun.velocities[:, -1, :], axis=1)))

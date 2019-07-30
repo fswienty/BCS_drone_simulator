@@ -207,7 +207,7 @@ class Drone:
 
 
     def targetVector(self) -> Vec3:
-        """Returns the vector from the drone to the target."""
+        """Returns the vector from the drone to its target."""
         return self.target - self.getPos()
 
 
