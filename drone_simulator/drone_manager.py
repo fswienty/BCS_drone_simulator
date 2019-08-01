@@ -1,4 +1,5 @@
 import random
+import time
 
 from drone import Drone
 from formations.formation_ui_element import loadFormationSelectionFrame
@@ -132,6 +133,7 @@ class DroneManager(DirectObject.DirectObject):
             print("connecting drones")
             for drone in self.drones:
                 drone.connect()
+            time.sleep(5)  # wait a moment so that the position estimator reports a consisten position
         # disconnect drones
         else:
             self.isConnected = False
