@@ -105,9 +105,12 @@ if __name__ == "__main__":
     droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
     droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
     # droneList.append([Vec3(-1, -1, .3), 'radio://0/80/2M/E7E7E7E7E4'])
-    # droneList.append([Vec3(.5, -1, .3), 'radio://0/80/2M/E7E7E7E7E5'])
+    # droneList.append([Vec3(1, 0, .3), 'radio://0/80/2M/E7E7E7E7E5'])
+    # droneList.append([Vec3(0, 1, .3), 'radio://0/80/2M/E7E7E7E7E6'])
+    # droneList.append([Vec3(0, -1, .3), 'radio://0/80/2M/E7E7E7E7E7'])
+    # droneList.append([Vec3(-1, 0, .3), 'radio://0/80/2M/E7E7E7E7E8'])
+    # droneList.append([Vec3(0, 1.5, .3), 'radio://0/80/2M/E7E7E7E7E9'])
 
-    # droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])
 
     app = DroneSimulator(droneList)
     app.run()

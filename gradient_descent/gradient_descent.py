@@ -67,7 +67,7 @@ class CostFunctions():
         cost += np.sum(self.wVel * (self.velocities[:, -1, :] - self.targetVel)**2)  # add target velocity cost
         cost += np.sum(self.wPos * (self.positions[:, -1, :] - self.targetPos)**2)  # add target position cost
 
-        # add drone-drone collision cost
+        # add drone-drone conflict cost
         for ag1 in range(0, self.agents):
             for ag2 in range(ag1 + 1, self.agents):
                 posDiff = self.positions[ag1, :, :] - self.positions[ag2, :, :]
@@ -89,7 +89,7 @@ class CostFunctions():
             costGrad[:, i, :] += self.wVel * 2 * (self.velocities[:, -1, :] - self.targetVel) * endVelGrad[:, i, :]
             costGrad[:, i, :] += self.wPos * 2 * (self.positions[:, -1, :] - self.targetPos) * endPosGrad[:, i, :]
 
-        # gradient due to drone-drone collisions
+        # gradient due to drone-drone conflicts
         for ag1 in range(0, self.agents):
             for ag2 in range(ag1 + 1, self.agents):
                 posDiff = self.positions[ag1, :, :] - self.positions[ag2, :, :]
@@ -203,7 +203,7 @@ def circleCoordinates(amount, radius, angleOffset):
 # TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
 
 # circle swap
-AGENTS = 5
+AGENTS = 6
 STARTVEL = np.zeros([AGENTS, 3])
 STARTPOS = circleCoordinates(AGENTS, .7, 0)
 TARGETVEL = np.zeros([AGENTS, 3])
@@ -223,23 +223,27 @@ TIMESTEPS = 20
 DIM = STARTVEL.shape[1]
 
 TIMESTEP = 0.5
-MAXJERK = 1
+MAXJERK = 0.1
 
+# weights for changing how much the final velocity error, the final position error and the drone-drone conflicts are considered
+# try changing these if your results are bad
 WVEL = 5
 WPOS = 5
 WCOL = .5
+
 MINDIST = .4
+
 costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TIMESTEPS, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
 
 # AGENT TIMESTEP DIM
 jerks = np.zeros([AGENTS, TIMESTEPS, DIM])
 # randomize jerks
-# maxRandom = 0.5
-# for i in range(0, AGENTS):
-#     tmp = np.zeros([TIMESTEPS, 3])
-#     for j in range(0, TIMESTEPS):
-#         tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
-#     jerks[i] = tmp
+maxRandom = 0.05
+for i in range(0, AGENTS):
+    tmp = np.zeros([TIMESTEPS, 3])
+    for j in range(0, TIMESTEPS):
+        tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
+    jerks[i] = tmp
 
 # COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS MOMENTUM
 # initialJerks = momentumGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.0005, 50, 0.9)
