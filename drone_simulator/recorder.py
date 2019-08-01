@@ -14,7 +14,7 @@ class DroneRecorder(DirectObject.DirectObject):
 
 
     def recordDronesTask(self, task):
-        task.delayTime = 0.2
+        task.delayTime = 0.05
         self.recordingLst.append(self.droneManager.getAllPositions())
         # print("recording")
         return task.again

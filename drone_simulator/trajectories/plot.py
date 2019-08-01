@@ -6,7 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 traj = np.load(sys.path[0] + "/pos_traj.npy")
 agents = traj.shape[0]
-timestep = traj.shape[1]
+timesteps = traj.shape[1]
 
 print("Showing {2}D trajectories of {0} agents with {1} timesteps".format(traj.shape[0], traj.shape[1], traj.shape[2]))
 
@@ -15,7 +15,7 @@ ax = fig.add_subplot(111, aspect='equal', projection='3d')
 plt.subplots_adjust(bottom=0.25)  # make room for the slider
 
 ax_step = plt.axes([0.25, 0.1, 0.65, 0.03])
-s_step = Slider(ax_step, 'timestep', 0, timestep - 1, valinit=0, valstep=1)
+s_step = Slider(ax_step, 'timestep', 0, timesteps - 1, valinit=0, valstep=1)
 
 plotRange = 1
 

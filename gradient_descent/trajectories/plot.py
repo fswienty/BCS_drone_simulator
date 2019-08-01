@@ -12,13 +12,12 @@ print("Showing {2}D trajectories of {0} agents with {1} timesteps".format(traj.s
 
 fig = plt.figure()
 ax = fig.add_subplot(111, aspect='equal', projection='3d')
-# Wax = fig.add_subplot(111, projection='3d')
 plt.subplots_adjust(bottom=0.25)  # make room for the slider
 
 ax_step = plt.axes([0.25, 0.1, 0.65, 0.03])
 s_step = Slider(ax_step, 'timestep', 0, timesteps - 1, valinit=0, valstep=1)
 
-plotRange = 1.5
+plotRange = 1
 
 
 def update(val):
@@ -26,7 +25,7 @@ def update(val):
     ax.clear()
     ax.set_xlim3d(-plotRange, plotRange)
     ax.set_ylim3d(-plotRange, plotRange)
-    ax.set_zlim3d(-plotRange + 1, plotRange + 1)
+    ax.set_zlim3d(0, 2 * plotRange)
     for i in range(0, agents):
         trail = max(0, step - 999999)
         ax.plot3D(traj[i, trail:step + 1, 0], traj[i, trail:step + 1, 1], traj[i, trail:step + 1, 2])
