@@ -211,6 +211,7 @@ def circleCoordinates(amount, radius, angleOffset):
 # print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
 
 # simple test
+# positive x -> towards window, positive y -> towards left wall
 STARTVEL = np.array([[0, 0, 0], [0, 0, 0]])
 STARTPOS = np.array([[0, -1, 1], [0, 1, 1]])
 TARGETVEL = np.array([[0, 0, 0], [0, 0, 0]])

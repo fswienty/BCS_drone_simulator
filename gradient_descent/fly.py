@@ -40,19 +40,19 @@ from cflib.crazyflie.swarm import Swarm
 from cflib.crazyflie.syncLogger import SyncLogger
 
 # Change uris and sequences according to your setup
-URI1 = 'radio://0/80/2M/E7E7E7E701'
-URI2 = 'radio://0/80/2M/E7E7E7E702'
-URI3 = 'radio://0/80/2M/E7E7E7E703'
-URI4 = 'radio://0/80/2M/E7E7E7E704'
-URI5 = 'radio://0/80/2M/E7E7E7E705'
-URI6 = 'radio://0/80/2M/E7E7E7E706'
-URI7 = 'radio://0/80/2M/E7E7E7E707'
-URI8 = 'radio://0/80/2M/E7E7E7E708'
-URI9 = 'radio://0/80/2M/E7E7E7E709'
-URI10 = 'radio://0/80/2M/E7E7E7E70A'
+URI1 = 'radio://0/80/2M/E7E7E7E7E0'
+URI2 = 'radio://0/80/2M/E7E7E7E7E1'
+URI3 = 'radio://0/80/2M/E7E7E7E7E2'
+URI4 = 'radio://0/80/2M/E7E7E7E7E3'
+URI5 = 'radio://0/80/2M/E7E7E7E7E4'
+URI6 = 'radio://0/80/2M/E7E7E7E7E5'
+URI7 = 'radio://0/80/2M/E7E7E7E7E6'
+URI8 = 'radio://0/80/2M/E7E7E7E7E7'
+URI9 = 'radio://0/80/2M/E7E7E7E7E8'
+URI10 = 'radio://0/80/2M/E7E7E7E7E9'
 
 # how long each setpoint broadcast before switching to the next
-timePerSetpoint = 0.5
+timePerSetpoint = 0.2
 
 traj = np.load(sys.path[0] + "/trajectories/pos_traj.npy")
 # agents = traj.shape[0]
@@ -154,35 +154,39 @@ def reset_estimator(scf):
 
 
 def take_off(cf, position):
-    take_off_time = 1.0
-    sleep_time = 0.1
-    steps = int(take_off_time / sleep_time)
-    vz = position[2] / take_off_time
+    # take_off_time = 1.0
+    # sleep_time = 0.1
+    # steps = int(take_off_time / sleep_time)
+    # vz = position[2] / take_off_time
 
-    print(vz)
+    # print(vz)
 
-    for _ in range(steps):
-        cf.commander.send_velocity_world_setpoint(0, 0, vz, 0)
-        time.sleep(sleep_time)
+    # for _ in range(steps):
+    #     cf.commander.send_velocity_world_setpoint(0, 0, vz, 0)
+    #     time.sleep(sleep_time)
 
     # make sure the drone is at the starting position of the trajectory
     # hopfefully you put them on the ground in a way that they dont crash on their way there
-    for _ in range(10):
+    for _ in range(30):
         cf.commander.send_position_setpoint(position[0], position[1], position[2], 0)
         time.sleep(0.1)
 
 
 def land(cf, position):
-    landing_time = 1.0
-    sleep_time = 0.1
-    steps = int(landing_time / sleep_time)
-    vz = -position[2] / landing_time
+    # landing_time = 1.0
+    # sleep_time = 0.1
+    # steps = int(landing_time / sleep_time)
+    # vz = -position[2] / landing_time
 
-    print(vz)
+    # print(vz)
 
-    for _ in range(steps):
-        cf.commander.send_velocity_world_setpoint(0, 0, vz, 0)
-        time.sleep(sleep_time)
+    # for _ in range(steps):
+    #     cf.commander.send_velocity_world_setpoint(0, 0, vz, 0)
+    #     time.sleep(sleep_time)
+
+    for _ in range(20):
+        cf.commander.send_position_setpoint(position[0], position[1], 0.25, 0)
+        time.sleep(0.1)
 
     cf.commander.send_stop_setpoint()
     # Make sure that the last packet leaves before the link is closed
@@ -205,6 +209,11 @@ def run_sequence(scf, sequence):
                 cf.commander.send_position_setpoint(position[0], position[1], position[2], 0)
                 time.sleep(0.1)
 
+        for _ in range(20):
+            position = sequence[-1]
+            cf.commander.send_position_setpoint(position[0], position[1], position[2], 0)
+            time.sleep(0.1)
+
         # fly the trajectory backwards
         print("backwards!")
         for position in reversed(sequence):
@@ -214,7 +223,7 @@ def run_sequence(scf, sequence):
                 cf.commander.send_position_setpoint(position[0], position[1], position[2], 0)
                 time.sleep(0.1)
 
-        land(cf, sequence[-1])
+        land(cf, sequence[0])
     except Exception as e:
         print(e)
 
