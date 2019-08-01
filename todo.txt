@@ -1,12 +1,9 @@
 make own collision avoidance more intelligent
     make ground and walls repel drones
     better distance and velocity multipliers
-let drones fly the gradient descent trajectories 
-
 
 nice to have:
     reset position estimators in parallel
-
 
 thesis
     grobe gliederung aufschreiben

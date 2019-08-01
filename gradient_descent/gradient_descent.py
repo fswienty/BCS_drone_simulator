@@ -2,7 +2,6 @@ import sys
 import random
 import numpy as np
 import math
-# from autograd import grad
 
 
 class CostFunctions():
@@ -162,12 +161,13 @@ def adamGradientDescent(costFunction, costTarget, gradientFunction, initialParam
     return parameters
 
 
+# first position is at the center towards the window, then counter clockwise
 def circleCoordinates(amount, radius, angleOffset):
     coordinateArray = np.zeros([amount, 3])
     angleStep = 360 / amount
     for i in range(0, amount):
         currRad = math.radians(i * angleStep + angleOffset)
-        coordinateArray[i] = np.array([radius * math.cos(currRad), radius * math.sin(currRad), 0])
+        coordinateArray[i] = np.array([radius * math.cos(currRad), radius * math.sin(currRad), 1])
     return coordinateArray
 
 
@@ -203,19 +203,19 @@ def circleCoordinates(amount, radius, angleOffset):
 # TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
 
 # circle swap
-# AGENTS = 8
-# STARTVEL = np.zeros([AGENTS, 3])
-# STARTPOS = circleCoordinates(AGENTS, 4, 0)
-# TARGETVEL = np.zeros([AGENTS, 3])
-# TARGETPOS = circleCoordinates(AGENTS, 4, 180)
-# print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
+AGENTS = 5
+STARTVEL = np.zeros([AGENTS, 3])
+STARTPOS = circleCoordinates(AGENTS, .7, 0)
+TARGETVEL = np.zeros([AGENTS, 3])
+TARGETPOS = circleCoordinates(AGENTS, .7, 180)
+print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
 
 # simple test
 # positive x -> towards window, positive y -> towards left wall
-STARTVEL = np.array([[0, 0, 0], [0, 0, 0]])
-STARTPOS = np.array([[0, -1, 1], [0, 1, 1]])
-TARGETVEL = np.array([[0, 0, 0], [0, 0, 0]])
-TARGETPOS = np.array([[0, 1, 1], [0, -1, 1]])
+# STARTVEL = np.array([[0, 0, 0], [0, 0, 0]])
+# STARTPOS = np.array([[0, -1, 1], [0, 1, 1]])
+# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0]])
+# TARGETPOS = np.array([[0, 1, 1], [0, -1, 1]])
 
 
 AGENTS = STARTVEL.shape[0]
@@ -228,7 +228,7 @@ MAXJERK = 1
 WVEL = 5
 WPOS = 5
 WCOL = .5
-MINDIST = 1
+MINDIST = .4
 costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TIMESTEPS, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
 
 # AGENT TIMESTEP DIM

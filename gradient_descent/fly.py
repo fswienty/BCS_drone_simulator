@@ -52,14 +52,21 @@ URI9 = 'radio://0/80/2M/E7E7E7E7E8'
 URI10 = 'radio://0/80/2M/E7E7E7E7E9'
 
 # how long each setpoint broadcast before switching to the next
-timePerSetpoint = 0.2
+timePerSetpoint = 0.3
 
 traj = np.load(sys.path[0] + "/trajectories/pos_traj.npy")
-# agents = traj.shape[0]
+agents = traj.shape[0]
 # timesteps = traj.shape[1]
 
-sequence1 = traj[0]
-sequence2 = traj[1]
+sequences = []
+for i in range(0, 10):
+    if i < agents:
+        sequences.append(traj[i])
+    else:
+        sequences.append(0)
+
+# sequence1 = traj[0]
+# sequence2 = traj[1]
 # sequence3 = traj[2]
 # sequence4 = traj[3]
 # sequence5 = traj[4]
@@ -69,26 +76,39 @@ sequence2 = traj[1]
 # sequence9 = traj[8]
 # sequence10 = traj[9]
 
+# seq_args = {
+#     URI1: [sequence1],
+#     URI2: [sequence2],
+#     URI3: [sequence3],
+#     URI4: [sequence4],
+#     URI5: [sequence5],
+#     URI6: [sequence6],
+#     URI7: [sequence7],
+#     URI8: [sequence8],
+#     URI9: [sequence9],
+#     URI10: [sequence10]
+# }
+
 seq_args = {
-    URI1: [sequence1],
-    URI2: [sequence2]
-    # URI3: [sequence3],
-    # URI4: [sequence4],
-    # URI5: [sequence5],
-    # URI6: [sequence6],
-    # URI7: [sequence7],
-    # URI8: [sequence8],
-    # URI9: [sequence9],
-    # URI10: [sequence10],
+    URI1: [sequences[0]],
+    URI2: [sequences[1]],
+    URI3: [sequences[2]],
+    URI4: [sequences[3]],
+    URI5: [sequences[4]],
+    URI6: [sequences[5]],
+    URI7: [sequences[6]],
+    URI8: [sequences[7]],
+    URI9: [sequences[8]],
+    URI10: [sequences[9]]
 }
 
 # List of URIs, comment the one you do not want to fly
 uris = {
     URI1,
-    URI2
-    # URI3,
-    # URI4,
-    # URI5,
+    URI2,
+    URI3,
+    URI4,
+    URI5
     # URI6,
     # URI7,
     # URI8,
@@ -167,7 +187,7 @@ def take_off(cf, position):
 
     # make sure the drone is at the starting position of the trajectory
     # hopfefully you put them on the ground in a way that they dont crash on their way there
-    for _ in range(30):
+    for _ in range(20):
         cf.commander.send_position_setpoint(position[0], position[1], position[2], 0)
         time.sleep(0.1)
 
@@ -209,7 +229,7 @@ def run_sequence(scf, sequence):
                 cf.commander.send_position_setpoint(position[0], position[1], position[2], 0)
                 time.sleep(0.1)
 
-        for _ in range(20):
+        for _ in range(10):
             position = sequence[-1]
             cf.commander.send_position_setpoint(position[0], position[1], position[2], 0)
             time.sleep(0.1)

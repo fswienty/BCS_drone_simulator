@@ -93,19 +93,21 @@ class Drone:
         """Sends the position of the virtual drone to the real one."""
         cf = self.scf.cf
 
-        # send position + the negative of the distance to the real drone
+        # position + the negative of the distance to the real drone
         # diff = self.getPos() - self.actualDronePosition
         # self.setpoint = self.getPos() + diff
 
-        #  send the position + some function of the velocity vector
+        #  position + some function of the velocity vector
         # vel = self.getVel().length()
         # multiplier = 0.5 * (math.tanh(4 * vel - 3) + 1)
         # # pos = self.getPos() + self.getVel() * multiplier
         # self.setpoint = self.getPos() + self.getVel() * 0.5 * multiplier
 
-        # send position only
+        # position only
         self.setpoint = self.getPos()
         # print('Sending position {} | {} | {}'.format(self.setpoint[0], self.setpoint[1], self.setpoint[2]))
+
+        # send the setpoint
         cf.commander.send_position_setpoint(self.setpoint[0], self.setpoint[1], self.setpoint[2], 0)
 
 
@@ -128,9 +130,9 @@ class Drone:
             self.sendPosition()
 
         # draw various lines to get a better idea of whats happening
-        self._drawTargetLine()
+        # self._drawTargetLine()
         # self._drawVelocityLine()
-        # self._drawForceLine()
+        self._drawForceLine()
         # self._drawActualDroneLine()
         # self._drawSetpointLine()
 
@@ -276,7 +278,7 @@ class Drone:
         # ls.setThickness(1)
         ls.setColor(0.0, 1.0, 0.0, 1.0)
         ls.moveTo(self.getPos())
-        ls.drawTo(self.getPos() + self.rigidBody.getTotalForce())
+        ls.drawTo(self.getPos() + self.rigidBody.getTotalForce() * 0.1)
         node = ls.create()
         self.forceLineNP = self.base.render.attachNewNode(node)
 
