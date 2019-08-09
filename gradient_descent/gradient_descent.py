@@ -203,11 +203,11 @@ def circleCoordinates(amount, radius, angleOffset):
 # TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
 
 # circle swap
-AGENTS = 6
+AGENTS = 7
 STARTVEL = np.zeros([AGENTS, 3])
-STARTPOS = circleCoordinates(AGENTS, .7, 0)
+STARTPOS = circleCoordinates(AGENTS, 2, 0)
 TARGETVEL = np.zeros([AGENTS, 3])
-TARGETPOS = circleCoordinates(AGENTS, .7, 180)
+TARGETPOS = circleCoordinates(AGENTS, 2, 180)
 print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
 
 # simple test
