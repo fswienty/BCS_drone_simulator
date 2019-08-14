@@ -43,7 +43,7 @@ from cflib.crazyflie.syncLogger import SyncLogger
 from cflib.crazyflie.commander import Commander
 
 # URI to the Crazyflie to connect to
-uri = 'radio://0/80/2M/E7E7E7E7E1'
+uri = 'radio://0/80/2M/E7E7E7E7E0'
 
 # Change the sequence according to your setup
 # x    y    z  YAW
