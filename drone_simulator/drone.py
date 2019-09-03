@@ -55,7 +55,7 @@ class Drone:
         model.setScale(0.2)
         model.reparentTo(self.rigidBodyNP)
 
-        self.target = position  # the target that the virtual drones tries to reach
+        self.target = position  # the long term target that the virtual drones tries to reach
         self.setpoint = position  # the immediate target (setpoint) that the real drone tries to reach, usually updated each frame
         self.waitingPosition = Vec3(position[0], position[1], 0.7)
 
