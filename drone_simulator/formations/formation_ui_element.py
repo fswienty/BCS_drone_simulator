@@ -37,7 +37,7 @@ def loadFormationSelectionFrame(manager):
         button.reparentTo(canvas)
         button.setPos(0.15, 0, -(i + 0.75) * buttonDistance)
 
-    print("{} formations found and loaded.".format(len(formations)))
+    print("{} formations loaded.".format(len(formations)))
 
 
 def _loadFormation(path: str) -> (np.array, int):
@@ -51,7 +51,7 @@ def _loadFormation(path: str) -> (np.array, int):
 
 
 def _getRowCount(path):
-    """Counts the line of a plain text file. No idea how it works, I copied it from stackoverflow."""
+    """Counts the lines of a plain text file. No idea how it works, I copied it from stackoverflow."""
     with open(path) as f:
         for i, _ in enumerate(f):
             pass

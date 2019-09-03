@@ -26,8 +26,8 @@ class DroneSimulator(ShowBase):
 
         # set resolution
         wp = WindowProperties()
-        wp.setSize(2000, 1500)
-        # wp.setSize(1200, 900)
+        # wp.setSize(2000, 1500)
+        wp.setSize(1200, 900)
         # wp.setSize(800, 600)
         self.win.requestProperties(wp)
 
@@ -100,16 +100,23 @@ if __name__ == "__main__":
     # add drones you want to spawn to the droneList, with an initial position and a uri of a real drone if applicable
     # if the drone should not be able to connect, put -1 as uri
     droneList = []
-    droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])
-    droneList.append([Vec3(1, 1, .3), 'radio://0/80/2M/E7E7E7E7E1'])
-    droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
-    droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
-    droneList.append([Vec3(-1, -1, .3), 'radio://0/80/2M/E7E7E7E7E4'])
-    droneList.append([Vec3(1, 0, .3), 'radio://0/80/2M/E7E7E7E7E5'])
-    droneList.append([Vec3(0, 1, .3), 'radio://0/80/2M/E7E7E7E7E6'])
-    droneList.append([Vec3(0, -1, .3), 'radio://0/80/2M/E7E7E7E7E7'])
-    droneList.append([Vec3(-1, 0, .3), 'radio://0/80/2M/E7E7E7E7E8'])
-    droneList.append([Vec3(0, 1.5, .3), 'radio://0/80/2M/E7E7E7E7E9'])
+    # droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E0'])
+    # droneList.append([Vec3(1, 1, .3), 'radio://0/80/2M/E7E7E7E7E1'])
+    # droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
+    # droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
+
+
+    dist = 0.8
+    droneList.append([Vec3(dist, dist, .3), 'radio://0/80/2M/E7E7E7E7E0'])
+    droneList.append([Vec3(dist, 0, .3), 'radio://0/80/2M/E7E7E7E7E1'])
+    droneList.append([Vec3(dist, -dist, .3), 'radio://0/80/2M/E7E7E7E7E2'])
+    droneList.append([Vec3(0, 1.5 * dist, .3), 'radio://0/80/2M/E7E7E7E7E3'])
+    droneList.append([Vec3(0, 0.5 * dist, .3), 'radio://0/80/2M/E7E7E7E7E4'])
+    droneList.append([Vec3(0, -0.5 * dist, .3), 'radio://0/80/2M/E7E7E7E7E5'])
+    droneList.append([Vec3(0, -1.5 * dist, .3), 'radio://0/80/2M/E7E7E7E7E6'])
+    droneList.append([Vec3(-dist, dist, .3), 'radio://0/80/2M/E7E7E7E7E7'])
+    droneList.append([Vec3(-dist, 0, .3), 'radio://0/80/2M/E7E7E7E7E8'])
+    droneList.append([Vec3(-dist, -dist, .3), 'radio://0/80/2M/E7E7E7E7E9'])
 
 
     app = DroneSimulator(droneList)
