@@ -158,9 +158,7 @@ class Drone:
         massVec = Vec3(0, 0, 0)
         for drone in self.manager.drones:
             dist = (drone.getPos() - self.getPos()).length()
-            if dist == 0:  # don't let the drone detect itself
-                continue
-            if dist < self.SENSORRANGE:
+            if dist > 0 and dist < self.SENSORRANGE:  # check dist > 0 to prevent drone from detecting itself
                 others.append(drone)
 
         # get the root mean square position of all drones involved

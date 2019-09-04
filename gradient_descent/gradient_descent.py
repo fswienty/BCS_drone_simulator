@@ -56,8 +56,8 @@ class CostFunctions():
         posGrad = np.zeros([self.agents, self.timesteps, self.dim])
         for i in range(0, k):
             posGrad[:, i, :] = 0.5 * self.t**3 * ((k - i)**2 + (k - i) + 0.3333)
-        for i in range(k, self.timesteps):
-            posGrad[:, i, :] = 0
+        # for i in range(k, self.timesteps):
+        #     posGrad[:, i, :] = 0
         return posGrad
 
 
@@ -203,11 +203,11 @@ def circleCoordinates(amount, radius, angleOffset):
 # TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
 
 # circle swap
-AGENTS = 7
+AGENTS = 5
 STARTVEL = np.zeros([AGENTS, 3])
-STARTPOS = circleCoordinates(AGENTS, 2, 0)
+STARTPOS = circleCoordinates(AGENTS, 1, 0)
 TARGETVEL = np.zeros([AGENTS, 3])
-TARGETPOS = circleCoordinates(AGENTS, 2, 180)
+TARGETPOS = circleCoordinates(AGENTS, 1, 180)
 print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
 
 # simple test
@@ -238,12 +238,12 @@ costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TIMESTEPS, DIM, START
 # AGENT TIMESTEP DIM
 jerks = np.zeros([AGENTS, TIMESTEPS, DIM])
 # randomize jerks
-maxRandom = 0.05
-for i in range(0, AGENTS):
-    tmp = np.zeros([TIMESTEPS, 3])
-    for j in range(0, TIMESTEPS):
-        tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
-    jerks[i] = tmp
+# maxRandom = 0.05
+# for i in range(0, AGENTS):
+#     tmp = np.zeros([TIMESTEPS, 3])
+#     for j in range(0, TIMESTEPS):
+#         tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
+#     jerks[i] = tmp
 
 # COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS MOMENTUM
 # initialJerks = momentumGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.0005, 50, 0.9)
