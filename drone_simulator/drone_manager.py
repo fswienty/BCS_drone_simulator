@@ -47,7 +47,7 @@ class DroneManager(DirectObject.DirectObject):
         buttonSize = (-4, 4, -.2, .8)
         buttonDistance = 0.15
 
-        frame = DirectFrame(frameColor=(.2, .2, .2, 1), frameSize=(-.5, .5, -.7, .1), pos=(-.9, 0, -.6), scale=.5)
+        frame = DirectFrame(frameColor=(.2, .2, .2, 1), frameSize=(-.5, .5, -.7, .15), pos=(-.9, 0, -.6), scale=.5)
 
         button = DirectButton(text="Start", scale=.1, frameSize=buttonSize, command=self.startLandAll)
         button["extraArgs"] = [button]
@@ -72,7 +72,6 @@ class DroneManager(DirectObject.DirectObject):
 
         # initialize an UI element with all available formations
         loadFormationSelectionFrame(self)
-
 
 
     def startLandAll(self, button):
@@ -157,10 +156,10 @@ class DroneManager(DirectObject.DirectObject):
         availableDrones = self.drones.__len__()
         maxNumber = availableDrones
         if requiredDrones > availableDrones:
-            print("The formation contains more points than there are drones available")
+            print("The formation contains {0} points but there are only {1} available drones".format(requiredDrones, availableDrones))
 
         if requiredDrones < availableDrones:
-            print("The formation contains less points than there are drones available, some drones will remain stationary")
+            print("The formation contains {0} points but there are {1} available drones, some drones will remain stationary".format(requiredDrones, availableDrones))
             maxNumber = requiredDrones
 
         print("applying {} formation".format(name))

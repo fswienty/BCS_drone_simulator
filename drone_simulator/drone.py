@@ -168,6 +168,16 @@ class Drone:
         massVec /= (others.__len__() + 1)
         massVec = self.root(massVec)
 
+        for other in others:
+            perp = self.targetVector().cross(massVec - self.getPos())
+            distVec = other.getPos() - self.getPos()
+            if distVec.length() < 0.2:
+                print("BONK")
+            distMult = max([0, self.SENSORRANGE - distVec.length()])
+            avoidanceVector = perp.normalized() * 0.1 - distVec.normalized() * 0.9
+            avoidanceVector.normalize()
+            self.addForce(avoidanceVector * distMult * self.AVOIDANCEFORCE)
+
         # for other in others:
         #     perp = self.targetVector().cross(massVec - self.getPos())
 
@@ -182,22 +192,6 @@ class Drone:
         #     avoidanceVector = perp.normalized() * 0.2 - distVec.normalized() * 0.7
         #     avoidanceVector.normalize()
         #     self.addForce(avoidanceVector * mult * self.AVOIDANCEFORCE)
-
-        for other in others:
-            perp = self.targetVector().cross(massVec - self.getPos())
-            perp2 = self.targetVector().cross(other.getPos() - self.getPos())
-
-            distVec = other.getPos() - self.getPos()
-            if distVec.length() < 0.2:
-                print("BONK")
-            distMult = max([0, self.SENSORRANGE - distVec.length()])
-            distMult = distMult
-            velMult = self.getVel().length()
-            velMult = velMult + .5
-
-            avoidanceVector = perp2.normalized() * 0.0 + perp.normalized() * 0.1 - distVec.normalized() * 0.7
-            avoidanceVector.normalize()
-            self.addForce(avoidanceVector * distMult * velMult * self.AVOIDANCEFORCE)
 
 
     def root(self, vec: Vec3) -> Vec3:
