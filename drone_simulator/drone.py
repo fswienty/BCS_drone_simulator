@@ -343,7 +343,7 @@ class Drone:
         time.sleep(0.1)
         cf.param.set_value('kalman.resetEstimation', '0')
 
-        # self._wait_for_position_estimator()
+        self._wait_for_position_estimator()
 
 
     def position_callback(self, timestamp, data, logconf):
