@@ -168,6 +168,7 @@ class Drone:
         massVec /= (others.__len__() + 1)
         massVec = self.root(massVec)
 
+        # calculate and apply forces
         for other in others:
             perp = self.targetVector().cross(massVec - self.getPos())
             distVec = other.getPos() - self.getPos()
