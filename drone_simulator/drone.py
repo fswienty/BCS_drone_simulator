@@ -1,5 +1,6 @@
 import time
 import math
+import random
 
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
@@ -28,6 +29,7 @@ class Drone:
 
         self.base = manager.base
         self.manager = manager
+
         # The position of the real drone this virtual drone is connected to.
         # If a connection is active, this value is updated each frame.
         self.realDronePosition = Vec3(0, 0, 0)
@@ -37,6 +39,8 @@ class Drone:
         self.uri = uri
         if self.uri != "-1":
             self.canConnect = True
+
+        self.randVec = Vec3(random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(-1, 1))
 
         # add the rigidbody to the drone, which has a mass and linear damping
         self.rigidBody = BulletRigidBodyNode("RigidSphere")  # derived from PandaNode
@@ -155,22 +159,23 @@ class Drone:
         """Applies a force the the virtual drone which makes it avoid other drones."""
         # get all drones within the sensors reach and put them in a list
         others = []
-        massVec = Vec3(0, 0, 0)
         for drone in self.manager.drones:
             dist = (drone.getPos() - self.getPos()).length()
             if dist > 0 and dist < self.SENSORRANGE:  # check dist > 0 to prevent drone from detecting itself
                 others.append(drone)
 
         # get the root mean square position of all drones involved
-        massVec = self.getPos() ** 2
-        for other in others:
-            massVec += other.getPos() ** 2
-        massVec /= (others.__len__() + 1)
-        massVec = self.root(massVec)
+        # becomes just the drone position if there are no drones in sensor range
+        # massVec = self.getPos() ** 2
+        # for other in others:
+        #     massVec += other.getPos() ** 2
+        # massVec /= (others.__len__() + 1)
+        # massVec = self.root(massVec)
 
         # calculate and apply forces
         for other in others:
-            perp = self.targetVector().cross(massVec - self.getPos())
+            # perp = self.targetVector().cross(massVec - self.getPos())
+            perp = self.targetVector().cross(self.randVec)
             distVec = other.getPos() - self.getPos()
             if distVec.length() < 0.2:
                 print("BONK")
@@ -178,21 +183,6 @@ class Drone:
             avoidanceVector = perp.normalized() * 0.1 - distVec.normalized() * 0.9
             avoidanceVector.normalize()
             self.addForce(avoidanceVector * distMult * self.AVOIDANCEFORCE)
-
-        # for other in others:
-        #     perp = self.targetVector().cross(massVec - self.getPos())
-
-        #     distVec = other.getPos() - self.getPos()
-        #     if distVec.length() < 0.2:
-        #         print("BONK")
-        #     closeness = self.SENSORRANGE - distVec.length()
-        #     velocityDiff = (self.getVel() - other.getVel()).length()
-        #     mult = velocityDiff + closeness
-        #     mult *= .1
-
-        #     avoidanceVector = perp.normalized() * 0.2 - distVec.normalized() * 0.7
-        #     avoidanceVector.normalize()
-        #     self.addForce(avoidanceVector * mult * self.AVOIDANCEFORCE)
 
 
     def root(self, vec: Vec3) -> Vec3:
