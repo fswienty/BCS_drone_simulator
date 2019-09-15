@@ -17,12 +17,20 @@ from panda3d.bullet import BulletGhostNode
 
 class Drone:
 
-    RIGIDBODYMASS = 1
+    # RIGIDBODYMASS = 1
+    # RIGIDBODYRADIUS = 0.1
+    # LINEARDAMPING = 0.97
+    # SENSORRANGE = 0.6
+    # TARGETFORCE = 3
+    # AVOIDANCEFORCE = 25
+    # FORCEFALLOFFDISTANCE = .5
+
+    RIGIDBODYMASS = 0.5
     RIGIDBODYRADIUS = 0.1
-    LINEARDAMPING = 0.97
+    LINEARDAMPING = 0.95
     SENSORRANGE = 0.6
-    TARGETFORCE = 3
-    AVOIDANCEFORCE = 25
+    TARGETFORCE = 1
+    AVOIDANCEFORCE = 10
     FORCEFALLOFFDISTANCE = .5
 
     def __init__(self, manager, position: Vec3, uri="-1", printDebugInfo=False):
@@ -134,7 +142,7 @@ class Drone:
             self.sendPosition()
 
         # draw various lines to get a better idea of whats happening
-        # self._drawTargetLine()
+        self._drawTargetLine()
         # self._drawVelocityLine()
         self._drawForceLine()
         # self._drawActualDroneLine()
@@ -175,22 +183,22 @@ class Drone:
         # calculate and apply forces
         for other in others:
             # perp = self.targetVector().cross(massVec - self.getPos())
-            perp = self.targetVector().cross(self.randVec)
             distVec = other.getPos() - self.getPos()
             if distVec.length() < 0.2:
                 print("BONK")
             distMult = max([0, self.SENSORRANGE - distVec.length()])
-            avoidanceVector = perp.normalized() * 0.1 - distVec.normalized() * 0.9
+            # avoidanceVector = perp.normalized() * 0.1 - distVec.normalized() * 0.9
+            avoidanceVector = self.randVec.normalized() * 0.1 - distVec.normalized() * 0.9
             avoidanceVector.normalize()
             self.addForce(avoidanceVector * distMult * self.AVOIDANCEFORCE)
 
 
-    def root(self, vec: Vec3) -> Vec3:
-        """Takes the root of all elements of the supplied vector and returns it."""
-        x = math.sqrt(vec.x)
-        y = math.sqrt(vec.y)
-        z = math.sqrt(vec.z)
-        return Vec3(x, y, z)
+    # def root(self, vec: Vec3) -> Vec3:
+    #     """Takes the root of all elements of the supplied vector and returns it."""
+    #     x = math.sqrt(vec.x)
+    #     y = math.sqrt(vec.y)
+    #     z = math.sqrt(vec.z)
+    #     return Vec3(x, y, z)
 
 
     def targetVector(self) -> Vec3:
@@ -261,7 +269,7 @@ class Drone:
         # ls.setThickness(1)
         ls.setColor(0.0, 1.0, 0.0, 1.0)
         ls.moveTo(self.getPos())
-        ls.drawTo(self.getPos() + self.rigidBody.getTotalForce() * 0.1)
+        ls.drawTo(self.getPos() + self.rigidBody.getTotalForce() * 0.2)
         node = ls.create()
         self.forceLineNP = self.base.render.attachNewNode(node)
 
