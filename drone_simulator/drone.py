@@ -188,7 +188,7 @@ class Drone:
                 print("BONK")
             distMult = max([0, self.SENSORRANGE - distVec.length()])
             # avoidanceVector = perp.normalized() * 0.1 - distVec.normalized() * 0.9
-            avoidanceVector = self.randVec.normalized() * 0.1 - distVec.normalized() * 0.9
+            avoidanceVector = self.randVec.normalized() * 0.2 - distVec.normalized() * 0.9
             avoidanceVector.normalize()
             self.addForce(avoidanceVector * distMult * self.AVOIDANCEFORCE)
 
