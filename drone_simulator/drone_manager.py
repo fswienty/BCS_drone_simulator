@@ -92,7 +92,7 @@ class DroneManager(DirectObject.DirectObject):
 
 
     def returnToWaitingPosition(self):
-        """Makes all drones hover above their starting position. Usefull to make the drones land just where they started."""
+        """Makes all drones hover above their starting position. Useful to make the drones land just where they started."""
         if not self.isStarted:
             print("can't return to waiting position, drones are not started")
             return

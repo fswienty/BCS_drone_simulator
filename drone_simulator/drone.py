@@ -186,7 +186,8 @@ class Drone:
             distVec = other.getPos() - self.getPos()
             if distVec.length() < 0.2:
                 print("BONK")
-            distMult = max([0, self.SENSORRANGE - distVec.length()])
+            # distMult = max(0, self.SENSORRANGE - distVec.length())
+            distMult = self.SENSORRANGE - distVec.length()
             # avoidanceVector = perp.normalized() * 0.1 - distVec.normalized() * 0.9
             avoidanceDirection = self.randVec.normalized() * 2 - distVec.normalized() * 10
             avoidanceDirection.normalize()
