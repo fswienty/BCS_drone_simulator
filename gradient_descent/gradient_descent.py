@@ -202,12 +202,13 @@ def circleCoordinates(amount, radius, angleOffset):
 # TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 # TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
 
+
 # circle swap
-AGENTS = 4
+AGENTS = 20
 STARTVEL = np.zeros([AGENTS, 3])
-STARTPOS = circleCoordinates(AGENTS, 1, 0)
+STARTPOS = circleCoordinates(AGENTS, 5, 0)
 TARGETVEL = np.zeros([AGENTS, 3])
-TARGETPOS = circleCoordinates(AGENTS, 1, 180)
+TARGETPOS = circleCoordinates(AGENTS, 5, 180)
 print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
 
 # simple test
@@ -222,7 +223,7 @@ AGENTS = STARTVEL.shape[0]
 TIMESTEPS = 20
 DIM = STARTVEL.shape[1]
 
-TIMESTEP = 0.5
+TIMESTEP = .5
 MAXJERK = 0.1
 
 # weights for changing how much the final velocity error, the final position error and the drone-drone conflicts are considered
@@ -231,19 +232,19 @@ WVEL = 5
 WPOS = 5
 WCOL = .5
 
-MINDIST = .4
+MINDIST = .6
 
 costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TIMESTEPS, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
 
 # AGENT TIMESTEP DIM
 jerks = np.zeros([AGENTS, TIMESTEPS, DIM])
 # randomize jerks
-# maxRandom = 0.05
-# for i in range(0, AGENTS):
-#     tmp = np.zeros([TIMESTEPS, 3])
-#     for j in range(0, TIMESTEPS):
-#         tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
-#     jerks[i] = tmp
+maxRandom = 0.05
+for i in range(0, AGENTS):
+    tmp = np.zeros([TIMESTEPS, 3])
+    for j in range(0, TIMESTEPS):
+        tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
+    jerks[i] = tmp
 
 # COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS MOMENTUM
 # initialJerks = momentumGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.0005, 50, 0.9)

@@ -11,6 +11,6 @@ def circleCoordinates(amount, radius, angleOffset):
     return coordinateArray
 
 
-arr = circleCoordinates(10, 1, 0)
+arr = circleCoordinates(6, 1, 0)
 for pos in arr:
     print("{}, {}, {}".format(pos[0], pos[1], pos[2]))
