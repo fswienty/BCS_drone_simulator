@@ -20,12 +20,19 @@ s_step = Slider(ax_step, 'timestep', 0, timesteps - 1, valinit=0, valstep=1)
 plotRange = 1
 
 
-def update(val):
-    step = int(s_step.val)
-    ax.clear()
+def setupPlotStuff():
     ax.set_xlim3d(-plotRange, plotRange)
     ax.set_ylim3d(-plotRange, plotRange)
     ax.set_zlim3d(0, 2 * plotRange)
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+
+
+def update(val):
+    step = int(s_step.val)
+    ax.clear()
+    setupPlotStuff()
     for i in range(0, agents):
         trail = max(0, step - 999999)
         ax.plot3D(traj[i, trail:step + 1, 0], traj[i, trail:step + 1, 1], traj[i, trail:step + 1, 2])
@@ -36,4 +43,9 @@ def update(val):
 s_step.on_changed(update)
 
 update(1)  # run update once to set axes range
+
+plt.savefig(sys.path[0] + "/plot.pdf", dpi=None, facecolor='w', edgecolor='w',
+            orientation='portrait', papertype=None, format=None,
+            transparent=False, bbox_inches=None, pad_inches=0.1,
+            frameon=None, metadata=None)
 plt.show()

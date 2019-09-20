@@ -203,7 +203,7 @@ def circleCoordinates(amount, radius, angleOffset):
 # TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
 
 # circle swap
-AGENTS = 6
+AGENTS = 4
 STARTVEL = np.zeros([AGENTS, 3])
 STARTPOS = circleCoordinates(AGENTS, 1, 0)
 TARGETVEL = np.zeros([AGENTS, 3])

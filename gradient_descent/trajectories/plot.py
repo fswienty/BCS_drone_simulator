@@ -26,6 +26,9 @@ def update(val):
     ax.set_xlim3d(-plotRange, plotRange)
     ax.set_ylim3d(-plotRange, plotRange)
     ax.set_zlim3d(0, 2 * plotRange)
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
     for i in range(0, agents):
         trail = max(0, step - 999999)
         ax.plot3D(traj[i, trail:step + 1, 0], traj[i, trail:step + 1, 1], traj[i, trail:step + 1, 2])
