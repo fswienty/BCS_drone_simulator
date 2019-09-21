@@ -137,6 +137,7 @@ class Drone:
         """Update the virtual drone."""
         self._updateTargetForce()
         self._updateAvoidanceForce()
+        self._clampForce()
 
         if self.isConnected:
             self.sendPosition()
@@ -192,6 +193,14 @@ class Drone:
             avoidanceDirection = self.randVec.normalized() * 2 - distVec.normalized() * 10
             avoidanceDirection.normalize()
             self.addForce(avoidanceDirection * distMult * self.AVOIDANCEFORCE)
+
+
+    def _clampForce(self):
+        """Clamps the total force acting in the drone."""
+        totalForce = self.rigidBody.getTotalForce()
+        if totalForce.length() > 2:
+            self.rigidBody.clearForces()
+            self.rigidBody.applyCentralForce(totalForce.normalized())
 
 
     # def root(self, vec: Vec3) -> Vec3:

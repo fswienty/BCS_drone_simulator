@@ -150,11 +150,14 @@ def adamGradientDescent(costFunction, costTarget, gradientFunction, initialParam
             print("stopping due to reaching cost target")
             return parameters
 
+        curStepsize = stepsize / (1 + 0.01 * i)
+        # curStepsize = stepsize
+
         m = beta1 * m + (1 - beta1) * gradient
         v = beta2 * v + (1 - beta2) * gradient**2
         mHat = m / (1 - beta1)
         vHat = v / (1 - beta2)
-        parameters -= stepsize / (np.sqrt(vHat) + eps) * mHat
+        parameters -= curStepsize / (np.sqrt(vHat) + eps) * mHat
         parameters = np.clip(parameters, -parameterLimit, parameterLimit)
 
     print("stopping due to reaching step limit")
@@ -202,21 +205,20 @@ def circleCoordinates(amount, radius, angleOffset):
 # TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 # TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
 
+# 3 axis swap
+# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# STARTPOS = np.array([[0, 0, .3], [0, 0, 1.3], [.5, 0, .8], [-.5, 0, .8], [0, .5, .8], [0, -.5, .8]])
+# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+# TARGETPOS = np.array([[0, 0, 1.3], [0, 0, 0.3], [-.5, 0, .8], [.5, 0, .8], [0, -.5, .8], [0, .5, .8]])
+
 
 # circle swap
-AGENTS = 20
+AGENTS = 6
 STARTVEL = np.zeros([AGENTS, 3])
-STARTPOS = circleCoordinates(AGENTS, 5, 0)
+STARTPOS = circleCoordinates(AGENTS, 1, 0)
 TARGETVEL = np.zeros([AGENTS, 3])
-TARGETPOS = circleCoordinates(AGENTS, 5, 180)
+TARGETPOS = circleCoordinates(AGENTS, 1, 180)
 print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
-
-# simple test
-# positive x -> towards window, positive y -> towards left wall
-# STARTVEL = np.array([[0, 0, 0], [0, 0, 0]])
-# STARTPOS = np.array([[0, -1, 1], [0, 1, 1]])
-# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0]])
-# TARGETPOS = np.array([[0, 1, 1], [0, -1, 1]])
 
 
 AGENTS = STARTVEL.shape[0]
@@ -239,12 +241,12 @@ costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TIMESTEPS, DIM, START
 # AGENT TIMESTEP DIM
 jerks = np.zeros([AGENTS, TIMESTEPS, DIM])
 # randomize jerks
-maxRandom = 0.05
-for i in range(0, AGENTS):
-    tmp = np.zeros([TIMESTEPS, 3])
-    for j in range(0, TIMESTEPS):
-        tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
-    jerks[i] = tmp
+# maxRandom = 0.05
+# for i in range(0, AGENTS):
+#     tmp = np.zeros([TIMESTEPS, 3])
+#     for j in range(0, TIMESTEPS):
+#         tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
+#     jerks[i] = tmp
 
 # COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS MOMENTUM
 # initialJerks = momentumGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.0005, 50, 0.9)
@@ -252,7 +254,7 @@ for i in range(0, AGENTS):
 
 # COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS BETA1 BETA2 EPSILON
 initialResult = adamGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.01, 50, 0.95, 0.99, 10**(-8))
-result = adamGradientDescent(costFun.cost, 0.05, costFun.gradient, initialResult, MAXJERK, 0.005, 1000, 0.95, 0.99, 10**(-8))
+result = adamGradientDescent(costFun.cost, 0.05, costFun.gradient, jerks, MAXJERK, 0.005, 4000, 0.95, 0.99, 10**(-8))
 
 print("\n ##### RESULTS #####")
 print("Highest final velocity difference:", np.max(np.linalg.norm(TARGETVEL - costFun.velocities[:, -1, :], axis=1)))
