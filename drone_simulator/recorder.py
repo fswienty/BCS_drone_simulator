@@ -8,22 +8,27 @@ class DroneRecorder(DirectObject.DirectObject):
 
     def __init__(self, droneManager):
         self.droneManager = droneManager
-        self.recordingLst = []
+        self.recordingLstPos = []
+        self.recordingLstVel = []
         self.isRecording = False
         self.accept('space', self.toggleRecording)
 
 
     def recordDronesTask(self, task):
         task.delayTime = 0.05
-        self.recordingLst.append(self.droneManager.getAllPositions())
+        self.recordingLstPos.append(self.droneManager.getAllPositions())
+        self.recordingLstVel.append(self.droneManager.getAllVelocities())
         # print("recording")
         return task.again
 
 
     def save(self):
-        posTraj = np.asarray(self.recordingLst)
+        posTraj = np.asarray(self.recordingLstPos)
         posTraj = np.swapaxes(posTraj, 0, 1)  # make array in the shape agent, timestep, dimension
         np.save(sys.path[0] + "/trajectories/pos_traj.npy", posTraj)
+        velTraj = np.asarray(self.recordingLstVel)
+        velTraj = np.swapaxes(velTraj, 0, 1)  # make array in the shape agent, timestep, dimension
+        np.save(sys.path[0] + "/trajectories/vel_traj.npy", velTraj)
         print("recording saved")
 
 
@@ -36,3 +41,5 @@ class DroneRecorder(DirectObject.DirectObject):
             self.isRecording = False
             self.droneManager.base.taskMgr.remove("RecordDrones")
             self.save()
+            # self.recordingLst = []
+            # self.recordingLstVel = []

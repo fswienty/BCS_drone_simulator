@@ -41,9 +41,12 @@ for i in range(0, agents):
     ax.plot3D(traj[i, trail:step + 1, 0], traj[i, trail:step + 1, 1], traj[i, trail:step + 1, 2])
     ax.scatter(traj[i, step, 0], traj[i, step, 1], traj[i, step, 2])
 
-plt.savefig(sys.path[0] + "/force.pdf", dpi=None, facecolor='w', edgecolor='w',
-            orientation='portrait', papertype=None, format=None,
-            transparent=False, bbox_inches='tight', pad_inches=.1,
-            frameon=None, metadata=None)
+SAVE = False
 
-# plt.show()
+if SAVE:
+    plt.savefig(sys.path[0] + "/force.pdf", dpi=None, facecolor='w', edgecolor='w',
+                orientation='portrait', papertype=None, format=None,
+                transparent=False, bbox_inches='tight', pad_inches=.1,
+                frameon=None, metadata=None)
+else:
+    plt.show()

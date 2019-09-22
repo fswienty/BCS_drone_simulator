@@ -189,3 +189,11 @@ class DroneManager(DirectObject.DirectObject):
             pos = drone.getPos()
             lst.append([pos.x, pos.y, pos.z])
         return lst
+
+    def getAllVelocities(self):
+        """Returns a list of the velocities of all drones. Usefull when recording their paths for later."""
+        lst = []
+        for drone in self.drones:
+            vel = drone.getVel()
+            lst.append([vel.x, vel.y, vel.z])
+        return lst

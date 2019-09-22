@@ -12,7 +12,7 @@ print("Showing {2}D trajectories of {0} agents with {1} timesteps".format(traj.s
 
 fig = plt.figure()
 # fig = plt.figure(figsize=(4, 35))
-fig.subplots_adjust(bottom=0, top=.5)
+fig.subplots_adjust(bottom=.25, top=.75)
 ax = fig.add_subplot(111, projection='3d')
 # fig.subplots_adjust()
 
@@ -41,9 +41,12 @@ for i in range(0, agents):
     ax.plot3D(traj[i, trail:step + 1, 0], traj[i, trail:step + 1, 1], traj[i, trail:step + 1, 2])
     ax.scatter(traj[i, step, 0], traj[i, step, 1], traj[i, step, 2])
 
-plt.savefig(sys.path[0] + "/opt.pdf", dpi=None, facecolor='w', edgecolor='w',
-            orientation='portrait', papertype=None, format=None,
-            transparent=False, bbox_inches='tight', pad_inches=.1,
-            frameon=None, metadata=None)
+SAVE = False
 
-# plt.show()
+if SAVE:
+    plt.savefig(sys.path[0] + "/opt.pdf", dpi=None, facecolor='w', edgecolor='w',
+                orientation='portrait', papertype=None, format=None,
+                transparent=False, bbox_inches='tight', pad_inches=.1,
+                frameon=None, metadata=None)
+else:
+    plt.show()
