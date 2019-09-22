@@ -225,7 +225,7 @@ AGENTS = STARTVEL.shape[0]
 TIMESTEPS = 20
 DIM = STARTVEL.shape[1]
 
-TIMESTEP = .5
+TIMESTEP = .38
 MAXJERK = 0.1
 
 # weights for changing how much the final velocity error, the final position error and the drone-drone conflicts are considered
@@ -254,7 +254,7 @@ jerks = np.zeros([AGENTS, TIMESTEPS, DIM])
 
 # COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS BETA1 BETA2 EPSILON
 initialResult = adamGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.01, 50, 0.95, 0.99, 10**(-8))
-result = adamGradientDescent(costFun.cost, 0.05, costFun.gradient, initialResult, MAXJERK, 0.005, 4000, 0.95, 0.99, 10**(-8))
+result = adamGradientDescent(costFun.cost, 0.05, costFun.gradient, initialResult, MAXJERK, 0.005, 1000, 0.95, 0.99, 10**(-8))
 
 # result = adamGradientDescent(costFun.cost, 0.05, costFun.gradient, jerks, MAXJERK, 0.005, 4000, 0.95, 0.99, 10**(-8))
 

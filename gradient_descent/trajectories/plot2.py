@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider  # , Button, RadioButtons
 from mpl_toolkits.mplot3d import Axes3D
 
-traj = np.load(sys.path[0] + "/6circle_pos.npy")
+traj = np.load(sys.path[0] + "/pos_traj.npy")
 agents = traj.shape[0]
 timesteps = traj.shape[1]
 
@@ -41,7 +41,7 @@ for i in range(0, agents):
     ax.plot3D(traj[i, trail:step + 1, 0], traj[i, trail:step + 1, 1], traj[i, trail:step + 1, 2])
     ax.scatter(traj[i, step, 0], traj[i, step, 1], traj[i, step, 2])
 
-SAVE = True
+SAVE = False
 if SAVE:
     plt.savefig(sys.path[0] + "/opt.pdf", dpi=None, facecolor='w', edgecolor='w',
                 orientation='portrait', papertype=None, format=None,

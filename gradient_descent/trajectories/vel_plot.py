@@ -20,7 +20,7 @@ timeArray = np.linspace(0, timeNeeded, timesteps)
 for i in range(0, agents):
     plt.plot(timeArray, speed[i])
 
-SAVE = True
+SAVE = False
 if SAVE:
     plt.savefig(sys.path[0] + "/opt_vel.pdf", dpi=None, facecolor='w', edgecolor='w',
                 orientation='portrait', papertype=None, format=None,
