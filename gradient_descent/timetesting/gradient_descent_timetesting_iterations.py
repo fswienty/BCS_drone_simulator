@@ -2,6 +2,7 @@ import sys
 import random
 import numpy as np
 import math
+import time
 
 
 class CostFunctions():
@@ -144,10 +145,8 @@ def adamGradientDescent(costFunction, costTarget, gradientFunction, initialParam
     for i in range(0, maxSteps):
         cost = costFunction(parameters)
         gradient = gradientFunction(parameters)
-        print("Iteration {} Cost = {}".format(i, cost))
 
         if(cost < costTarget):
-            print("stopping due to reaching cost target")
             return parameters
 
         curStepsize = stepsize / (1 + 0.01 * i)
@@ -160,7 +159,6 @@ def adamGradientDescent(costFunction, costTarget, gradientFunction, initialParam
         parameters -= curStepsize / (np.sqrt(vHat) + eps) * mHat
         parameters = np.clip(parameters, -parameterLimit, parameterLimit)
 
-    print("stopping due to reaching step limit")
     return parameters
 
 
@@ -174,108 +172,36 @@ def circleCoordinates(amount, radius, angleOffset):
     return coordinateArray
 
 
-# AGENT DIM
-# "random"
-# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 0, 0], [0, 0, 4], [-3, -3, 0]])
-# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# TARGETPOS = np.array([[-4, 0, 0], [4, 0, 0], [0, 0, 0], [0, 0, -4], [3, 3, 0]])
-
-# 3 axis position swap
-# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# STARTPOS = np.array([[4, 0, 0], [-4, 0, 0], [0, 4, 0], [0, -4, 0], [0, 0, 4], [0, 0, -4], [0, 0, 0]])
-# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# TARGETPOS = np.array([[-4, 0, 0], [4, 0, 0], [0, -4, 0], [0, 4, 0], [0, 0, -4], [0, 0, 4], [0, 0, 0]])
-
-# pentagram
-# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# STARTPOS = np.array([[-2, -2, 0], [3, 1, 0], [-3, 1, 0], [2, -2, 0], [0, 4, 0]])
-# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# TARGETPOS = np.array([[3, 1, 0], [-3, 1, 0], [2, -2, 0], [0, 4, 0], [-2, -2, 0]])
-
-# line swap
-# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# STARTPOS = np.array([[3, -4, 0], [3, -2, 0], [3, 0, 0], [3, 2, 0], [3, 4, 0], [-3, -4, 0], [-3, -2, 0], [-3, 0, 0], [-3, 2, 0], [-3, 4, 0]])
-# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# TARGETPOS = np.array([[-3, -4, 0], [-3, -2, 0], [-3, 0, 0], [-3, 2, 0], [-3, 4, 0], [3, -4, 0], [3, -2, 0], [3, 0, 0], [3, 2, 0], [3, 4, 0]])
-
-# drone wall
-# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# STARTPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, -3, 0]])
-# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# TARGETPOS = np.array([[-2, 0, -2], [-2, 0, 0], [-2, 0, 2], [0, 0, -2], [0, 0, 0], [0, 0, 2], [2, 0, -2], [2, 0, 0], [2, 0, 2], [0, 3, 0]])
-
-# 3 axis swap
-# STARTVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# STARTPOS = np.array([[0, 0, .3], [0, 0, 1.3], [.5, 0, .8], [-.5, 0, .8], [0, .5, .8], [0, -.5, .8]])
-# TARGETVEL = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-# TARGETPOS = np.array([[0, 0, 1.3], [0, 0, 0.3], [-.5, 0, .8], [.5, 0, .8], [0, -.5, .8], [0, .5, .8]])
-
-
-# circle swap
-AGENTS = 2
-STARTVEL = np.zeros([AGENTS, 3])
-STARTPOS = circleCoordinates(AGENTS, 1, 0)
-TARGETVEL = np.zeros([AGENTS, 3])
-TARGETPOS = circleCoordinates(AGENTS, 1, 180)
-print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
-
-
-AGENTS = STARTVEL.shape[0]
-TIMESTEPS = 20
-DIM = STARTVEL.shape[1]
-
 TIMESTEP = .5
 MAXJERK = 0.1
 
-# weights for changing how much the final velocity error, the final position error and the drone-drone conflicts are considered
-# try changing these if your results are bad
 WVEL = 5
 WPOS = 5
 WCOL = .5
 
 MINDIST = .6
 
-costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TIMESTEPS, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
+AGENTS = 25
+STARTVEL = np.zeros([AGENTS, 3])
+STARTPOS = circleCoordinates(AGENTS, 1, 0)
+TARGETVEL = np.zeros([AGENTS, 3])
+TARGETPOS = circleCoordinates(AGENTS, 1, 180)
+AGENTS = STARTVEL.shape[0]
+TIMESTEPS = 20
+DIM = STARTVEL.shape[1]
 
-# AGENT TIMESTEP DIM
-jerks = np.zeros([AGENTS, TIMESTEPS, DIM])
-# randomize jerks
-# maxRandom = 0.05
-# for i in range(0, AGENTS):
-#     tmp = np.zeros([TIMESTEPS, 3])
-#     for j in range(0, TIMESTEPS):
-#         tmp[j] = [random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom), random.uniform(-maxRandom, maxRandom)]
-#     jerks[i] = tmp
+times = []
+for i in range(0, 20):
+    costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TIMESTEPS, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
+    jerks = np.zeros([AGENTS, TIMESTEPS, DIM])
 
-# COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS MOMENTUM
-# initialJerks = momentumGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.0005, 50, 0.9)
-# momentumGradientDescent(costFun.cost, 0.05, costFun.gradient, initialJerks, MAXJERK, 0.0005, 700, 0.9)
+    now = time.time()
+    result = adamGradientDescent(costFun.cost, 0, costFun.gradient, jerks, MAXJERK, 0.005, 100, 0.95, 0.99, 10**(-8))
+    runtime = time.time() - now
+    print(runtime)
+    times.append(runtime)
 
-# COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS BETA1 BETA2 EPSILON
-initialResult = adamGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.01, 50, 0.95, 0.99, 10**(-8))
-result = adamGradientDescent(costFun.cost, 0.05, costFun.gradient, initialResult, MAXJERK, 0.005, 4000, 0.95, 0.99, 10**(-8))
-
-# result = adamGradientDescent(costFun.cost, 0.05, costFun.gradient, jerks, MAXJERK, 0.005, 4000, 0.95, 0.99, 10**(-8))
-
-print("\n ##### RESULTS #####")
-print("Highest final velocity difference:", np.max(np.linalg.norm(TARGETVEL - costFun.velocities[:, -1, :], axis=1)))
-print("Highest final position difference:", np.max(np.linalg.norm(TARGETPOS - costFun.positions[:, -1, :], axis=1)))
-smallestDistance = sys.float_info.max
-smallestDistanceTimestep = -1
-smallestDistanceAgent1 = -1
-smallestDistanceAgent2 = -1
-for ag1 in range(0, costFun.agents):
-    for ag2 in range(ag1 + 1, costFun.agents):
-        posDiff = costFun.positions[ag1, :, :] - costFun.positions[ag2, :, :]
-        for step in range(0, costFun.timesteps):
-            dist = np.linalg.norm(posDiff[step, :])
-            if dist < smallestDistance:
-                smallestDistance = dist
-                smallestDistanceTimestep = step
-                smallestDistanceAgent1 = ag1
-                smallestDistanceAgent2 = ag2
-print("Smallest distance: {0} at timestep {1} between agents {2} and {3}".format(smallestDistance, smallestDistanceTimestep, smallestDistanceAgent1, smallestDistanceAgent2), "\n")
-
-np.save(sys.path[0] + "/trajectories/vel_traj.npy", costFun.velocities)
-np.save(sys.path[0] + "/trajectories/pos_traj.npy", costFun.positions)
+mean = np.mean(times)
+std = np.std(times)
+print(f"mean = {mean}")
+print(f"std = {std}")
