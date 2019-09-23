@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 
 from camera_controller import CameraController
 from drone_manager import DroneManager
@@ -44,6 +45,19 @@ class DroneSimulator(ShowBase):
 
         self.droneManager = DroneManager(self, droneList)
         DroneRecorder(self.droneManager)
+
+        self.stopwatchOn = False
+        self.now = 0
+        self.accept('t', self.toggleStopwatch)
+
+
+    def toggleStopwatch(self):
+        if not self.stopwatchOn:
+            self.stopwatchOn = True
+            self.now = time.time()
+        else:
+            self.stopwatchOn = False
+            print(time.time() - self.now)
 
 
     def initScene(self):
@@ -110,10 +124,10 @@ if __name__ == "__main__":
     dist = 0.8
     droneList.append([Vec3(dist, dist, .3), 'radio://0/80/2M/E7E7E7E7E0'])
     droneList.append([Vec3(dist, 0, .3), 'radio://0/80/2M/E7E7E7E7E1'])
-    # droneList.append([Vec3(dist, -dist, .3), 'radio://0/80/2M/E7E7E7E7E2'])
-    # droneList.append([Vec3(0, 1.5 * dist, .3), 'radio://0/80/2M/E7E7E7E7E3'])
-    # droneList.append([Vec3(0, 0.5 * dist, .3), 'radio://0/80/2M/E7E7E7E7E4'])
-    # droneList.append([Vec3(0, -0.5 * dist, .3), 'radio://0/80/2M/E7E7E7E7E5'])
+    droneList.append([Vec3(dist, -dist, .3), 'radio://0/80/2M/E7E7E7E7E2'])
+    droneList.append([Vec3(0, 1.5 * dist, .3), 'radio://0/80/2M/E7E7E7E7E3'])
+    droneList.append([Vec3(0, 0.5 * dist, .3), 'radio://0/80/2M/E7E7E7E7E4'])
+    droneList.append([Vec3(0, -0.5 * dist, .3), 'radio://0/80/2M/E7E7E7E7E5'])
     # droneList.append([Vec3(0, -1.5 * dist, .3), 'radio://0/80/2M/E7E7E7E7E6'])
     # droneList.append([Vec3(-dist, dist, .3), 'radio://0/80/2M/E7E7E7E7E7'])
     # droneList.append([Vec3(-dist, 0, .3), 'radio://0/80/2M/E7E7E7E7E8'])

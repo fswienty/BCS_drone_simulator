@@ -150,7 +150,7 @@ def adamGradientDescent(costFunction, costTarget, gradientFunction, initialParam
             print("stopping due to reaching cost target")
             return parameters
 
-        curStepsize = stepsize / (1 + 0.01 * i)
+        curStepsize = stepsize / (1 + 0.1 * i)
         # curStepsize = stepsize
 
         m = beta1 * m + (1 - beta1) * gradient
@@ -213,7 +213,7 @@ def circleCoordinates(amount, radius, angleOffset):
 
 
 # circle swap
-AGENTS = 2
+AGENTS = 8
 STARTVEL = np.zeros([AGENTS, 3])
 STARTPOS = circleCoordinates(AGENTS, 1, 0)
 TARGETVEL = np.zeros([AGENTS, 3])
@@ -222,11 +222,11 @@ print("initial distance: {}".format(np.linalg.norm(STARTPOS[0] - STARTPOS[1])))
 
 
 AGENTS = STARTVEL.shape[0]
-TIMESTEPS = 20
+TIMESTEPS = 25
 DIM = STARTVEL.shape[1]
 
-TIMESTEP = .38
-MAXJERK = 0.1
+TIMESTEP = .5
+MAXJERK = 0.3
 
 # weights for changing how much the final velocity error, the final position error and the drone-drone conflicts are considered
 # try changing these if your results are bad
@@ -254,7 +254,7 @@ jerks = np.zeros([AGENTS, TIMESTEPS, DIM])
 
 # COST TARGET GRAD INITIALPARAM PARAMLIMIT STEPSIZE MAXSTEPS BETA1 BETA2 EPSILON
 initialResult = adamGradientDescent(costFun.cost, 0, costFun.gradientNoCollision, jerks, MAXJERK, 0.01, 50, 0.95, 0.99, 10**(-8))
-result = adamGradientDescent(costFun.cost, 0.05, costFun.gradient, initialResult, MAXJERK, 0.005, 1000, 0.95, 0.99, 10**(-8))
+result = adamGradientDescent(costFun.cost, 0.05, costFun.gradient, initialResult, MAXJERK, 0.005, 3000, 0.95, 0.99, 10**(-8))
 
 # result = adamGradientDescent(costFun.cost, 0.05, costFun.gradient, jerks, MAXJERK, 0.005, 4000, 0.95, 0.99, 10**(-8))
 

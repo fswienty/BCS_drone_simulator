@@ -162,7 +162,7 @@ class DroneManager(DirectObject.DirectObject):
             print("The formation contains {0} points but there are {1} available drones, some drones will remain stationary".format(requiredDrones, availableDrones))
             maxNumber = requiredDrones
 
-        print("applying {} formation".format(name))
+        # print("applying {} formation".format(name))
         for i in range(0, maxNumber):
             self.drones[i].setTarget(Vec3(dronePositions[i, 0], dronePositions[i, 1], dronePositions[i, 2]))
 
