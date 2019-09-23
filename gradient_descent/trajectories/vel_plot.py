@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider  # , Button, RadioButtons
 from mpl_toolkits.mplot3d import Axes3D
 
-traj = np.load(sys.path[0] + "/8circle_vel.npy")
+traj = np.load(sys.path[0] + "/4circle_vel.npy")
 agents = traj.shape[0]
 timesteps = traj.shape[1]
 
@@ -14,7 +14,7 @@ speed = np.sqrt(traj[:, :, 0]**2 + traj[:, :, 1]**2 + traj[:, :, 2]**2)
 plt.xlabel('Time (s)')
 plt.ylabel('Speed (a.u.)')
 
-timeNeeded = 0.5 * timesteps
+timeNeeded = 0.3 * timesteps
 print(f"time needed = {timeNeeded}")
 timeArray = np.linspace(0, timeNeeded, timesteps)
 

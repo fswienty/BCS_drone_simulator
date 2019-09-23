@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider  # , Button, RadioButtons
 from mpl_toolkits.mplot3d import Axes3D
 
-traj = np.load(sys.path[0] + "/8circle_pos.npy")
+traj = np.load(sys.path[0] + "/4circle_pos.npy")
 agents = traj.shape[0]
 timesteps = traj.shape[1]
 

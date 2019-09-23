@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider  # , Button, RadioButtons
 from mpl_toolkits.mplot3d import Axes3D
 
-traj = np.load(sys.path[0] + "/vel_traj.npy")
+traj = np.load(sys.path[0] + "/4circle_vel.npy")
 agents = traj.shape[0]
 timesteps = traj.shape[1]
 
@@ -21,7 +21,7 @@ timeArray = np.linspace(0, timeNeeded, timesteps)
 for i in range(0, agents):
     plt.plot(timeArray, speed[i])
 
-SAVE = False
+SAVE = True
 if SAVE:
     plt.savefig(sys.path[0] + "/force_vel.pdf", dpi=None, facecolor='w', edgecolor='w',
                 orientation='portrait', papertype=None, format=None,

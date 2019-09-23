@@ -1,0 +1,36 @@
+import sys
+import numpy as np
+import matplotlib.pyplot as plt
+
+# circle swaps time until completion data, mean and std
+x = [2, 4, 6, 8]
+data = [[5.300239324569702, 5.4547998905181885, 5.360153675079346, 5.449978828430176, 5.859875202178955, 5.862412452697754, 5.599879264831543, 5.520211458206177, 5.250281095504761, 5.401733636856079],
+        [7.199877977371216, 6.3499486446380615, 7.399947166442871, 8.014953136444092, 7.050033330917358, 7.014585256576538, 7.799839019775391, 8.080129623413086, 6.56036376953125, 6.701298952102661],
+        [7.5399885177612305, 7.529787540435791, 7.370052337646484, 7.260145902633667, 7.7199788093566895, 8.849814176559448, 7.620048999786377, 8.149760007858276, 9.119993448257446, 8.155161619186401],
+        [10.389974117279053, 8.709822177886963, 9.040137529373169, 8.119767427444458, 8.669618844985962, 8.84520411491394, 8.769750833511353, 8.180006265640259, 8.920428991317749, 9.580013751983643]]
+data = np.asarray(data)
+
+y = np.mean(data, axis=1)
+std = np.std(data, axis=1)
+
+fig, ax = plt.subplots()
+ax.bar(x, y,
+       yerr=std,
+       align='center',
+       alpha=0.5,
+       ecolor='black',
+       capsize=10)
+
+ax.set_xlabel('Number of quadcopters on circle')
+ax.set_ylabel('Time until completion (s)')
+ax.set_xticks(x)
+ax.yaxis.grid(True)
+
+SAVE = True
+if SAVE:
+    plt.savefig(sys.path[0] + "/force_time.pdf", dpi=None, facecolor='w', edgecolor='w',
+                orientation='portrait', papertype=None, format=None,
+                transparent=False, bbox_inches='tight', pad_inches=0,
+                frameon=None, metadata=None)
+else:
+    plt.show()

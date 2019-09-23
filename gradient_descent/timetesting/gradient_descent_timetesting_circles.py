@@ -184,7 +184,7 @@ WCOL = .5
 
 MINDIST = .6
 
-AGENTS = 1
+AGENTS = 4
 STARTVEL = np.zeros([AGENTS, 3])
 STARTPOS = circleCoordinates(AGENTS, 1, 0)
 TARGETVEL = np.zeros([AGENTS, 3])
@@ -194,7 +194,7 @@ TIMESTEPS = 20
 DIM = STARTVEL.shape[1]
 
 times = []
-for i in range(0, 10):
+for i in range(0, 20):
     costFun = CostFunctions(WVEL, WPOS, WCOL, MINDIST, AGENTS, TIMESTEPS, DIM, STARTVEL, STARTPOS, TARGETVEL, TARGETPOS, TIMESTEP)
     jerks = np.zeros([AGENTS, TIMESTEPS, DIM])
 
