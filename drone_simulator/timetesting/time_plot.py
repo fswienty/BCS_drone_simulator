@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # circle swaps time until completion data, mean and std
+# use circle_comparison.py to have both this and the opt data
 x = [2, 4, 6, 8]
 data = [[5.300239324569702, 5.4547998905181885, 5.360153675079346, 5.449978828430176, 5.859875202178955, 5.862412452697754, 5.599879264831543, 5.520211458206177, 5.250281095504761, 5.401733636856079],
         [7.199877977371216, 6.3499486446380615, 7.399947166442871, 8.014953136444092, 7.050033330917358, 7.014585256576538, 7.799839019775391, 8.080129623413086, 6.56036376953125, 6.701298952102661],
@@ -26,7 +27,7 @@ ax.set_ylabel('Time until completion (s)')
 ax.set_xticks(x)
 ax.yaxis.grid(True)
 
-SAVE = True
+SAVE = False
 if SAVE:
     plt.savefig(sys.path[0] + "/force_time.pdf", dpi=None, facecolor='w', edgecolor='w',
                 orientation='portrait', papertype=None, format=None,
