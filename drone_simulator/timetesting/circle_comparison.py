@@ -2,6 +2,8 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({'font.size': 12})
+
 labels = [2, 4, 6, 8]
 opt_means = [5.4, 6, 6.8, 12.5]
 
