@@ -55,23 +55,23 @@ class WriteMem:
             # WRITE
             mems[0].geometry_data = [bs1, bs2]
 
-            print('Writing data')
+            print(f'Writing data to {uri}')
             mems[0].write_data(self._data_written)
 
             while not self.data_written:
                 time.sleep(1)
 
             # READ
-            print('Requesting data')
-            mems[0].update(self._data_updated)
+            # print('Requesting data')
+            # mems[0].update(self._data_updated)
 
-            while not self.got_data:
-                time.sleep(1)
+            # while not self.got_data:
+            #     time.sleep(1)
 
 
     def _data_written(self, mem, addr):
         self.data_written = True
-        print('Data written')
+        print(f'Data written to {uri}')
 
     def _data_updated(self, mem):
         mem.dump()
@@ -79,8 +79,6 @@ class WriteMem:
 
 
 if __name__ == '__main__':
-    # URI to the Crazyflie to connect to
-    uri = 'radio://0/80/2M/E7E7E7E7E7'
 
     # Initialize the low-level drivers (don't list the debug drivers)
     cflib.crtp.init_drivers(enable_debug_driver=False)
@@ -97,4 +95,31 @@ if __name__ == '__main__':
     bs2.origin = numberList[12:15]
     bs2.rotation_matrix = [numberList[15:18], numberList[18:21], numberList[21:24]]
 
-    WriteMem(uri, bs1, bs2)
+
+    # URIs to the drones that should be updated
+    uris = [
+        'radio://0/80/2M/E7E7E7E7E0',
+        'radio://0/80/2M/E7E7E7E7E1',
+        'radio://0/80/2M/E7E7E7E7E2',
+        'radio://0/80/2M/E7E7E7E7E3',
+        'radio://0/80/2M/E7E7E7E7E4',
+        'radio://0/80/2M/E7E7E7E7E5',
+        'radio://0/80/2M/E7E7E7E7E6',
+        'radio://0/80/2M/E7E7E7E7E7',
+        'radio://0/80/2M/E7E7E7E7E8',
+        'radio://0/80/2M/E7E7E7E7E9',
+    ]
+
+    updated = []
+    for uri in uris:
+        try:
+            WriteMem(uri, bs1, bs2)
+            updated.append(uri)
+        except Exception:
+            # print(f"Did not find a drone at address {uri}")
+            pass
+        time.sleep(0.7)  # increase this if the dongle cant be found or some problem with the link occurs
+
+    print("\n############### UPDATED DRONES: ###############")
+    for uri in updated:
+        print(f"{uri}")
