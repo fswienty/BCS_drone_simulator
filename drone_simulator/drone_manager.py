@@ -88,7 +88,7 @@ class DroneManager(DirectObject.DirectObject):
             print("landing all")
             for drone in self.drones:
                 pos = drone.getPos()
-                drone.setTarget(target=Vec3(pos[0], pos[1], .2))
+                drone.setTarget(target=Vec3(pos[0], pos[1], 0))
 
 
     def returnToWaitingPosition(self):

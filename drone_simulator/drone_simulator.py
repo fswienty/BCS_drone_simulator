@@ -27,8 +27,8 @@ class DroneSimulator(ShowBase):
 
         # set resolution
         wp = WindowProperties()
-        # wp.setSize(2000, 1500)
-        wp.setSize(1200, 900)
+        wp.setSize(2000, 1500)
+        # wp.setSize(1200, 900)
         # wp.setSize(800, 600)
         self.win.requestProperties(wp)
 
@@ -115,10 +115,10 @@ if __name__ == "__main__":
     # if the drone should not be able to connect, put -1 as uri
     droneList = []
 
-    droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E7'])
-    droneList.append([Vec3(1, 1, .3), 'radio://0/80/2M/E7E7E7E7E1'])
-    droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
-    droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
+    droneList.append([Vec3(0, 0, .3), 'radio://0/80/2M/E7E7E7E7E4'])
+    # droneList.append([Vec3(1, 1, .3), 'radio://0/80/2M/E7E7E7E7E1'])
+    # droneList.append([Vec3(1, -1, .3), 'radio://0/80/2M/E7E7E7E7E2'])
+    # droneList.append([Vec3(-1, 1, .3), 'radio://0/80/2M/E7E7E7E7E3'])
 
 
     dist = 0.8
