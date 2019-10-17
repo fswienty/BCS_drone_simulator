@@ -76,11 +76,11 @@ def start_position_printing(scf):
 
 if __name__ == '__main__':
     # URI to the Crazyflie to connect to
-    uri = 'radio://0/80/2M/E7E7E7E7E3'
+    uri = 'radio://0/80/2M/E7E7E7E7E6'
 
     # Initialize the low-level drivers (don't list the debug drivers)
     cflib.crtp.init_drivers(enable_debug_driver=False)
     with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-        reset_estimator(scf)
         start_position_printing(scf)
+        # reset_estimator(scf)
         time.sleep(10)

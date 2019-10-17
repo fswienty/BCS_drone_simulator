@@ -43,15 +43,33 @@ from cflib.crazyflie.syncLogger import SyncLogger
 from cflib.crazyflie.commander import Commander
 
 # URI to the Crazyflie to connect to
-uri = 'radio://0/80/2M/E7E7E7E7E3'
+uri = 'radio://0/80/2M/E7E7E7E7E5'
 
 # Change the sequence according to your setup
 # x    y    z  YAW
 sequence = [
-    (0.4, 0.35, 0, 0),
-    (1, 0, 0, 0),
-    (1, 1, 0, 0),
-    (0.4, 0.35, -0.5, 0)
+    (0, 0, 0.5, 0),
+    (0, 0, 0.15, 0)
+]
+
+sequence2 = [
+    (0, 0, 0.5, 0),
+    (0, 0, 1, 0),
+    (1, -1, 1, 0),
+    (1, 1, 1, 0),
+    (-1, 1, 1, 0),
+    (-1, -1, 1, 0),
+    (0, 0, 1, 0),
+    (0, 0, 0.15, 0)
+]
+
+sequence3 = [
+    (0, 0, 0.5, 0),
+    (0.5, 0, 0.5, 0),
+    (-.5, .5, .5, 0),
+    (-.5, -.5, .5, 0),
+    (0, 0, .5, 0),
+    (0, 0, 0.15, 0)
 ]
 
 yawstuff = [
@@ -148,7 +166,7 @@ def run_sequence(scf, sequence):
 
     cf.param.set_value('flightmode.posSet', '1')
 
-    for position in sequence:
+    for position in sequence2:
         print('Setting position {}'.format(position))
         for _ in range(35):
             cf.commander.send_position_setpoint(position[0], position[1], position[2], position[3])
@@ -175,8 +193,7 @@ def run_sequence(scf, sequence):
     #         time.sleep(0.2)           
 
     cf.commander.send_stop_setpoint()
-    # Make sure that the last packet leaves before the link is closed
-    # since the message queue is not flushed before closing
+    # Make sure that the last packet leaves before the link is closed since the message queue is not flushed before closing
     time.sleep(0.1)
 
 

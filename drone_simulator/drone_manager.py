@@ -81,7 +81,7 @@ class DroneManager(DirectObject.DirectObject):
             print("starting all")
             for drone in self.drones:
                 pos = drone.getPos()
-                drone.setTarget(target=Vec3(pos[0], pos[1], .7))
+                drone.setTarget(target=Vec3(pos[0], pos[1], 0.3))
         else:
             self.isStarted = False
             button["text"] = "Start"
